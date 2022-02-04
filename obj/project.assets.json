@@ -15,9 +15,9 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "D:\\College\\spring_2022\\cs499\\cs-499-team-project\\demoapp.csproj",
-      "projectName": "demoapp",
-      "projectPath": "D:\\College\\spring_2022\\cs499\\cs-499-team-project\\demoapp.csproj",
+      "projectUniqueName": "D:\\College\\spring_2022\\cs499\\cs-499-team-project\\VaccuumSim.csproj",
+      "projectName": "VaccuumSim",
+      "projectPath": "D:\\College\\spring_2022\\cs499\\cs-499-team-project\\VaccuumSim.csproj",
       "packagesPath": "C:\\Users\\Michael\\.nuget\\packages\\",
       "outputPath": "D:\\College\\spring_2022\\cs499\\cs-499-team-project\\obj\\",
       "projectStyle": "PackageReference",
