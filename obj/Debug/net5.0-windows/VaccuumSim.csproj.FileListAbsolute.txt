@@ -15,3 +15,4 @@ D:\College\spring_2022\cs499\cs-499-team-project\obj\Debug\net5.0-windows\Vaccuu
 D:\College\spring_2022\cs499\cs-499-team-project\obj\Debug\net5.0-windows\ref\VaccuumSim.dll
 D:\College\spring_2022\cs499\cs-499-team-project\obj\Debug\net5.0-windows\VaccuumSim.pdb
 D:\College\spring_2022\cs499\cs-499-team-project\obj\Debug\net5.0-windows\VaccuumSim.genruntimeconfig.cache
+D:\College\spring_2022\cs499\cs-499-team-project\obj\Debug\net5.0-windows\VaccuumSim.csproj.AssemblyReference.cache
