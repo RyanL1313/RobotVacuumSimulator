@@ -30,6 +30,18 @@ namespace demoapp
         private void InitializeComponent()
         {
             this.LeftPane = new System.Windows.Forms.SplitContainer();
+            this.RoomSizeGroupBox = new System.Windows.Forms.GroupBox();
+            this.RoomWidthLabel = new System.Windows.Forms.Label();
+            this.RoomHeightLabel = new System.Windows.Forms.Label();
+            this.RoomWidthSelector = new System.Windows.Forms.NumericUpDown();
+            this.RoomHeightSelector = new System.Windows.Forms.NumericUpDown();
+            this.FloorTypeGroupBox = new System.Windows.Forms.GroupBox();
+            this.WallRadioButton = new System.Windows.Forms.RadioButton();
+            this.FriezeCutPileRadioButton = new System.Windows.Forms.RadioButton();
+            this.CutPileRadioButton = new System.Windows.Forms.RadioButton();
+            this.LoopPileRadioButton = new System.Windows.Forms.RadioButton();
+            this.HardWoodRadioButton = new System.Windows.Forms.RadioButton();
+            this.FloorplanSectionLabel = new System.Windows.Forms.Label();
             this.ControlsPane = new System.Windows.Forms.SplitContainer();
             this.SimulationSpeedLabel = new System.Windows.Forms.Label();
             this.SimulationSpeedSelector = new System.Windows.Forms.ComboBox();
@@ -44,45 +56,30 @@ namespace demoapp
             this.RobotBatteryLifeLabel = new System.Windows.Forms.Label();
             this.RobotBatteryLifeSelector = new System.Windows.Forms.NumericUpDown();
             this.RobotSectionLabel = new System.Windows.Forms.Label();
-            this.menuStrip1 = new System.Windows.Forms.MenuStrip();
-            this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.saveSimulationToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.loadSimulationToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
-            this.saveFloorplanToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.loadFloorplanToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
-            this.resetToDefaultToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.RoomSizeGroupBox = new System.Windows.Forms.GroupBox();
-            this.RoomWidthLabel = new System.Windows.Forms.Label();
-            this.RoomHeightLabel = new System.Windows.Forms.Label();
-            this.RoomWidthSelector = new System.Windows.Forms.NumericUpDown();
-            this.RoomHeightSelector = new System.Windows.Forms.NumericUpDown();
-            this.FloorTypeGroupBox = new System.Windows.Forms.GroupBox();
-            this.WallRadioButton = new System.Windows.Forms.RadioButton();
-            this.FriezeCutPileRadioButton = new System.Windows.Forms.RadioButton();
-            this.CutPileRadioButton = new System.Windows.Forms.RadioButton();
-            this.LoopPileRadioButton = new System.Windows.Forms.RadioButton();
-            this.HardWoodRadioButton = new System.Windows.Forms.RadioButton();
-            this.FloorplanSectionLabel = new System.Windows.Forms.Label();
             this.CenterSplitPane = new System.Windows.Forms.SplitContainer();
+            this.button1 = new System.Windows.Forms.Button();
+            this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.button2 = new System.Windows.Forms.Button();
+            this.button3 = new System.Windows.Forms.Button();
+            this.button4 = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.LeftPane)).BeginInit();
             this.LeftPane.Panel1.SuspendLayout();
             this.LeftPane.Panel2.SuspendLayout();
             this.LeftPane.SuspendLayout();
+            this.RoomSizeGroupBox.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.RoomWidthSelector)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.RoomHeightSelector)).BeginInit();
+            this.FloorTypeGroupBox.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.ControlsPane)).BeginInit();
             this.ControlsPane.Panel1.SuspendLayout();
             this.ControlsPane.Panel2.SuspendLayout();
             this.ControlsPane.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.RobotSpeedSelector)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.RobotBatteryLifeSelector)).BeginInit();
-            this.menuStrip1.SuspendLayout();
-            this.RoomSizeGroupBox.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.RoomWidthSelector)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.RoomHeightSelector)).BeginInit();
-            this.FloorTypeGroupBox.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.CenterSplitPane)).BeginInit();
+            this.CenterSplitPane.Panel1.SuspendLayout();
             this.CenterSplitPane.SuspendLayout();
+            this.groupBox1.SuspendLayout();
             this.SuspendLayout();
             // 
             // LeftPane
@@ -90,12 +87,12 @@ namespace demoapp
             this.LeftPane.Cursor = System.Windows.Forms.Cursors.VSplit;
             this.LeftPane.Dock = System.Windows.Forms.DockStyle.Fill;
             this.LeftPane.IsSplitterFixed = true;
-            this.LeftPane.Location = new System.Drawing.Point(0, 28);
+            this.LeftPane.Location = new System.Drawing.Point(0, 0);
             this.LeftPane.Name = "LeftPane";
             // 
             // LeftPane.Panel1
             // 
-            this.LeftPane.Panel1.Controls.Add(this.menuStrip1);
+            this.LeftPane.Panel1.Controls.Add(this.groupBox1);
             this.LeftPane.Panel1.Controls.Add(this.RoomSizeGroupBox);
             this.LeftPane.Panel1.Controls.Add(this.FloorTypeGroupBox);
             this.LeftPane.Panel1.Controls.Add(this.FloorplanSectionLabel);
@@ -108,9 +105,150 @@ namespace demoapp
             this.LeftPane.Panel2.Cursor = System.Windows.Forms.Cursors.Arrow;
             this.LeftPane.Panel2.RightToLeft = System.Windows.Forms.RightToLeft.No;
             this.LeftPane.RightToLeft = System.Windows.Forms.RightToLeft.No;
-            this.LeftPane.Size = new System.Drawing.Size(623, 723);
+            this.LeftPane.Size = new System.Drawing.Size(623, 751);
             this.LeftPane.SplitterDistance = 312;
             this.LeftPane.TabIndex = 1;
+            // 
+            // RoomSizeGroupBox
+            // 
+            this.RoomSizeGroupBox.AutoSize = true;
+            this.RoomSizeGroupBox.Controls.Add(this.RoomWidthLabel);
+            this.RoomSizeGroupBox.Controls.Add(this.RoomHeightLabel);
+            this.RoomSizeGroupBox.Controls.Add(this.RoomWidthSelector);
+            this.RoomSizeGroupBox.Controls.Add(this.RoomHeightSelector);
+            this.RoomSizeGroupBox.Dock = System.Windows.Forms.DockStyle.Top;
+            this.RoomSizeGroupBox.Location = new System.Drawing.Point(0, 228);
+            this.RoomSizeGroupBox.Name = "RoomSizeGroupBox";
+            this.RoomSizeGroupBox.Size = new System.Drawing.Size(312, 132);
+            this.RoomSizeGroupBox.TabIndex = 11;
+            this.RoomSizeGroupBox.TabStop = false;
+            this.RoomSizeGroupBox.Text = "Room Size";
+            // 
+            // RoomWidthLabel
+            // 
+            this.RoomWidthLabel.Location = new System.Drawing.Point(6, 35);
+            this.RoomWidthLabel.Name = "RoomWidthLabel";
+            this.RoomWidthLabel.Size = new System.Drawing.Size(73, 20);
+            this.RoomWidthLabel.TabIndex = 9;
+            this.RoomWidthLabel.Text = "Width (ft)";
+            // 
+            // RoomHeightLabel
+            // 
+            this.RoomHeightLabel.Location = new System.Drawing.Point(100, 35);
+            this.RoomHeightLabel.Name = "RoomHeightLabel";
+            this.RoomHeightLabel.Size = new System.Drawing.Size(78, 20);
+            this.RoomHeightLabel.TabIndex = 10;
+            this.RoomHeightLabel.Text = "Height (ft)";
+            // 
+            // RoomWidthSelector
+            // 
+            this.RoomWidthSelector.Location = new System.Drawing.Point(6, 72);
+            this.RoomWidthSelector.Margin = new System.Windows.Forms.Padding(10);
+            this.RoomWidthSelector.Name = "RoomWidthSelector";
+            this.RoomWidthSelector.Size = new System.Drawing.Size(74, 27);
+            this.RoomWidthSelector.TabIndex = 7;
+            this.RoomWidthSelector.Value = new decimal(new int[] {
+            45,
+            0,
+            0,
+            0});
+            this.RoomWidthSelector.ValueChanged += new System.EventHandler(this.RoomWidthSelector_ValueChanged);
+            // 
+            // RoomHeightSelector
+            // 
+            this.RoomHeightSelector.Location = new System.Drawing.Point(100, 72);
+            this.RoomHeightSelector.Name = "RoomHeightSelector";
+            this.RoomHeightSelector.Size = new System.Drawing.Size(74, 27);
+            this.RoomHeightSelector.TabIndex = 8;
+            this.RoomHeightSelector.Value = new decimal(new int[] {
+            45,
+            0,
+            0,
+            0});
+            // 
+            // FloorTypeGroupBox
+            // 
+            this.FloorTypeGroupBox.AutoSize = true;
+            this.FloorTypeGroupBox.Controls.Add(this.WallRadioButton);
+            this.FloorTypeGroupBox.Controls.Add(this.FriezeCutPileRadioButton);
+            this.FloorTypeGroupBox.Controls.Add(this.CutPileRadioButton);
+            this.FloorTypeGroupBox.Controls.Add(this.LoopPileRadioButton);
+            this.FloorTypeGroupBox.Controls.Add(this.HardWoodRadioButton);
+            this.FloorTypeGroupBox.Dock = System.Windows.Forms.DockStyle.Top;
+            this.FloorTypeGroupBox.Location = new System.Drawing.Point(0, 31);
+            this.FloorTypeGroupBox.Name = "FloorTypeGroupBox";
+            this.FloorTypeGroupBox.Size = new System.Drawing.Size(312, 197);
+            this.FloorTypeGroupBox.TabIndex = 6;
+            this.FloorTypeGroupBox.TabStop = false;
+            this.FloorTypeGroupBox.Text = "Floor Types";
+            // 
+            // WallRadioButton
+            // 
+            this.WallRadioButton.AutoSize = true;
+            this.WallRadioButton.Location = new System.Drawing.Point(7, 147);
+            this.WallRadioButton.Name = "WallRadioButton";
+            this.WallRadioButton.Size = new System.Drawing.Size(59, 24);
+            this.WallRadioButton.TabIndex = 4;
+            this.WallRadioButton.TabStop = true;
+            this.WallRadioButton.Text = "Wall";
+            this.WallRadioButton.UseVisualStyleBackColor = true;
+            // 
+            // FriezeCutPileRadioButton
+            // 
+            this.FriezeCutPileRadioButton.AutoSize = true;
+            this.FriezeCutPileRadioButton.Location = new System.Drawing.Point(7, 117);
+            this.FriezeCutPileRadioButton.Name = "FriezeCutPileRadioButton";
+            this.FriezeCutPileRadioButton.Size = new System.Drawing.Size(125, 24);
+            this.FriezeCutPileRadioButton.TabIndex = 3;
+            this.FriezeCutPileRadioButton.TabStop = true;
+            this.FriezeCutPileRadioButton.Text = "Frieze-Cut Pile";
+            this.FriezeCutPileRadioButton.UseVisualStyleBackColor = true;
+            // 
+            // CutPileRadioButton
+            // 
+            this.CutPileRadioButton.AutoSize = true;
+            this.CutPileRadioButton.Location = new System.Drawing.Point(6, 87);
+            this.CutPileRadioButton.Name = "CutPileRadioButton";
+            this.CutPileRadioButton.Size = new System.Drawing.Size(80, 24);
+            this.CutPileRadioButton.TabIndex = 2;
+            this.CutPileRadioButton.TabStop = true;
+            this.CutPileRadioButton.Text = "Cut Pile";
+            this.CutPileRadioButton.UseVisualStyleBackColor = true;
+            // 
+            // LoopPileRadioButton
+            // 
+            this.LoopPileRadioButton.AutoSize = true;
+            this.LoopPileRadioButton.Location = new System.Drawing.Point(7, 57);
+            this.LoopPileRadioButton.Name = "LoopPileRadioButton";
+            this.LoopPileRadioButton.Size = new System.Drawing.Size(92, 24);
+            this.LoopPileRadioButton.TabIndex = 1;
+            this.LoopPileRadioButton.TabStop = true;
+            this.LoopPileRadioButton.Text = "Loop Pile";
+            this.LoopPileRadioButton.UseVisualStyleBackColor = true;
+            // 
+            // HardWoodRadioButton
+            // 
+            this.HardWoodRadioButton.AutoSize = true;
+            this.HardWoodRadioButton.Location = new System.Drawing.Point(7, 27);
+            this.HardWoodRadioButton.Name = "HardWoodRadioButton";
+            this.HardWoodRadioButton.Size = new System.Drawing.Size(107, 24);
+            this.HardWoodRadioButton.TabIndex = 0;
+            this.HardWoodRadioButton.TabStop = true;
+            this.HardWoodRadioButton.Text = "Hard Wood";
+            this.HardWoodRadioButton.UseVisualStyleBackColor = true;
+            // 
+            // FloorplanSectionLabel
+            // 
+            this.FloorplanSectionLabel.BackColor = System.Drawing.Color.Transparent;
+            this.FloorplanSectionLabel.Dock = System.Windows.Forms.DockStyle.Top;
+            this.FloorplanSectionLabel.Font = new System.Drawing.Font("Segoe UI", 12F, ((System.Drawing.FontStyle)((System.Drawing.FontStyle.Bold | System.Drawing.FontStyle.Underline))), System.Drawing.GraphicsUnit.Point);
+            this.FloorplanSectionLabel.Location = new System.Drawing.Point(0, 0);
+            this.FloorplanSectionLabel.Margin = new System.Windows.Forms.Padding(10);
+            this.FloorplanSectionLabel.Name = "FloorplanSectionLabel";
+            this.FloorplanSectionLabel.Size = new System.Drawing.Size(312, 31);
+            this.FloorplanSectionLabel.TabIndex = 5;
+            this.FloorplanSectionLabel.Text = "Floorplan Control";
+            this.FloorplanSectionLabel.TextAlign = System.Drawing.ContentAlignment.TopCenter;
             // 
             // ControlsPane
             // 
@@ -144,8 +282,8 @@ namespace demoapp
             this.ControlsPane.Panel2.Controls.Add(this.RobotSectionLabel);
             this.ControlsPane.Panel2.Cursor = System.Windows.Forms.Cursors.Arrow;
             this.ControlsPane.Panel2.RightToLeft = System.Windows.Forms.RightToLeft.No;
-            this.ControlsPane.Size = new System.Drawing.Size(307, 723);
-            this.ControlsPane.SplitterDistance = 450;
+            this.ControlsPane.Size = new System.Drawing.Size(307, 751);
+            this.ControlsPane.SplitterDistance = 467;
             this.ControlsPane.TabIndex = 0;
             // 
             // SimulationSpeedLabel
@@ -304,220 +442,6 @@ namespace demoapp
             this.RobotSectionLabel.Text = "Robot Control";
             this.RobotSectionLabel.TextAlign = System.Drawing.ContentAlignment.TopCenter;
             // 
-            // menuStrip1
-            // 
-            this.menuStrip1.ImageScalingSize = new System.Drawing.Size(20, 20);
-            this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.fileToolStripMenuItem});
-            this.menuStrip1.LayoutStyle = System.Windows.Forms.ToolStripLayoutStyle.HorizontalStackWithOverflow;
-            this.menuStrip1.Location = new System.Drawing.Point(0, 31);
-            this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Size = new System.Drawing.Size(312, 28);
-            this.menuStrip1.TabIndex = 0;
-            this.menuStrip1.Text = "menuStrip1";
-            // 
-            // fileToolStripMenuItem
-            // 
-            this.fileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.saveSimulationToolStripMenuItem,
-            this.loadSimulationToolStripMenuItem,
-            this.toolStripSeparator1,
-            this.saveFloorplanToolStripMenuItem,
-            this.loadFloorplanToolStripMenuItem,
-            this.toolStripSeparator2,
-            this.resetToDefaultToolStripMenuItem});
-            this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
-            this.fileToolStripMenuItem.Size = new System.Drawing.Size(46, 24);
-            this.fileToolStripMenuItem.Text = "File";
-            // 
-            // saveSimulationToolStripMenuItem
-            // 
-            this.saveSimulationToolStripMenuItem.Name = "saveSimulationToolStripMenuItem";
-            this.saveSimulationToolStripMenuItem.Size = new System.Drawing.Size(201, 26);
-            this.saveSimulationToolStripMenuItem.Text = "Save Simulation";
-            // 
-            // loadSimulationToolStripMenuItem
-            // 
-            this.loadSimulationToolStripMenuItem.Name = "loadSimulationToolStripMenuItem";
-            this.loadSimulationToolStripMenuItem.Size = new System.Drawing.Size(201, 26);
-            this.loadSimulationToolStripMenuItem.Text = "Load Simulation";
-            // 
-            // toolStripSeparator1
-            // 
-            this.toolStripSeparator1.Name = "toolStripSeparator1";
-            this.toolStripSeparator1.Size = new System.Drawing.Size(198, 6);
-            // 
-            // saveFloorplanToolStripMenuItem
-            // 
-            this.saveFloorplanToolStripMenuItem.Name = "saveFloorplanToolStripMenuItem";
-            this.saveFloorplanToolStripMenuItem.Size = new System.Drawing.Size(201, 26);
-            this.saveFloorplanToolStripMenuItem.Text = "Save Floorplan";
-            // 
-            // loadFloorplanToolStripMenuItem
-            // 
-            this.loadFloorplanToolStripMenuItem.Name = "loadFloorplanToolStripMenuItem";
-            this.loadFloorplanToolStripMenuItem.Size = new System.Drawing.Size(201, 26);
-            this.loadFloorplanToolStripMenuItem.Text = "Load Floorplan";
-            // 
-            // toolStripSeparator2
-            // 
-            this.toolStripSeparator2.Name = "toolStripSeparator2";
-            this.toolStripSeparator2.Size = new System.Drawing.Size(198, 6);
-            // 
-            // resetToDefaultToolStripMenuItem
-            // 
-            this.resetToDefaultToolStripMenuItem.Name = "resetToDefaultToolStripMenuItem";
-            this.resetToDefaultToolStripMenuItem.Size = new System.Drawing.Size(201, 26);
-            this.resetToDefaultToolStripMenuItem.Text = "Reset To Default";
-            // 
-            // RoomSizeGroupBox
-            // 
-            this.RoomSizeGroupBox.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.RoomSizeGroupBox.Controls.Add(this.RoomWidthLabel);
-            this.RoomSizeGroupBox.Controls.Add(this.RoomHeightLabel);
-            this.RoomSizeGroupBox.Controls.Add(this.RoomWidthSelector);
-            this.RoomSizeGroupBox.Controls.Add(this.RoomHeightSelector);
-            this.RoomSizeGroupBox.Location = new System.Drawing.Point(0, 249);
-            this.RoomSizeGroupBox.Name = "RoomSizeGroupBox";
-            this.RoomSizeGroupBox.Size = new System.Drawing.Size(306, 110);
-            this.RoomSizeGroupBox.TabIndex = 11;
-            this.RoomSizeGroupBox.TabStop = false;
-            this.RoomSizeGroupBox.Text = "Room Size";
-            // 
-            // RoomWidthLabel
-            // 
-            this.RoomWidthLabel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.RoomWidthLabel.AutoSize = true;
-            this.RoomWidthLabel.Location = new System.Drawing.Point(11, 39);
-            this.RoomWidthLabel.Name = "RoomWidthLabel";
-            this.RoomWidthLabel.Size = new System.Drawing.Size(73, 20);
-            this.RoomWidthLabel.TabIndex = 9;
-            this.RoomWidthLabel.Text = "Width (ft)";
-            // 
-            // RoomHeightLabel
-            // 
-            this.RoomHeightLabel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.RoomHeightLabel.AutoSize = true;
-            this.RoomHeightLabel.Location = new System.Drawing.Point(100, 39);
-            this.RoomHeightLabel.Name = "RoomHeightLabel";
-            this.RoomHeightLabel.Size = new System.Drawing.Size(78, 20);
-            this.RoomHeightLabel.TabIndex = 10;
-            this.RoomHeightLabel.Text = "Height (ft)";
-            // 
-            // RoomWidthSelector
-            // 
-            this.RoomWidthSelector.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.RoomWidthSelector.Location = new System.Drawing.Point(13, 69);
-            this.RoomWidthSelector.Margin = new System.Windows.Forms.Padding(10);
-            this.RoomWidthSelector.Name = "RoomWidthSelector";
-            this.RoomWidthSelector.Size = new System.Drawing.Size(74, 27);
-            this.RoomWidthSelector.TabIndex = 7;
-            this.RoomWidthSelector.Value = new decimal(new int[] {
-            45,
-            0,
-            0,
-            0});
-            // 
-            // RoomHeightSelector
-            // 
-            this.RoomHeightSelector.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.RoomHeightSelector.Location = new System.Drawing.Point(100, 69);
-            this.RoomHeightSelector.Name = "RoomHeightSelector";
-            this.RoomHeightSelector.Size = new System.Drawing.Size(74, 27);
-            this.RoomHeightSelector.TabIndex = 8;
-            this.RoomHeightSelector.Value = new decimal(new int[] {
-            45,
-            0,
-            0,
-            0});
-            // 
-            // FloorTypeGroupBox
-            // 
-            this.FloorTypeGroupBox.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.FloorTypeGroupBox.Controls.Add(this.WallRadioButton);
-            this.FloorTypeGroupBox.Controls.Add(this.FriezeCutPileRadioButton);
-            this.FloorTypeGroupBox.Controls.Add(this.CutPileRadioButton);
-            this.FloorTypeGroupBox.Controls.Add(this.LoopPileRadioButton);
-            this.FloorTypeGroupBox.Controls.Add(this.HardWoodRadioButton);
-            this.FloorTypeGroupBox.Location = new System.Drawing.Point(3, 39);
-            this.FloorTypeGroupBox.Name = "FloorTypeGroupBox";
-            this.FloorTypeGroupBox.Size = new System.Drawing.Size(306, 204);
-            this.FloorTypeGroupBox.TabIndex = 6;
-            this.FloorTypeGroupBox.TabStop = false;
-            this.FloorTypeGroupBox.Text = "Floor Types";
-            // 
-            // WallRadioButton
-            // 
-            this.WallRadioButton.AutoSize = true;
-            this.WallRadioButton.Location = new System.Drawing.Point(7, 147);
-            this.WallRadioButton.Name = "WallRadioButton";
-            this.WallRadioButton.Size = new System.Drawing.Size(59, 24);
-            this.WallRadioButton.TabIndex = 4;
-            this.WallRadioButton.TabStop = true;
-            this.WallRadioButton.Text = "Wall";
-            this.WallRadioButton.UseVisualStyleBackColor = true;
-            // 
-            // FriezeCutPileRadioButton
-            // 
-            this.FriezeCutPileRadioButton.AutoSize = true;
-            this.FriezeCutPileRadioButton.Location = new System.Drawing.Point(7, 117);
-            this.FriezeCutPileRadioButton.Name = "FriezeCutPileRadioButton";
-            this.FriezeCutPileRadioButton.Size = new System.Drawing.Size(125, 24);
-            this.FriezeCutPileRadioButton.TabIndex = 3;
-            this.FriezeCutPileRadioButton.TabStop = true;
-            this.FriezeCutPileRadioButton.Text = "Frieze-Cut Pile";
-            this.FriezeCutPileRadioButton.UseVisualStyleBackColor = true;
-            // 
-            // CutPileRadioButton
-            // 
-            this.CutPileRadioButton.AutoSize = true;
-            this.CutPileRadioButton.Location = new System.Drawing.Point(6, 87);
-            this.CutPileRadioButton.Name = "CutPileRadioButton";
-            this.CutPileRadioButton.Size = new System.Drawing.Size(80, 24);
-            this.CutPileRadioButton.TabIndex = 2;
-            this.CutPileRadioButton.TabStop = true;
-            this.CutPileRadioButton.Text = "Cut Pile";
-            this.CutPileRadioButton.UseVisualStyleBackColor = true;
-            // 
-            // LoopPileRadioButton
-            // 
-            this.LoopPileRadioButton.AutoSize = true;
-            this.LoopPileRadioButton.Location = new System.Drawing.Point(7, 57);
-            this.LoopPileRadioButton.Name = "LoopPileRadioButton";
-            this.LoopPileRadioButton.Size = new System.Drawing.Size(92, 24);
-            this.LoopPileRadioButton.TabIndex = 1;
-            this.LoopPileRadioButton.TabStop = true;
-            this.LoopPileRadioButton.Text = "Loop Pile";
-            this.LoopPileRadioButton.UseVisualStyleBackColor = true;
-            // 
-            // HardWoodRadioButton
-            // 
-            this.HardWoodRadioButton.AutoSize = true;
-            this.HardWoodRadioButton.Location = new System.Drawing.Point(7, 27);
-            this.HardWoodRadioButton.Name = "HardWoodRadioButton";
-            this.HardWoodRadioButton.Size = new System.Drawing.Size(107, 24);
-            this.HardWoodRadioButton.TabIndex = 0;
-            this.HardWoodRadioButton.TabStop = true;
-            this.HardWoodRadioButton.Text = "Hard Wood";
-            this.HardWoodRadioButton.UseVisualStyleBackColor = true;
-            // 
-            // FloorplanSectionLabel
-            // 
-            this.FloorplanSectionLabel.BackColor = System.Drawing.Color.Transparent;
-            this.FloorplanSectionLabel.Dock = System.Windows.Forms.DockStyle.Top;
-            this.FloorplanSectionLabel.Font = new System.Drawing.Font("Segoe UI", 12F, ((System.Drawing.FontStyle)((System.Drawing.FontStyle.Bold | System.Drawing.FontStyle.Underline))), System.Drawing.GraphicsUnit.Point);
-            this.FloorplanSectionLabel.Location = new System.Drawing.Point(0, 0);
-            this.FloorplanSectionLabel.Margin = new System.Windows.Forms.Padding(5);
-            this.FloorplanSectionLabel.Name = "FloorplanSectionLabel";
-            this.FloorplanSectionLabel.Size = new System.Drawing.Size(312, 31);
-            this.FloorplanSectionLabel.TabIndex = 5;
-            this.FloorplanSectionLabel.Text = "Floorplan Control";
-            this.FloorplanSectionLabel.TextAlign = System.Drawing.ContentAlignment.TopCenter;
-            // 
             // CenterSplitPane
             // 
             this.CenterSplitPane.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
@@ -526,11 +450,65 @@ namespace demoapp
             this.CenterSplitPane.IsSplitterFixed = true;
             this.CenterSplitPane.Location = new System.Drawing.Point(0, 0);
             this.CenterSplitPane.Name = "CenterSplitPane";
+            // 
+            // CenterSplitPane.Panel1
+            // 
+            this.CenterSplitPane.Panel1.Controls.Add(this.LeftPane);
             this.CenterSplitPane.Size = new System.Drawing.Size(1250, 753);
             this.CenterSplitPane.SplitterDistance = 625;
             this.CenterSplitPane.SplitterWidth = 1;
             this.CenterSplitPane.TabIndex = 0;
-            this.CenterSplitPane.Panel1.Controls.Add(LeftPane);
+            // 
+            // button1
+            // 
+            this.button1.Location = new System.Drawing.Point(6, 32);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(123, 29);
+            this.button1.TabIndex = 12;
+            this.button1.Text = "Load Floorplan";
+            this.button1.UseVisualStyleBackColor = true;
+            // 
+            // groupBox1
+            // 
+            this.groupBox1.AutoSize = true;
+            this.groupBox1.Controls.Add(this.button4);
+            this.groupBox1.Controls.Add(this.button3);
+            this.groupBox1.Controls.Add(this.button2);
+            this.groupBox1.Controls.Add(this.button1);
+            this.groupBox1.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.groupBox1.Location = new System.Drawing.Point(0, 535);
+            this.groupBox1.Name = "groupBox1";
+            this.groupBox1.Size = new System.Drawing.Size(312, 216);
+            this.groupBox1.TabIndex = 13;
+            this.groupBox1.TabStop = false;
+            this.groupBox1.Text = "Load/Save";
+            // 
+            // button2
+            // 
+            this.button2.Location = new System.Drawing.Point(6, 64);
+            this.button2.Name = "button2";
+            this.button2.Size = new System.Drawing.Size(123, 29);
+            this.button2.TabIndex = 13;
+            this.button2.Text = "Save Floorplan";
+            this.button2.UseVisualStyleBackColor = true;
+            // 
+            // button3
+            // 
+            this.button3.Location = new System.Drawing.Point(4, 126);
+            this.button3.Name = "button3";
+            this.button3.Size = new System.Drawing.Size(184, 29);
+            this.button3.TabIndex = 14;
+            this.button3.Text = "Load Simulation Settings";
+            this.button3.UseVisualStyleBackColor = true;
+            // 
+            // button4
+            // 
+            this.button4.Location = new System.Drawing.Point(4, 161);
+            this.button4.Name = "button4";
+            this.button4.Size = new System.Drawing.Size(184, 29);
+            this.button4.TabIndex = 15;
+            this.button4.Text = "Save Simulation Settings";
+            this.button4.UseVisualStyleBackColor = true;
             // 
             // Form1
             // 
@@ -539,7 +517,6 @@ namespace demoapp
             this.ClientSize = new System.Drawing.Size(1250, 753);
             this.Controls.Add(this.CenterSplitPane);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
-            this.MainMenuStrip = this.menuStrip1;
             this.MaximizeBox = false;
             this.Name = "Form1";
             this.Text = "Team 8 Robot Vaccuum Simulation";
@@ -548,6 +525,11 @@ namespace demoapp
             this.LeftPane.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.LeftPane)).EndInit();
             this.LeftPane.ResumeLayout(false);
+            this.RoomSizeGroupBox.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.RoomWidthSelector)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.RoomHeightSelector)).EndInit();
+            this.FloorTypeGroupBox.ResumeLayout(false);
+            this.FloorTypeGroupBox.PerformLayout();
             this.ControlsPane.Panel1.ResumeLayout(false);
             this.ControlsPane.Panel1.PerformLayout();
             this.ControlsPane.Panel2.ResumeLayout(false);
@@ -556,30 +538,15 @@ namespace demoapp
             this.ControlsPane.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.RobotSpeedSelector)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.RobotBatteryLifeSelector)).EndInit();
-            this.menuStrip1.ResumeLayout(false);
-            this.menuStrip1.PerformLayout();
-            this.RoomSizeGroupBox.ResumeLayout(false);
-            this.RoomSizeGroupBox.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.RoomWidthSelector)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.RoomHeightSelector)).EndInit();
-            this.FloorTypeGroupBox.ResumeLayout(false);
-            this.FloorTypeGroupBox.PerformLayout();
+            this.CenterSplitPane.Panel1.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.CenterSplitPane)).EndInit();
             this.CenterSplitPane.ResumeLayout(false);
+            this.groupBox1.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
 
         #endregion
-        private System.Windows.Forms.MenuStrip menuStrip1;
-        private System.Windows.Forms.ToolStripMenuItem fileToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem saveSimulationToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem loadSimulationToolStripMenuItem;
-        private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
-        private System.Windows.Forms.ToolStripMenuItem saveFloorplanToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem loadFloorplanToolStripMenuItem;
-        private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
-        private System.Windows.Forms.ToolStripMenuItem resetToDefaultToolStripMenuItem;
         private System.Windows.Forms.SplitContainer LeftPane;
         private System.Windows.Forms.SplitContainer ControlsPane;
         private System.Windows.Forms.Label RobotSectionLabel;
@@ -608,6 +575,11 @@ namespace demoapp
         private System.Windows.Forms.Button StartSimulationButton;
         private System.Windows.Forms.Label SimulationControlLabel;
         private System.Windows.Forms.SplitContainer CenterSplitPane;
+        private System.Windows.Forms.GroupBox groupBox1;
+        private System.Windows.Forms.Button button4;
+        private System.Windows.Forms.Button button3;
+        private System.Windows.Forms.Button button2;
+        private System.Windows.Forms.Button button1;
     }
 }
 

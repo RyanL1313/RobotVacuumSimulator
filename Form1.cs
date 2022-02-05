@@ -65,5 +65,10 @@ namespace demoapp
                 RobotPathAlgorithmSelector.Enabled = true;
             }
         }
+
+        private void RoomWidthSelector_ValueChanged(object sender, EventArgs e)
+        {
+
+        }
     }
 }
