@@ -57,11 +57,12 @@ namespace demoapp
             this.RobotBatteryLifeSelector = new System.Windows.Forms.NumericUpDown();
             this.RobotSectionLabel = new System.Windows.Forms.Label();
             this.CenterSplitPane = new System.Windows.Forms.SplitContainer();
-            this.button1 = new System.Windows.Forms.Button();
+            this.LoadFloorplanButton = new System.Windows.Forms.Button();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
-            this.button2 = new System.Windows.Forms.Button();
-            this.button3 = new System.Windows.Forms.Button();
-            this.button4 = new System.Windows.Forms.Button();
+            this.SaveFloorplanButton = new System.Windows.Forms.Button();
+            this.LoadSimulationButton = new System.Windows.Forms.Button();
+            this.SaveSimulationButton = new System.Windows.Forms.Button();
+            this.radioButton1 = new System.Windows.Forms.RadioButton();
             ((System.ComponentModel.ISupportInitialize)(this.LeftPane)).BeginInit();
             this.LeftPane.Panel1.SuspendLayout();
             this.LeftPane.Panel2.SuspendLayout();
@@ -116,8 +117,7 @@ namespace demoapp
             this.RoomSizeGroupBox.Controls.Add(this.RoomHeightLabel);
             this.RoomSizeGroupBox.Controls.Add(this.RoomWidthSelector);
             this.RoomSizeGroupBox.Controls.Add(this.RoomHeightSelector);
-            this.RoomSizeGroupBox.Dock = System.Windows.Forms.DockStyle.Top;
-            this.RoomSizeGroupBox.Location = new System.Drawing.Point(0, 228);
+            this.RoomSizeGroupBox.Location = new System.Drawing.Point(0, 338);
             this.RoomSizeGroupBox.Name = "RoomSizeGroupBox";
             this.RoomSizeGroupBox.Size = new System.Drawing.Size(312, 132);
             this.RoomSizeGroupBox.TabIndex = 11;
@@ -169,15 +169,15 @@ namespace demoapp
             // FloorTypeGroupBox
             // 
             this.FloorTypeGroupBox.AutoSize = true;
+            this.FloorTypeGroupBox.Controls.Add(this.radioButton1);
             this.FloorTypeGroupBox.Controls.Add(this.WallRadioButton);
             this.FloorTypeGroupBox.Controls.Add(this.FriezeCutPileRadioButton);
             this.FloorTypeGroupBox.Controls.Add(this.CutPileRadioButton);
             this.FloorTypeGroupBox.Controls.Add(this.LoopPileRadioButton);
             this.FloorTypeGroupBox.Controls.Add(this.HardWoodRadioButton);
-            this.FloorTypeGroupBox.Dock = System.Windows.Forms.DockStyle.Top;
             this.FloorTypeGroupBox.Location = new System.Drawing.Point(0, 31);
             this.FloorTypeGroupBox.Name = "FloorTypeGroupBox";
-            this.FloorTypeGroupBox.Size = new System.Drawing.Size(312, 197);
+            this.FloorTypeGroupBox.Size = new System.Drawing.Size(312, 301);
             this.FloorTypeGroupBox.TabIndex = 6;
             this.FloorTypeGroupBox.TabStop = false;
             this.FloorTypeGroupBox.Text = "Floor Types";
@@ -459,22 +459,22 @@ namespace demoapp
             this.CenterSplitPane.SplitterWidth = 1;
             this.CenterSplitPane.TabIndex = 0;
             // 
-            // button1
+            // LoadFloorplanButton
             // 
-            this.button1.Location = new System.Drawing.Point(6, 32);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(123, 29);
-            this.button1.TabIndex = 12;
-            this.button1.Text = "Load Floorplan";
-            this.button1.UseVisualStyleBackColor = true;
+            this.LoadFloorplanButton.Location = new System.Drawing.Point(6, 32);
+            this.LoadFloorplanButton.Name = "LoadFloorplanButton";
+            this.LoadFloorplanButton.Size = new System.Drawing.Size(123, 29);
+            this.LoadFloorplanButton.TabIndex = 12;
+            this.LoadFloorplanButton.Text = "Load Floorplan";
+            this.LoadFloorplanButton.UseVisualStyleBackColor = true;
             // 
             // groupBox1
             // 
             this.groupBox1.AutoSize = true;
-            this.groupBox1.Controls.Add(this.button4);
-            this.groupBox1.Controls.Add(this.button3);
-            this.groupBox1.Controls.Add(this.button2);
-            this.groupBox1.Controls.Add(this.button1);
+            this.groupBox1.Controls.Add(this.SaveSimulationButton);
+            this.groupBox1.Controls.Add(this.LoadSimulationButton);
+            this.groupBox1.Controls.Add(this.SaveFloorplanButton);
+            this.groupBox1.Controls.Add(this.LoadFloorplanButton);
             this.groupBox1.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.groupBox1.Location = new System.Drawing.Point(0, 535);
             this.groupBox1.Name = "groupBox1";
@@ -483,32 +483,43 @@ namespace demoapp
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Load/Save";
             // 
-            // button2
+            // SaveFloorplanButton
             // 
-            this.button2.Location = new System.Drawing.Point(6, 64);
-            this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(123, 29);
-            this.button2.TabIndex = 13;
-            this.button2.Text = "Save Floorplan";
-            this.button2.UseVisualStyleBackColor = true;
+            this.SaveFloorplanButton.Location = new System.Drawing.Point(6, 64);
+            this.SaveFloorplanButton.Name = "SaveFloorplanButton";
+            this.SaveFloorplanButton.Size = new System.Drawing.Size(123, 29);
+            this.SaveFloorplanButton.TabIndex = 13;
+            this.SaveFloorplanButton.Text = "Save Floorplan";
+            this.SaveFloorplanButton.UseVisualStyleBackColor = true;
             // 
-            // button3
+            // LoadSimulationButton
             // 
-            this.button3.Location = new System.Drawing.Point(4, 126);
-            this.button3.Name = "button3";
-            this.button3.Size = new System.Drawing.Size(184, 29);
-            this.button3.TabIndex = 14;
-            this.button3.Text = "Load Simulation Settings";
-            this.button3.UseVisualStyleBackColor = true;
+            this.LoadSimulationButton.Location = new System.Drawing.Point(4, 126);
+            this.LoadSimulationButton.Name = "LoadSimulationButton";
+            this.LoadSimulationButton.Size = new System.Drawing.Size(184, 29);
+            this.LoadSimulationButton.TabIndex = 14;
+            this.LoadSimulationButton.Text = "Load Simulation Settings";
+            this.LoadSimulationButton.UseVisualStyleBackColor = true;
             // 
-            // button4
+            // SaveSimulationButton
             // 
-            this.button4.Location = new System.Drawing.Point(4, 161);
-            this.button4.Name = "button4";
-            this.button4.Size = new System.Drawing.Size(184, 29);
-            this.button4.TabIndex = 15;
-            this.button4.Text = "Save Simulation Settings";
-            this.button4.UseVisualStyleBackColor = true;
+            this.SaveSimulationButton.Location = new System.Drawing.Point(4, 161);
+            this.SaveSimulationButton.Name = "SaveSimulationButton";
+            this.SaveSimulationButton.Size = new System.Drawing.Size(184, 29);
+            this.SaveSimulationButton.TabIndex = 15;
+            this.SaveSimulationButton.Text = "Save Simulation Settings";
+            this.SaveSimulationButton.UseVisualStyleBackColor = true;
+            // 
+            // radioButton1
+            // 
+            this.radioButton1.AutoSize = true;
+            this.radioButton1.Location = new System.Drawing.Point(6, 177);
+            this.radioButton1.Name = "radioButton1";
+            this.radioButton1.Size = new System.Drawing.Size(59, 24);
+            this.radioButton1.TabIndex = 5;
+            this.radioButton1.TabStop = true;
+            this.radioButton1.Text = "Wall";
+            this.radioButton1.UseVisualStyleBackColor = true;
             // 
             // Form1
             // 
@@ -576,10 +587,11 @@ namespace demoapp
         private System.Windows.Forms.Label SimulationControlLabel;
         private System.Windows.Forms.SplitContainer CenterSplitPane;
         private System.Windows.Forms.GroupBox groupBox1;
-        private System.Windows.Forms.Button button4;
-        private System.Windows.Forms.Button button3;
-        private System.Windows.Forms.Button button2;
-        private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.Button SaveSimulationButton;
+        private System.Windows.Forms.Button LoadSimulationButton;
+        private System.Windows.Forms.Button SaveFloorplanButton;
+        private System.Windows.Forms.Button LoadFloorplanButton;
+        private System.Windows.Forms.RadioButton radioButton1;
     }
 }
 
