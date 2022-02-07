@@ -44,15 +44,15 @@ namespace VacuumSim
 
         public static bool modifyTile(int x, int y, ObstacleType ob)
         {
-            // Get (x,y) coordinates of top left corner of selected tile
-            int xTile = x / tileSideLength;
-            int yTile = y / tileSideLength;
+            // Get row, col indices of selected tile based on the coordinates selected by the user
+            int xTileIndex = x / tileSideLength;
+            int yTileIndex = y / tileSideLength;
 
-            if (xTile > numTilesPerRow * tileSideLength || yTile > numTilesPerCol * tileSideLength)
+            if (xTileIndex > numTilesPerRow || yTileIndex > numTilesPerCol)
                 return false; // Outside grid
 
             
-            floorLayout[xTile, yTile].obstacle = ob;
+            floorLayout[xTileIndex, yTileIndex].obstacle = ob;
             
             return true;
         }
