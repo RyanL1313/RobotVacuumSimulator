@@ -1,24 +1,23 @@
 {
   "format": 1,
   "restore": {
-    "D:\\College\\spring_2022\\cs499\\cs-499-team-project\\VaccuumSim.csproj": {}
+    "C:\\Users\\Ryan\\source\\repos\\cs-499-team-project\\VaccuumSim.csproj": {}
   },
   "projects": {
-    "D:\\College\\spring_2022\\cs499\\cs-499-team-project\\VaccuumSim.csproj": {
+    "C:\\Users\\Ryan\\source\\repos\\cs-499-team-project\\VaccuumSim.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\College\\spring_2022\\cs499\\cs-499-team-project\\VaccuumSim.csproj",
+        "projectUniqueName": "C:\\Users\\Ryan\\source\\repos\\cs-499-team-project\\VaccuumSim.csproj",
         "projectName": "VaccuumSim",
-        "projectPath": "D:\\College\\spring_2022\\cs499\\cs-499-team-project\\VaccuumSim.csproj",
-        "packagesPath": "C:\\Users\\Michael\\.nuget\\packages\\",
-        "outputPath": "D:\\College\\spring_2022\\cs499\\cs-499-team-project\\obj\\",
+        "projectPath": "C:\\Users\\Ryan\\source\\repos\\cs-499-team-project\\VaccuumSim.csproj",
+        "packagesPath": "C:\\Users\\Ryan\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\Ryan\\source\\repos\\cs-499-team-project\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
-          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages",
-          "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
+          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
         ],
         "configFilePaths": [
-          "C:\\Users\\Michael\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\Ryan\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
@@ -62,7 +61,7 @@
               "privateAssets": "none"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\5.0.400\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\5.0.404\\RuntimeIdentifierGraph.json"
         }
       }
     }
