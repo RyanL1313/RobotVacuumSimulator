@@ -130,8 +130,8 @@ namespace VacuumSim
             this.ObstacleSelector.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.ObstacleSelector.Name = "ObstacleSelector";
             this.ObstacleSelector.Size = new System.Drawing.Size(133, 23);
-            this.ObstacleSelector.SelectedIndex = 0;
             this.ObstacleSelector.TabIndex = 11;
+            this.ObstacleSelector.SelectedIndex = 0;
             // 
             // groupBox1
             // 

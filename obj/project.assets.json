@@ -14,9 +14,9 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\Ryan\\source\\repos\\cs-499-team-project\\VaccuumSim.csproj",
-      "projectName": "VaccuumSim",
-      "projectPath": "C:\\Users\\Ryan\\source\\repos\\cs-499-team-project\\VaccuumSim.csproj",
+      "projectUniqueName": "C:\\Users\\Ryan\\source\\repos\\cs-499-team-project\\VacuumSim.csproj",
+      "projectName": "VacuumSim",
+      "projectPath": "C:\\Users\\Ryan\\source\\repos\\cs-499-team-project\\VacuumSim.csproj",
       "packagesPath": "C:\\Users\\Ryan\\.nuget\\packages\\",
       "outputPath": "C:\\Users\\Ryan\\source\\repos\\cs-499-team-project\\obj\\",
       "projectStyle": "PackageReference",
