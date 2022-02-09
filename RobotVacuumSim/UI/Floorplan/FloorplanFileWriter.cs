@@ -27,7 +27,7 @@ namespace VacuumSim
                 }
             }
 
-            File.WriteAllLines("../../../SavedFloorplan.txt", lines);
+            File.WriteAllLines("../../../UI/Floorplan/SavedFloorplan.txt", lines);
         }
     }
 }

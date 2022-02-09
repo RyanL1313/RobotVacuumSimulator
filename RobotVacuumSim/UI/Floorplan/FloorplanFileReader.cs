@@ -16,7 +16,7 @@ namespace VacuumSim
 
         public static void LoadTileGridData(string path, TileGridAccessor tga)
         {
-            string[] lines = File.ReadAllLines("../../../DefaultFloorPlan.txt");
+            string[] lines = File.ReadAllLines("../../../UI/Floorplan/DefaultFloorPlan.txt");
 
             int row = 0;
             int col = 0;
