@@ -25,9 +25,19 @@ namespace VacuumSim
     {
         public int numTilesPerRow { get; private set; } = 50;
         public int numTilesPerCol { get; private set; } = 40;
-        public int tileSideLength { get; private set; } = 15;
+        public const int tileSideLength = 15;
         public Tile[,] floorLayout { get; private set; } // 2D array of tiles
+        public bool gridLinesOn { get; set; } = true; // Should grid lines currently be displaying?
 
+        /* Feel free to remove this gigantic comment block later. */
+        /* Creates the 2D array of tiles and sets the tiles' default attributes */
+        /* Note: The 2D array of tiles is created using column-major order since */
+        /* numTilesPerRow is actually the number of columns, while numTilesPerCol */
+        /* is the number of rows. This might be inconvenient when accessing certain */
+        /* tiles, so I added a helper method (GetTileFromRowCol) to easily access a */
+        /* tile based on the row and column and another helper method */
+        /* (GetTileFromCoordinates) to easily access a tile based on the coordinates */
+        /* clicked on by the user. */
         public TileGridAccessor()
         {
             floorLayout = new Tile[numTilesPerRow, numTilesPerCol]; // Create the 2D array of tiles
@@ -42,15 +52,22 @@ namespace VacuumSim
             }
         }
 
-        /* Returns the obstacle located at the tile associated with the (x, y) coordinates in the FloorCanvas PictureBox */
-        public ObstacleType GetObstacleTypeFromTileCoordinates(int x, int y)
+        /* Returns the Tile object by requested row and column. */
+        public Tile GetTileFromRowCol(int row, int col)
+        {
+            return floorLayout[col, row];
+        }
+
+        /* Returns the Tile object located at the (x, y) coordinates in the FloorCanvas PictureBox */
+        public Tile GetTileFromCoordinates(int x, int y)
         {
             int xTileIndex = x / tileSideLength;
             int yTileIndex = y / tileSideLength;
 
-            return floorLayout[xTileIndex, yTileIndex].obstacle;
+            return floorLayout[xTileIndex, yTileIndex];
         }
 
+        /* Modifies the obstacle located in a certain tile based on the (x, y) coordinates in the FloorCanvas PictureBox */
         public bool ModifyTile(int x, int y, ObstacleType ob)
         {
             // Get row, col indices of selected tile based on the coordinates selected by the user
@@ -66,6 +83,7 @@ namespace VacuumSim
             return true;
         }
 
+        /* Returns the ObstacleType enum value associated with an obstacle string */
         public static ObstacleType GetObstacleTypeFromString(string strObstacle)
         {
             string lowercase = strObstacle.ToLower();
