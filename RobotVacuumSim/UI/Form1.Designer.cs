@@ -29,6 +29,7 @@ namespace VacuumSim
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
             this.LeftPane = new System.Windows.Forms.SplitContainer();
             this.ObstacleSelector = new System.Windows.Forms.ComboBox();
@@ -66,6 +67,8 @@ namespace VacuumSim
             this.RobotSectionLabel = new System.Windows.Forms.Label();
             this.CenterSplitPane = new System.Windows.Forms.SplitContainer();
             this.FloorCanvas = new System.Windows.Forms.PictureBox();
+            this.VacuumBodyTimer = new System.Windows.Forms.Timer(this.components);
+            this.VacuumWhiskersTimer = new System.Windows.Forms.Timer(this.components);
             ((System.ComponentModel.ISupportInitialize)(this.LeftPane)).BeginInit();
             this.LeftPane.Panel1.SuspendLayout();
             this.LeftPane.Panel2.SuspendLayout();
@@ -131,7 +134,6 @@ namespace VacuumSim
             this.ObstacleSelector.Name = "ObstacleSelector";
             this.ObstacleSelector.Size = new System.Drawing.Size(133, 23);
             this.ObstacleSelector.TabIndex = 11;
-            this.ObstacleSelector.SelectedIndex = 0;
             // 
             // groupBox1
             // 
@@ -419,6 +421,7 @@ namespace VacuumSim
             this.StopSimulationButton.TabIndex = 8;
             this.StopSimulationButton.Text = "Stop Simulation";
             this.StopSimulationButton.UseVisualStyleBackColor = true;
+            this.StopSimulationButton.Click += new System.EventHandler(this.StopSimulationButton_Click);
             // 
             // StartSimulationButton
             // 
@@ -429,6 +432,7 @@ namespace VacuumSim
             this.StartSimulationButton.TabIndex = 7;
             this.StartSimulationButton.Text = "Start Simulation";
             this.StartSimulationButton.UseVisualStyleBackColor = true;
+            this.StartSimulationButton.Click += new System.EventHandler(this.StartSimulationButton_Click);
             // 
             // SimulationControlLabel
             // 
@@ -587,6 +591,15 @@ namespace VacuumSim
             this.FloorCanvas.Click += new System.EventHandler(this.FloorCanvas_Click);
             this.FloorCanvas.Paint += new System.Windows.Forms.PaintEventHandler(this.FloorCanvas_Paint);
             // 
+            // VacuumBodyTimer
+            // 
+            this.VacuumBodyTimer.Interval = 200;
+            this.VacuumBodyTimer.Tick += new System.EventHandler(this.VacuumBodyTimer_Tick);
+            // 
+            // VacuumWhiskersTimer
+            // 
+            this.VacuumWhiskersTimer.Tick += new System.EventHandler(this.VacuumWhiskersTimer_Tick);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
@@ -664,6 +677,8 @@ namespace VacuumSim
         private System.Windows.Forms.RadioButton radioButton1;
         private System.Windows.Forms.PictureBox FloorCanvas;
         private System.Windows.Forms.ComboBox ObstacleSelector;
+        private System.Windows.Forms.Timer VacuumBodyTimer;
+        private System.Windows.Forms.Timer VacuumWhiskersTimer;
     }
 }
 
