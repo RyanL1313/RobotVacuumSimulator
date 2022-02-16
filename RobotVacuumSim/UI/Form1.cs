@@ -83,6 +83,7 @@ namespace VacuumSim
         {
             Graphics canvasEditor = e.Graphics;
             canvasEditor.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
+
             /* Draw 50 x 40 square grid. Each square in the grid is 4 ft^2 */
             for (int i = 0; i < HouseLayoutAccessor.numTilesPerRow; i++)
             {
@@ -133,12 +134,14 @@ namespace VacuumSim
 
         private void SaveFloorplanButton_Click(object sender, EventArgs e)
         {
+            // Modify this in the future
             FloorplanFileWriter.SaveTileGridData("../../../DefaultFloorPlan.txt", HouseLayoutAccessor);
         }
 
         private void LoadFloorplanButton_Click(object sender, EventArgs e)
         {
             // Read the floorplan data file and store it in HouseLayoutAccessor.floorLayout
+            // Modify this in the future
             FloorplanFileReader.LoadTileGridData("../../../DefaultFloorPlan.txt", HouseLayoutAccessor);
             
             FloorCanvas.Invalidate(); // Re-trigger paint event
@@ -195,7 +198,8 @@ namespace VacuumSim
             // 12 inches/second = half tile length/second
             Vacuum.vacuumCoords[0] += (int)(TileGridAccessor.tileSideLength / 2 * (float)Math.Cos((Math.PI * Vacuum.vacuumHeading) / 180));
             Vacuum.vacuumCoords[1] += (int)(TileGridAccessor.tileSideLength / 2 * (float)Math.Sin((Math.PI * Vacuum.vacuumHeading) / 180));
-            FloorCanvas.Invalidate();
+
+            FloorCanvas.Invalidate(); // Re-trigger paint event
 
             Vacuum.vacuumHeading = (Vacuum.vacuumHeading + 45) % 360;
         }
@@ -213,7 +217,7 @@ namespace VacuumSim
             Vacuum.whiskersEndingCoords[0] = Vacuum.vacuumCoords[0] + (VacuumDisplay.vacuumDiameter / 2 + lenWhiskersExtendFromVacuum) * (float)Math.Cos((Math.PI * Vacuum.vacuumHeading - Vacuum.whiskersHeadingWRTVacuum) / 180);
             Vacuum.whiskersEndingCoords[1] = Vacuum.vacuumCoords[1] + (VacuumDisplay.vacuumDiameter / 2 + lenWhiskersExtendFromVacuum) * (float)Math.Sin((Math.PI * Vacuum.vacuumHeading - Vacuum.whiskersHeadingWRTVacuum) / 180);
 
-            FloorCanvas.Invalidate();
+            FloorCanvas.Invalidate(); // Re-trigger paint event
         }
 
         private void StartSimulationButton_Click(object sender, EventArgs e)
@@ -228,6 +232,8 @@ namespace VacuumSim
             VacuumBodyTimer.Enabled = false;
             VacuumWhiskersTimer.Enabled = false;
             HouseLayoutAccessor.gridLinesOn = true;
+
+            FloorCanvas.Invalidate(); // Re-trigger paint event
         }
     }
 }
