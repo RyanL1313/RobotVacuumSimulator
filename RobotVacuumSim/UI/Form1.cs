@@ -27,7 +27,7 @@ namespace VacuumSim
         private List<string> SimulationSpeeds = new List<string> { "1x", "5x", "50x" };
         private TileGridAccessor HouseLayoutAccessor;
         private VacuumDisplay Vacuum;
-        
+
         /// <summary>
         /// Initializes the algorithm selector to allow for choosing an algorithm type as specified by the PathAlgorithm enum.
         /// </summary>
@@ -76,7 +76,6 @@ namespace VacuumSim
 
         private void RoomWidthSelector_ValueChanged(object sender, EventArgs e)
         {
-
         }
 
         private void FloorCanvas_Paint(object sender, PaintEventArgs e)
@@ -115,21 +114,29 @@ namespace VacuumSim
             DrawVacuum(canvasEditor); // Draw vacuum to the canvas
         }
 
-        private void FloorCanvas_Click(object sender, EventArgs e)
+        /// <summary>
+        /// FloorCanvas_Click is the handler for both the MouseClick and the MouseMove events for FloorCanvas.
+        /// This allows us to draw a tile from a single click, as well as a click-and-drag.
+        /// Maybe a little bit crude, but it does indeed work.
+        /// </summary>
+        private void FloorCanvas_Click(object sender, MouseEventArgs e)
         {
-            Point canvasCoords = FloorCanvas.PointToClient(Cursor.Position);
+            if (e.Button == MouseButtons.Left)
+            {
+                Point canvasCoords = FloorCanvas.PointToClient(Cursor.Position);
 
-            string selectedObstruction = ObstacleSelector.SelectedItem.ToString();
+                string selectedObstruction = ObstacleSelector.SelectedItem.ToString();
 
-            // Make sure user clicks within the grid
-            if (canvasCoords.X >= HouseLayoutAccessor.numTilesPerRow * TileGridAccessor.tileSideLength || canvasCoords.Y >= HouseLayoutAccessor.numTilesPerCol * TileGridAccessor.tileSideLength)
-                return;
+                // Make sure user clicks within the grid
+                if (canvasCoords.X >= HouseLayoutAccessor.numTilesPerRow * TileGridAccessor.tileSideLength || canvasCoords.Y >= HouseLayoutAccessor.numTilesPerCol * TileGridAccessor.tileSideLength)
+                    return;
 
-            ObstacleType ob = TileGridAccessor.GetObstacleTypeFromString(selectedObstruction);
+                ObstacleType ob = TileGridAccessor.GetObstacleTypeFromString(selectedObstruction);
 
-            HouseLayoutAccessor.ModifyTile(canvasCoords.X, canvasCoords.Y, ob);
+                HouseLayoutAccessor.ModifyTile(canvasCoords.X, canvasCoords.Y, ob);
 
-            FloorCanvas.Invalidate(); // Re-trigger paint event
+                FloorCanvas.Invalidate(); // Re-trigger paint event
+            }
         }
 
         private void SaveFloorplanButton_Click(object sender, EventArgs e)
@@ -143,18 +150,20 @@ namespace VacuumSim
             // Read the floorplan data file and store it in HouseLayoutAccessor.floorLayout
             // Modify this in the future
             FloorplanFileReader.LoadTileGridData("../../../DefaultFloorPlan.txt", HouseLayoutAccessor);
-            
+
             FloorCanvas.Invalidate(); // Re-trigger paint event
         }
 
         /* Fill a tile using a SolidBrush */
         /* The +1's are there so everything matches up with the grid lines (which are of pen width 1) */
+
         private void PaintTile(int rowIndex, int colIndex, SolidBrush brush, Graphics canvasEditor)
         {
             canvasEditor.FillRectangle(brush, TileGridAccessor.tileSideLength * rowIndex, TileGridAccessor.tileSideLength * colIndex, TileGridAccessor.tileSideLength + 1, TileGridAccessor.tileSideLength + 1);
         }
 
         /* Draw a tile (just the outline, no fill) using a Pen */
+
         private void DrawTileOutline(int rowIndex, int colIndex, Pen penColor, Graphics canvasEditor)
         {
             // Get the coordinates of each tile corner
@@ -171,6 +180,7 @@ namespace VacuumSim
         }
 
         /* Draws the vacuum onto the canvas */
+
         private void DrawVacuum(Graphics canvasEditor)
         {
             // Draw vacuum whiskers
@@ -185,6 +195,7 @@ namespace VacuumSim
         }
 
         /* Helper function to draw filled circles using FillEllipse */
+
         private void FillCircle(SolidBrush brush, float radius, float centerX, float centerY, Graphics canvasEditor)
         {
             canvasEditor.FillEllipse(brush, centerX - radius, centerY - radius, radius + radius, radius + radius);

@@ -588,8 +588,9 @@ namespace VacuumSim
             this.FloorCanvas.Size = new System.Drawing.Size(947, 758);
             this.FloorCanvas.TabIndex = 0;
             this.FloorCanvas.TabStop = false;
-            this.FloorCanvas.Click += new System.EventHandler(this.FloorCanvas_Click);
             this.FloorCanvas.Paint += new System.Windows.Forms.PaintEventHandler(this.FloorCanvas_Paint);
+            this.FloorCanvas.MouseClick += new System.Windows.Forms.MouseEventHandler(this.FloorCanvas_Click);
+            this.FloorCanvas.MouseMove += new System.Windows.Forms.MouseEventHandler(this.FloorCanvas_Click);
             // 
             // VacuumBodyTimer
             // 
