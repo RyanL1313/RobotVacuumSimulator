@@ -130,21 +130,25 @@ namespace VacuumSim
         /// </summary>
         private void FloorCanvas_Click(object sender, MouseEventArgs e)
         {
-            if (e.Button == MouseButtons.Left)
+            // Check that the sim is not running
+            if (!VacuumBodyTimer.Enabled)
             {
-                Point canvasCoords = FloorCanvas.PointToClient(Cursor.Position);
+                if (e.Button == MouseButtons.Left)
+                {
+                    Point canvasCoords = FloorCanvas.PointToClient(Cursor.Position);
 
-                string selectedObstruction = ObstacleSelector.SelectedItem.ToString();
+                    string selectedObstruction = ObstacleSelector.SelectedItem.ToString();
 
-                // Make sure user clicks within the grid
-                if (canvasCoords.X >= HouseLayoutAccessor.numTilesPerRow * TileGridAccessor.tileSideLength || canvasCoords.Y >= HouseLayoutAccessor.numTilesPerCol * TileGridAccessor.tileSideLength)
-                    return;
+                    // Make sure user clicks within the grid
+                    if (canvasCoords.X >= HouseLayoutAccessor.numTilesPerRow * TileGridAccessor.tileSideLength || canvasCoords.Y >= HouseLayoutAccessor.numTilesPerCol * TileGridAccessor.tileSideLength)
+                        return;
 
-                ObstacleType ob = TileGridAccessor.GetObstacleTypeFromString(selectedObstruction);
+                    ObstacleType ob = TileGridAccessor.GetObstacleTypeFromString(selectedObstruction);
 
-                HouseLayoutAccessor.ModifyTile(canvasCoords.X, canvasCoords.Y, ob);
+                    HouseLayoutAccessor.ModifyTile(canvasCoords.X, canvasCoords.Y, ob);
 
-                FloorCanvas.Invalidate(); // Re-trigger paint event
+                    FloorCanvas.Invalidate(); // Re-trigger paint event
+                }
             }
         }
 
