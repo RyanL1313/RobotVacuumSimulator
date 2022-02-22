@@ -27,7 +27,7 @@ namespace VacuumSim
         private List<string> SimulationSpeeds = new List<string> { "1x", "5x", "50x" };
         private TileGridAccessor HouseLayoutAccessor;
         private VacuumDisplay Vacuum;
-        
+
         /// <summary>
         /// Initializes the algorithm selector to allow for choosing an algorithm type as specified by the PathAlgorithm enum.
         /// </summary>
@@ -37,6 +37,14 @@ namespace VacuumSim
             RobotPathAlgorithmSelector.DataSource = Enum.GetValues(typeof(PathAlgorithm));
             // Set the default value to the PathAlgorithm.Random value.
             RobotPathAlgorithmSelector.SelectedItem = PathAlgorithm.Random;
+        }
+
+        private void InitFloorTileSelector()
+        {
+            // Set the data source of the dropdown box to be the values of our ObstacleType enum
+            ObstacleSelector.DataSource = Enum.GetValues(typeof(ObstacleType));
+            // Set the default value to the ObstacleType.WALL;
+            ObstacleSelector.SelectedItem = ObstacleType.Wall;
         }
 
         private void InitSimulationSpeedSelector()
@@ -49,6 +57,7 @@ namespace VacuumSim
             InitializeComponent();
             InitAlgorithmSelector();
             InitSimulationSpeedSelector();
+            InitFloorTileSelector();
 
             // Create objects needed for drawing to FloorCanvas
             HouseLayoutAccessor = new TileGridAccessor();
@@ -76,7 +85,6 @@ namespace VacuumSim
 
         private void RoomWidthSelector_ValueChanged(object sender, EventArgs e)
         {
-
         }
 
         private void FloorCanvas_Paint(object sender, PaintEventArgs e)
@@ -89,23 +97,23 @@ namespace VacuumSim
             {
                 for (int j = 0; j < HouseLayoutAccessor.numTilesPerCol; j++)
                 {
-                    if (HouseLayoutAccessor.floorLayout[i, j].obstacle == ObstacleType.NONE && HouseLayoutAccessor.gridLinesOn) // Blank tile
+                    if (HouseLayoutAccessor.floorLayout[i, j].obstacle == ObstacleType.None && HouseLayoutAccessor.gridLinesOn) // Blank tile
                     {
                         DrawTileOutline(i, j, new Pen(Color.Black), canvasEditor);
                     }
-                    else if (HouseLayoutAccessor.floorLayout[i, j].obstacle == ObstacleType.WALL) // Wall tile
+                    else if (HouseLayoutAccessor.floorLayout[i, j].obstacle == ObstacleType.Wall) // Wall tile
                     {
                         PaintTile(i, j, new SolidBrush(Color.Black), canvasEditor);
                     }
-                    else if (HouseLayoutAccessor.floorLayout[i, j].obstacle == ObstacleType.CHEST) // Chest tile
+                    else if (HouseLayoutAccessor.floorLayout[i, j].obstacle == ObstacleType.Chest) // Chest tile
                     {
                         PaintTile(i, j, new SolidBrush(Color.Brown), canvasEditor);
                     }
-                    else if (HouseLayoutAccessor.floorLayout[i, j].obstacle == ObstacleType.CHAIR) // Chair tile
+                    else if (HouseLayoutAccessor.floorLayout[i, j].obstacle == ObstacleType.Chair) // Chair tile
                     {
                         PaintTile(i, j, new SolidBrush(Color.Green), canvasEditor);
                     }
-                    else if (HouseLayoutAccessor.floorLayout[i, j].obstacle == ObstacleType.TABLE) // Table tile
+                    else if (HouseLayoutAccessor.floorLayout[i, j].obstacle == ObstacleType.Table) // Table tile
                     {
                         PaintTile(i, j, new SolidBrush(Color.Blue), canvasEditor);
                     }
@@ -115,21 +123,40 @@ namespace VacuumSim
             DrawVacuum(canvasEditor); // Draw vacuum to the canvas
         }
 
-        private void FloorCanvas_Click(object sender, EventArgs e)
+        /// <summary>
+        /// FloorCanvas_Click is the handler for both the MouseClick and the MouseMove events for FloorCanvas.
+        /// This allows us to draw a tile from a single click, as well as a click-and-drag.
+        /// Maybe a little bit crude, but it does indeed work.
+        /// </summary>
+        private void FloorCanvas_Click(object sender, MouseEventArgs e)
         {
-            Point canvasCoords = FloorCanvas.PointToClient(Cursor.Position);
+            // Check that the sim is not running
+            if (!VacuumBodyTimer.Enabled)
+            {
+                if (e.Button == MouseButtons.Left)
+                {
+                    Point canvasCoords = FloorCanvas.PointToClient(Cursor.Position);
 
-            string selectedObstruction = ObstacleSelector.SelectedItem.ToString();
+                    string selectedObstruction = ObstacleSelector.SelectedItem.ToString();
 
-            // Make sure user clicks within the grid
-            if (canvasCoords.X >= HouseLayoutAccessor.numTilesPerRow * TileGridAccessor.tileSideLength || canvasCoords.Y >= HouseLayoutAccessor.numTilesPerCol * TileGridAccessor.tileSideLength)
-                return;
+                    // Make sure user clicks within the grid
+                    if (canvasCoords.X >= HouseLayoutAccessor.numTilesPerRow * TileGridAccessor.tileSideLength ||
+                        (canvasCoords.X <= 0 ||
+                        canvasCoords.Y >= HouseLayoutAccessor.numTilesPerCol * TileGridAccessor.tileSideLength) ||
+                        canvasCoords.Y <= 0)
+                        return;
 
-            ObstacleType ob = TileGridAccessor.GetObstacleTypeFromString(selectedObstruction);
+                    ObstacleType ob = TileGridAccessor.GetObstacleTypeFromString(selectedObstruction);
 
-            HouseLayoutAccessor.ModifyTile(canvasCoords.X, canvasCoords.Y, ob);
+                    // Check that we aren't writing the same value that already exists
+                    if (HouseLayoutAccessor.GetTileFromCoordinates(canvasCoords.X, canvasCoords.Y).obstacle != ob)
+                    {
+                        HouseLayoutAccessor.ModifyTile(canvasCoords.X, canvasCoords.Y, ob);
 
-            FloorCanvas.Invalidate(); // Re-trigger paint event
+                        FloorCanvas.Invalidate(); // Re-trigger paint event
+                    }
+                }
+            }
         }
 
         private void SaveFloorplanButton_Click(object sender, EventArgs e)
@@ -143,18 +170,20 @@ namespace VacuumSim
             // Read the floorplan data file and store it in HouseLayoutAccessor.floorLayout
             // Modify this in the future
             FloorplanFileReader.LoadTileGridData("../../../DefaultFloorPlan.txt", HouseLayoutAccessor);
-            
+
             FloorCanvas.Invalidate(); // Re-trigger paint event
         }
 
         /* Fill a tile using a SolidBrush */
         /* The +1's are there so everything matches up with the grid lines (which are of pen width 1) */
+
         private void PaintTile(int rowIndex, int colIndex, SolidBrush brush, Graphics canvasEditor)
         {
             canvasEditor.FillRectangle(brush, TileGridAccessor.tileSideLength * rowIndex, TileGridAccessor.tileSideLength * colIndex, TileGridAccessor.tileSideLength + 1, TileGridAccessor.tileSideLength + 1);
         }
 
         /* Draw a tile (just the outline, no fill) using a Pen */
+
         private void DrawTileOutline(int rowIndex, int colIndex, Pen penColor, Graphics canvasEditor)
         {
             // Get the coordinates of each tile corner
@@ -171,6 +200,7 @@ namespace VacuumSim
         }
 
         /* Draws the vacuum onto the canvas */
+
         private void DrawVacuum(Graphics canvasEditor)
         {
             // Draw vacuum whiskers
@@ -185,6 +215,7 @@ namespace VacuumSim
         }
 
         /* Helper function to draw filled circles using FillEllipse */
+
         private void FillCircle(SolidBrush brush, float radius, float centerX, float centerY, Graphics canvasEditor)
         {
             canvasEditor.FillEllipse(brush, centerX - radius, centerY - radius, radius + radius, radius + radius);
