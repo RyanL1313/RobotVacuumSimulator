@@ -39,6 +39,14 @@ namespace VacuumSim
             RobotPathAlgorithmSelector.SelectedItem = PathAlgorithm.Random;
         }
 
+        private void InitFloorTileSelector()
+        {
+            // Set the data source of the dropdown box to be the values of our ObstacleType enum
+            ObstacleSelector.DataSource = Enum.GetValues(typeof(ObstacleType));
+            // Set the default value to the ObstacleType.WALL;
+            ObstacleSelector.SelectedItem = ObstacleType.Wall;
+        }
+
         private void InitSimulationSpeedSelector()
         {
             SimulationSpeedSelector.DataSource = SimulationSpeeds;
@@ -49,6 +57,7 @@ namespace VacuumSim
             InitializeComponent();
             InitAlgorithmSelector();
             InitSimulationSpeedSelector();
+            InitFloorTileSelector();
 
             // Create objects needed for drawing to FloorCanvas
             HouseLayoutAccessor = new TileGridAccessor();
@@ -88,23 +97,23 @@ namespace VacuumSim
             {
                 for (int j = 0; j < HouseLayoutAccessor.numTilesPerCol; j++)
                 {
-                    if (HouseLayoutAccessor.floorLayout[i, j].obstacle == ObstacleType.NONE && HouseLayoutAccessor.gridLinesOn) // Blank tile
+                    if (HouseLayoutAccessor.floorLayout[i, j].obstacle == ObstacleType.None && HouseLayoutAccessor.gridLinesOn) // Blank tile
                     {
                         DrawTileOutline(i, j, new Pen(Color.Black), canvasEditor);
                     }
-                    else if (HouseLayoutAccessor.floorLayout[i, j].obstacle == ObstacleType.WALL) // Wall tile
+                    else if (HouseLayoutAccessor.floorLayout[i, j].obstacle == ObstacleType.Wall) // Wall tile
                     {
                         PaintTile(i, j, new SolidBrush(Color.Black), canvasEditor);
                     }
-                    else if (HouseLayoutAccessor.floorLayout[i, j].obstacle == ObstacleType.CHEST) // Chest tile
+                    else if (HouseLayoutAccessor.floorLayout[i, j].obstacle == ObstacleType.Chest) // Chest tile
                     {
                         PaintTile(i, j, new SolidBrush(Color.Brown), canvasEditor);
                     }
-                    else if (HouseLayoutAccessor.floorLayout[i, j].obstacle == ObstacleType.CHAIR) // Chair tile
+                    else if (HouseLayoutAccessor.floorLayout[i, j].obstacle == ObstacleType.Chair) // Chair tile
                     {
                         PaintTile(i, j, new SolidBrush(Color.Green), canvasEditor);
                     }
-                    else if (HouseLayoutAccessor.floorLayout[i, j].obstacle == ObstacleType.TABLE) // Table tile
+                    else if (HouseLayoutAccessor.floorLayout[i, j].obstacle == ObstacleType.Table) // Table tile
                     {
                         PaintTile(i, j, new SolidBrush(Color.Blue), canvasEditor);
                     }

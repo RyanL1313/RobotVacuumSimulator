@@ -6,7 +6,8 @@ using System.Threading.Tasks;
 
 namespace VacuumSim
 {
-    public enum ObstacleType { NONE, WALL, CHEST, TABLE, CHAIR };
+    public enum ObstacleType
+    { None, Wall, Chest, Table, Chair };
 
     public struct Tile
     {
@@ -21,6 +22,7 @@ namespace VacuumSim
             this.obstacle = obstacle;
         }
     }
+
     public class TileGridAccessor
     {
         public int numTilesPerRow { get; private set; } = 50;
@@ -38,6 +40,7 @@ namespace VacuumSim
         /* tile based on the row and column and another helper method */
         /* (GetTileFromCoordinates) to easily access a tile based on the coordinates */
         /* clicked on by the user. */
+
         public TileGridAccessor()
         {
             floorLayout = new Tile[numTilesPerRow, numTilesPerCol]; // Create the 2D array of tiles
@@ -47,18 +50,20 @@ namespace VacuumSim
             {
                 for (int j = 0; j < numTilesPerCol; j++)
                 {
-                    floorLayout[i, j] = new Tile(i * tileSideLength, j * tileSideLength, ObstacleType.NONE);
+                    floorLayout[i, j] = new Tile(i * tileSideLength, j * tileSideLength, ObstacleType.None);
                 }
             }
         }
 
         /* Returns the Tile object by requested row and column. */
+
         public Tile GetTileFromRowCol(int row, int col)
         {
             return floorLayout[col, row];
         }
 
         /* Returns the Tile object located at the (x, y) coordinates in the FloorCanvas PictureBox */
+
         public Tile GetTileFromCoordinates(int x, int y)
         {
             int xTileIndex = x / tileSideLength;
@@ -68,6 +73,7 @@ namespace VacuumSim
         }
 
         /* Modifies the obstacle located in a certain tile based on the (x, y) coordinates in the FloorCanvas PictureBox */
+
         public bool ModifyTile(int x, int y, ObstacleType ob)
         {
             // Get row, col indices of selected tile based on the coordinates selected by the user
@@ -77,28 +83,28 @@ namespace VacuumSim
             if (xTileIndex > numTilesPerRow || yTileIndex > numTilesPerCol)
                 return false; // Outside grid
 
-            
             floorLayout[xTileIndex, yTileIndex].obstacle = ob;
-            
+
             return true;
         }
 
         /* Returns the ObstacleType enum value associated with an obstacle string */
+
         public static ObstacleType GetObstacleTypeFromString(string strObstacle)
         {
             string lowercase = strObstacle.ToLower();
-            ObstacleType ret = ObstacleType.NONE;
+            ObstacleType ret = ObstacleType.None;
 
             if (lowercase.Equals("blank") || lowercase.Equals("none"))
-                ret = ObstacleType.NONE;
+                ret = ObstacleType.None;
             else if (lowercase.Equals("wall"))
-                ret = ObstacleType.WALL;
+                ret = ObstacleType.Wall;
             else if (lowercase.Equals("chest"))
-                ret = ObstacleType.CHEST;
+                ret = ObstacleType.Chest;
             else if (lowercase.Equals("chair"))
-                ret = ObstacleType.CHAIR;
+                ret = ObstacleType.Chair;
             else if (lowercase.Equals("table"))
-                ret = ObstacleType.TABLE;
+                ret = ObstacleType.Table;
 
             return ret;
         }

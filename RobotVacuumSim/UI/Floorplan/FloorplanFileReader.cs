@@ -21,7 +21,7 @@ namespace VacuumSim
             int row = 0;
             int col = 0;
             string strOb = "";
-            ObstacleType ob = ObstacleType.NONE;
+            ObstacleType ob = ObstacleType.None;
 
             // Iterate over each row in the .txt file
             for (int i = 0; i < tga.numTilesPerCol; i++)
