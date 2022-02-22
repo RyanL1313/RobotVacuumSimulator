@@ -145,9 +145,13 @@ namespace VacuumSim
 
                     ObstacleType ob = TileGridAccessor.GetObstacleTypeFromString(selectedObstruction);
 
-                    HouseLayoutAccessor.ModifyTile(canvasCoords.X, canvasCoords.Y, ob);
+                    // Check that we aren't writing the same value that already exists
+                    if (HouseLayoutAccessor.GetTileFromCoordinates(canvasCoords.X, canvasCoords.Y).obstacle != ob)
+                    {
+                        HouseLayoutAccessor.ModifyTile(canvasCoords.X, canvasCoords.Y, ob);
 
-                    FloorCanvas.Invalidate(); // Re-trigger paint event
+                        FloorCanvas.Invalidate(); // Re-trigger paint event
+                    }
                 }
             }
         }
