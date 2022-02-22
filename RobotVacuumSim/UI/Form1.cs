@@ -140,7 +140,10 @@ namespace VacuumSim
                     string selectedObstruction = ObstacleSelector.SelectedItem.ToString();
 
                     // Make sure user clicks within the grid
-                    if (canvasCoords.X >= HouseLayoutAccessor.numTilesPerRow * TileGridAccessor.tileSideLength || canvasCoords.Y >= HouseLayoutAccessor.numTilesPerCol * TileGridAccessor.tileSideLength)
+                    if (canvasCoords.X >= HouseLayoutAccessor.numTilesPerRow * TileGridAccessor.tileSideLength ||
+                        (canvasCoords.X <= 0 ||
+                        canvasCoords.Y >= HouseLayoutAccessor.numTilesPerCol * TileGridAccessor.tileSideLength) ||
+                        canvasCoords.Y <= 0)
                         return;
 
                     ObstacleType ob = TileGridAccessor.GetObstacleTypeFromString(selectedObstruction);
