@@ -90,10 +90,6 @@ namespace VacuumSim
                 HouseWidthSelector.Value = 2;
             else if (HouseWidthSelector.Value > 100) // Maximum width is 100 ft (50 tiles wide)
                 HouseWidthSelector.Value = 100;
-            else if (HouseWidthSelector.Value * HouseHeightSelector.Value > 8000) // Maximum area is 8000 sq ft
-                HouseWidthSelector.Value -= 2; // Go back to previous value
-            else if (HouseWidthSelector.Value * HouseHeightSelector.Value < 4) // Minimum area is 4 sq ft
-                HouseWidthSelector.Value += 2; // Go back to previous value
 
             HouseLayout.numTilesPerRow = (int)HouseWidthSelector.Value / 2; // Get number of tiles per row based on house width chosen by user
 
@@ -106,10 +102,6 @@ namespace VacuumSim
                 HouseHeightSelector.Value = 2;
             else if (HouseHeightSelector.Value > 80) // Maximum height is 80 ft (40 tiles high)
                 HouseHeightSelector.Value = 80;
-            else if (HouseHeightSelector.Value * HouseHeightSelector.Value > 8000) // Maximum area is 8000 sq ft
-                HouseHeightSelector.Value -= 2; // Go back to previous value
-            else if (HouseHeightSelector.Value * HouseHeightSelector.Value < 4) // Minimum area is 4 sq ft
-                HouseHeightSelector.Value += 2; // Go back to previous value
 
             HouseLayout.numTilesPerCol = (int)HouseHeightSelector.Value / 2; // Get number of tiles per column based on house height chosen by user
 
