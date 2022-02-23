@@ -23,12 +23,14 @@ namespace VacuumSim
         }
     }
 
-    public class TileGridAccessor
+    public class FloorplanLayout
     {
-        public int numTilesPerRow { get; private set; } = 50;
-        public int numTilesPerCol { get; private set; } = 40;
-        public const int tileSideLength = 15;
-        public Tile[,] floorLayout { get; private set; } // 2D array of tiles
+        public const int maxTilesPerRow = 50; // Maximum tiles allowed per row
+        public const int maxTilesPerCol = 40; // Maximum tiles allowed per column
+        public int numTilesPerRow { get; set; } = 25; // Default value
+        public int numTilesPerCol { get; set; } = 20; // Default value
+        public const int tileSideLength = 15; // Pixel length of each side of the tiles
+        public Tile[,] floorLayout { get; set; } // 2D array of tiles
         public bool gridLinesOn { get; set; } = true; // Should grid lines currently be displaying?
 
         /* Feel free to remove this gigantic comment block later. */
@@ -40,15 +42,14 @@ namespace VacuumSim
         /* tile based on the row and column and another helper method */
         /* (GetTileFromCoordinates) to easily access a tile based on the coordinates */
         /* clicked on by the user. */
-
-        public TileGridAccessor()
+        public FloorplanLayout()
         {
-            floorLayout = new Tile[numTilesPerRow, numTilesPerCol]; // Create the 2D array of tiles
+            floorLayout = new Tile[maxTilesPerRow, maxTilesPerRow]; // Create the 2D array of tiles
 
             // Initialize the grid with blank tiles and the coordinates of those tiles
-            for (int i = 0; i < numTilesPerRow; i++)
+            for (int i = 0; i < maxTilesPerRow; i++)
             {
-                for (int j = 0; j < numTilesPerCol; j++)
+                for (int j = 0; j < maxTilesPerCol; j++)
                 {
                     floorLayout[i, j] = new Tile(i * tileSideLength, j * tileSideLength, ObstacleType.None);
                 }
@@ -56,14 +57,12 @@ namespace VacuumSim
         }
 
         /* Returns the Tile object by requested row and column. */
-
         public Tile GetTileFromRowCol(int row, int col)
         {
             return floorLayout[col, row];
         }
 
         /* Returns the Tile object located at the (x, y) coordinates in the FloorCanvas PictureBox */
-
         public Tile GetTileFromCoordinates(int x, int y)
         {
             int xTileIndex = x / tileSideLength;
@@ -72,8 +71,19 @@ namespace VacuumSim
             return floorLayout[xTileIndex, yTileIndex];
         }
 
-        /* Modifies the obstacle located in a certain tile based on the (x, y) coordinates in the FloorCanvas PictureBox */
+        /* Returns the maximum x coordinates. Vacuum should not go past this. */
+        public int GetMaximumXCoordinates()
+        {
+            return numTilesPerRow * tileSideLength;
+        }
 
+        /* Returns the maximum y coordinates. Vacuum should not go past this. */
+        public int GetMaximumYCoordinates()
+        {
+            return numTilesPerCol * tileSideLength;
+        }
+
+        /* Modifies the obstacle located in a certain tile based on the (x, y) coordinates in the FloorCanvas PictureBox */
         public bool ModifyTile(int x, int y, ObstacleType ob)
         {
             // Get row, col indices of selected tile based on the coordinates selected by the user
@@ -89,7 +99,6 @@ namespace VacuumSim
         }
 
         /* Returns the ObstacleType enum value associated with an obstacle string */
-
         public static ObstacleType GetObstacleTypeFromString(string strObstacle)
         {
             string lowercase = strObstacle.ToLower();

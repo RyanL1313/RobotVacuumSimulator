@@ -25,8 +25,9 @@ namespace VacuumSim
         }
 
         private List<string> SimulationSpeeds = new List<string> { "1x", "5x", "50x" };
-        private TileGridAccessor HouseLayoutAccessor;
+        private FloorplanLayout HouseLayout;
         private VacuumDisplay Vacuum;
+        bool simStarted = false; // Probably need to make a Simulation class in the future and move this there
 
         /// <summary>
         /// Initializes the algorithm selector to allow for choosing an algorithm type as specified by the PathAlgorithm enum.
@@ -60,7 +61,7 @@ namespace VacuumSim
             InitFloorTileSelector();
 
             // Create objects needed for drawing to FloorCanvas
-            HouseLayoutAccessor = new TileGridAccessor();
+            HouseLayout = new FloorplanLayout();
             Vacuum = new VacuumDisplay();
 
             this.DoubleBuffered = true; // Enable double buffering for smooth animation
@@ -83,43 +84,69 @@ namespace VacuumSim
             }
         }
 
-        private void RoomWidthSelector_ValueChanged(object sender, EventArgs e)
+        private void HouseWidthSelector_ValueChanged(object sender, EventArgs e)
         {
+            if (HouseWidthSelector.Value < 2) // Minimum width is 2 ft (1 tile wide)
+                HouseWidthSelector.Value = 2;
+            else if (HouseWidthSelector.Value > 100) // Maximum width is 100 ft (50 tiles wide)
+                HouseWidthSelector.Value = 100;
+
+            HouseLayout.numTilesPerRow = (int)HouseWidthSelector.Value / 2; // Get number of tiles per row based on house width chosen by user
+
+            FloorCanvas.Invalidate(); // Re-draw canvas to reflect change in house width
+        }
+
+        private void HouseHeightSelector_ValueChanged(object sender, EventArgs e)
+        {
+            if (HouseHeightSelector.Value < 2) // Minimum height is 2 ft (1 tile high)
+                HouseHeightSelector.Value = 2;
+            else if (HouseHeightSelector.Value > 80) // Maximum height is 80 ft (40 tiles high)
+                HouseHeightSelector.Value = 80;
+
+            HouseLayout.numTilesPerCol = (int)HouseHeightSelector.Value / 2; // Get number of tiles per column based on house height chosen by user
+
+            FloorCanvas.Invalidate(); // Re-draw canvas to reflect change in house height
         }
 
         private void FloorCanvas_Paint(object sender, PaintEventArgs e)
         {
             Graphics canvasEditor = e.Graphics;
-            canvasEditor.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
 
-            /* Draw 50 x 40 square grid. Each square in the grid is 4 ft^2 */
-            for (int i = 0; i < HouseLayoutAccessor.numTilesPerRow; i++)
+            // Turn on anti-aliasing when simulation is running
+            if (simStarted)
+                canvasEditor.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
+            else
+                canvasEditor.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.None;
+
+            /* Draw the floor layout. Each square in the grid is 4 ft^2 */
+            for (int i = 0; i < HouseLayout.numTilesPerRow; i++)
             {
-                for (int j = 0; j < HouseLayoutAccessor.numTilesPerCol; j++)
+                for (int j = 0; j < HouseLayout.numTilesPerCol; j++)
                 {
-                    if (HouseLayoutAccessor.floorLayout[i, j].obstacle == ObstacleType.None && HouseLayoutAccessor.gridLinesOn) // Blank tile
+                    if (HouseLayout.floorLayout[i, j].obstacle == ObstacleType.None && HouseLayout.gridLinesOn) // Blank tile
                     {
                         DrawTileOutline(i, j, new Pen(Color.Black), canvasEditor);
                     }
-                    else if (HouseLayoutAccessor.floorLayout[i, j].obstacle == ObstacleType.Wall) // Wall tile
+                    else if (HouseLayout.floorLayout[i, j].obstacle == ObstacleType.Wall) // Wall tile
                     {
                         PaintTile(i, j, new SolidBrush(Color.Black), canvasEditor);
                     }
-                    else if (HouseLayoutAccessor.floorLayout[i, j].obstacle == ObstacleType.Chest) // Chest tile
+                    else if (HouseLayout.floorLayout[i, j].obstacle == ObstacleType.Chest) // Chest tile
                     {
                         PaintTile(i, j, new SolidBrush(Color.Brown), canvasEditor);
                     }
-                    else if (HouseLayoutAccessor.floorLayout[i, j].obstacle == ObstacleType.Chair) // Chair tile
+                    else if (HouseLayout.floorLayout[i, j].obstacle == ObstacleType.Chair) // Chair tile
                     {
                         PaintTile(i, j, new SolidBrush(Color.Green), canvasEditor);
                     }
-                    else if (HouseLayoutAccessor.floorLayout[i, j].obstacle == ObstacleType.Table) // Table tile
+                    else if (HouseLayout.floorLayout[i, j].obstacle == ObstacleType.Table) // Table tile
                     {
                         PaintTile(i, j, new SolidBrush(Color.Blue), canvasEditor);
                     }
                 }
             }
 
+            DrawHouseBoundaryLines(canvasEditor); // Draw the boundary lines of the house
             DrawVacuum(canvasEditor); // Draw vacuum to the canvas
         }
 
@@ -140,18 +167,18 @@ namespace VacuumSim
                     string selectedObstruction = ObstacleSelector.SelectedItem.ToString();
 
                     // Make sure user clicks within the grid
-                    if (canvasCoords.X >= HouseLayoutAccessor.numTilesPerRow * TileGridAccessor.tileSideLength ||
+                    if (canvasCoords.X >= HouseLayout.numTilesPerRow * FloorplanLayout.tileSideLength ||
                         (canvasCoords.X <= 0 ||
-                        canvasCoords.Y >= HouseLayoutAccessor.numTilesPerCol * TileGridAccessor.tileSideLength) ||
+                        canvasCoords.Y >= HouseLayout.numTilesPerCol * FloorplanLayout.tileSideLength) ||
                         canvasCoords.Y <= 0)
                         return;
 
-                    ObstacleType ob = TileGridAccessor.GetObstacleTypeFromString(selectedObstruction);
+                    ObstacleType ob = FloorplanLayout.GetObstacleTypeFromString(selectedObstruction);
 
                     // Check that we aren't writing the same value that already exists
-                    if (HouseLayoutAccessor.GetTileFromCoordinates(canvasCoords.X, canvasCoords.Y).obstacle != ob)
+                    if (HouseLayout.GetTileFromCoordinates(canvasCoords.X, canvasCoords.Y).obstacle != ob)
                     {
-                        HouseLayoutAccessor.ModifyTile(canvasCoords.X, canvasCoords.Y, ob);
+                        HouseLayout.ModifyTile(canvasCoords.X, canvasCoords.Y, ob);
 
                         FloorCanvas.Invalidate(); // Re-trigger paint event
                     }
@@ -162,14 +189,18 @@ namespace VacuumSim
         private void SaveFloorplanButton_Click(object sender, EventArgs e)
         {
             // Modify this in the future
-            FloorplanFileWriter.SaveTileGridData("../../../DefaultFloorPlan.txt", HouseLayoutAccessor);
+            FloorplanFileWriter.SaveTileGridData("../../../DefaultFloorplan.txt", HouseLayout);
         }
 
         private void LoadFloorplanButton_Click(object sender, EventArgs e)
         {
+            // Change this in future when we need to load other floorplans
+            HouseWidthSelector.Value = 50;
+            HouseHeightSelector.Value = 40;
+
             // Read the floorplan data file and store it in HouseLayoutAccessor.floorLayout
             // Modify this in the future
-            FloorplanFileReader.LoadTileGridData("../../../DefaultFloorPlan.txt", HouseLayoutAccessor);
+            FloorplanFileReader.LoadTileGridData("../../../DefaultFloorplan.txt", HouseLayout);
 
             FloorCanvas.Invalidate(); // Re-trigger paint event
         }
@@ -179,7 +210,7 @@ namespace VacuumSim
 
         private void PaintTile(int rowIndex, int colIndex, SolidBrush brush, Graphics canvasEditor)
         {
-            canvasEditor.FillRectangle(brush, TileGridAccessor.tileSideLength * rowIndex, TileGridAccessor.tileSideLength * colIndex, TileGridAccessor.tileSideLength + 1, TileGridAccessor.tileSideLength + 1);
+            canvasEditor.FillRectangle(brush, FloorplanLayout.tileSideLength * rowIndex, FloorplanLayout.tileSideLength * colIndex, FloorplanLayout.tileSideLength + 1, FloorplanLayout.tileSideLength + 1);
         }
 
         /* Draw a tile (just the outline, no fill) using a Pen */
@@ -187,16 +218,35 @@ namespace VacuumSim
         private void DrawTileOutline(int rowIndex, int colIndex, Pen penColor, Graphics canvasEditor)
         {
             // Get the coordinates of each tile corner
-            Point p1 = new Point(TileGridAccessor.tileSideLength * rowIndex, TileGridAccessor.tileSideLength * colIndex);
-            Point p2 = new Point(TileGridAccessor.tileSideLength * rowIndex, TileGridAccessor.tileSideLength * colIndex + TileGridAccessor.tileSideLength);
-            Point p3 = new Point(TileGridAccessor.tileSideLength * rowIndex + TileGridAccessor.tileSideLength, TileGridAccessor.tileSideLength * colIndex + TileGridAccessor.tileSideLength);
-            Point p4 = new Point(TileGridAccessor.tileSideLength * rowIndex + TileGridAccessor.tileSideLength, TileGridAccessor.tileSideLength * colIndex);
+            Point p1 = new Point(FloorplanLayout.tileSideLength * rowIndex, FloorplanLayout.tileSideLength * colIndex);
+            Point p2 = new Point(FloorplanLayout.tileSideLength * rowIndex, FloorplanLayout.tileSideLength * colIndex + FloorplanLayout.tileSideLength);
+            Point p3 = new Point(FloorplanLayout.tileSideLength * rowIndex + FloorplanLayout.tileSideLength, FloorplanLayout.tileSideLength * colIndex + FloorplanLayout.tileSideLength);
+            Point p4 = new Point(FloorplanLayout.tileSideLength * rowIndex + FloorplanLayout.tileSideLength, FloorplanLayout.tileSideLength * colIndex);
 
             // Draw the tile
             canvasEditor.DrawLine(penColor, p1, p2);
             canvasEditor.DrawLine(penColor, p2, p3);
             canvasEditor.DrawLine(penColor, p3, p4);
             canvasEditor.DrawLine(penColor, p4, p1);
+        }
+
+        private void DrawHouseBoundaryLines(Graphics canvasEditor)
+        {
+            if (!simStarted) // No need to draw the boundary lines if the grid is still being displayed
+                return;
+
+            Pen BlackPen = new Pen(Color.Black);
+
+            Point p1 = new Point(0, 0);
+            Point p2 = new Point(0, HouseLayout.numTilesPerCol * FloorplanLayout.tileSideLength + 1);
+            Point p3 = new Point(HouseLayout.numTilesPerRow * FloorplanLayout.tileSideLength + 1, HouseLayout.numTilesPerCol * FloorplanLayout.tileSideLength + 1);
+            Point p4 = new Point(HouseLayout.numTilesPerRow * FloorplanLayout.tileSideLength + 1, 0);
+
+            // Draw the house boundary
+            canvasEditor.DrawLine(BlackPen, p1, p2);
+            canvasEditor.DrawLine(BlackPen, p2, p3);
+            canvasEditor.DrawLine(BlackPen, p3, p4);
+            canvasEditor.DrawLine(BlackPen, p4, p1);
         }
 
         /* Draws the vacuum onto the canvas */
@@ -215,7 +265,6 @@ namespace VacuumSim
         }
 
         /* Helper function to draw filled circles using FillEllipse */
-
         private void FillCircle(SolidBrush brush, float radius, float centerX, float centerY, Graphics canvasEditor)
         {
             canvasEditor.FillEllipse(brush, centerX - radius, centerY - radius, radius + radius, radius + radius);
@@ -227,8 +276,8 @@ namespace VacuumSim
 
             // Initial attempt at animating the vacuum to go in a circle
             // 12 inches/second = half tile length/second
-            Vacuum.vacuumCoords[0] += (int)(TileGridAccessor.tileSideLength / 2 * (float)Math.Cos((Math.PI * Vacuum.vacuumHeading) / 180));
-            Vacuum.vacuumCoords[1] += (int)(TileGridAccessor.tileSideLength / 2 * (float)Math.Sin((Math.PI * Vacuum.vacuumHeading) / 180));
+            Vacuum.vacuumCoords[0] += (int)(FloorplanLayout.tileSideLength / 2 * (float)Math.Cos((Math.PI * Vacuum.vacuumHeading) / 180));
+            Vacuum.vacuumCoords[1] += (int)(FloorplanLayout.tileSideLength / 2 * (float)Math.Sin((Math.PI * Vacuum.vacuumHeading) / 180));
 
             FloorCanvas.Invalidate(); // Re-trigger paint event
 
@@ -243,7 +292,7 @@ namespace VacuumSim
 
             // Calculate ending (x, y) coordinates of whiskers
             // Also, remember that 2 inch long whiskers = tile side length (2 ft = 24 inches) / 12
-            float lenWhiskersExtendFromVacuum = TileGridAccessor.tileSideLength / 12;
+            float lenWhiskersExtendFromVacuum = FloorplanLayout.tileSideLength / 12;
             Vacuum.whiskersHeadingWRTVacuum = (Vacuum.whiskersHeadingWRTVacuum + 30) % 120;
             Vacuum.whiskersEndingCoords[0] = Vacuum.vacuumCoords[0] + (VacuumDisplay.vacuumDiameter / 2 + lenWhiskersExtendFromVacuum) * (float)Math.Cos((Math.PI * Vacuum.vacuumHeading - Vacuum.whiskersHeadingWRTVacuum) / 180);
             Vacuum.whiskersEndingCoords[1] = Vacuum.vacuumCoords[1] + (VacuumDisplay.vacuumDiameter / 2 + lenWhiskersExtendFromVacuum) * (float)Math.Sin((Math.PI * Vacuum.vacuumHeading - Vacuum.whiskersHeadingWRTVacuum) / 180);
@@ -255,14 +304,20 @@ namespace VacuumSim
         {
             VacuumBodyTimer.Enabled = true;
             VacuumWhiskersTimer.Enabled = true;
-            HouseLayoutAccessor.gridLinesOn = false;
+            HouseLayout.gridLinesOn = false;
+            HouseWidthSelector.Enabled = false;
+            HouseHeightSelector.Enabled = false;
+            simStarted = true;
         }
 
         private void StopSimulationButton_Click(object sender, EventArgs e)
         {
             VacuumBodyTimer.Enabled = false;
             VacuumWhiskersTimer.Enabled = false;
-            HouseLayoutAccessor.gridLinesOn = true;
+            HouseLayout.gridLinesOn = true;
+            HouseWidthSelector.Enabled = true;
+            HouseHeightSelector.Enabled = true;
+            simStarted = false;
 
             FloorCanvas.Invalidate(); // Re-trigger paint event
         }
