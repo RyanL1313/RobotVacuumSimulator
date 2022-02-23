@@ -14,30 +14,31 @@ namespace VacuumSim
 
         }
 
-        public static void LoadTileGridData(string path, TileGridAccessor tga)
+        public static void LoadTileGridData(string path, FloorplanLayout HouseLayout)
         {
             string[] lines = File.ReadAllLines("../../../UI/Floorplan/DefaultFloorPlan.txt");
 
             int row = 0;
             int col = 0;
             string strOb = "";
+
             ObstacleType ob = ObstacleType.None;
 
             // Iterate over each row in the .txt file
-            for (int i = 0; i < tga.numTilesPerCol; i++)
+            for (int i = 0; i < HouseLayout.numTilesPerCol; i++)
             {
                 string[] rowData = lines[i].Split(" ");
                 int strIndex = 0;
 
-                for (int j = 0; j < tga.numTilesPerRow; j++)
+                for (int j = 0; j < HouseLayout.numTilesPerRow; j++)
                 {
                     row = Int32.Parse(rowData[strIndex++]);
                     col = Int32.Parse(rowData[strIndex++]);
 
                     strOb = rowData[strIndex++];
-                    ob = TileGridAccessor.GetObstacleTypeFromString(strOb);
+                    ob = FloorplanLayout.GetObstacleTypeFromString(strOb);
 
-                    tga.floorLayout[col, row].obstacle = ob;
+                    HouseLayout.floorLayout[col, row].obstacle = ob;
                 }
             }
         }

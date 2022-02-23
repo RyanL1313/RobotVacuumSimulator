@@ -14,20 +14,20 @@ namespace VacuumSim
 
         }
 
-        public static void SaveTileGridData(string path, TileGridAccessor tga)
+        public static void SaveTileGridData(string path, FloorplanLayout HouseLayout)
         {
-            string[] lines = new string[tga.numTilesPerCol]; // NumTilesPerCol is technically the number of rows. Confusing, I know
+            string[] lines = new string[HouseLayout.numTilesPerCol]; // NumTilesPerCol is technically the number of rows. Confusing, I know
 
-            for (int i = 0; i < tga.numTilesPerCol; i++)
+            for (int i = 0; i < HouseLayout.numTilesPerCol; i++)
             {
-                lines[i] = i + " " + "0" + " " + tga.floorLayout[0, i].obstacle; // First value in row
-                for (int j = 1; j < tga.numTilesPerRow; j++)
+                lines[i] = i + " " + "0" + " " + HouseLayout.floorLayout[0, i].obstacle; // First value in row
+                for (int j = 1; j < HouseLayout.numTilesPerRow; j++)
                 {
-                    lines[i] = lines[i] + " " + i + " " + j + " " + tga.floorLayout[j, i].obstacle;
+                    lines[i] = lines[i] + " " + i + " " + j + " " + HouseLayout.floorLayout[j, i].obstacle;
                 }
             }
 
-            File.WriteAllLines("../../../UI/Floorplan/SavedFloorplan.txt", lines);
+            File.WriteAllLines("../../../UI/Floorplan/DefaultFloorplan.txt", lines);
         }
     }
 }
