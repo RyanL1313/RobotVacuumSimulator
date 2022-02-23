@@ -27,6 +27,7 @@ namespace VacuumSim
         private List<string> SimulationSpeeds = new List<string> { "1x", "5x", "50x" };
         private FloorplanLayout HouseLayout;
         private VacuumDisplay Vacuum;
+        bool simStarted = false; // Probably need to make a Simulation class in the future and move this there
 
         /// <summary>
         /// Initializes the algorithm selector to allow for choosing an algorithm type as specified by the PathAlgorithm enum.
@@ -234,12 +235,15 @@ namespace VacuumSim
 
         private void DrawHouseBoundaryLines(Graphics canvasEditor)
         {
+            if (!simStarted) // No need to draw the boundary lines if the grid is still being displayed
+                return;
+
             Pen BlackPen = new Pen(Color.Black);
 
             Point p1 = new Point(0, 0);
-            Point p2 = new Point(0, HouseLayout.numTilesPerCol * FloorplanLayout.tileSideLength);
-            Point p3 = new Point(HouseLayout.numTilesPerRow * FloorplanLayout.tileSideLength, HouseLayout.numTilesPerCol * FloorplanLayout.tileSideLength);
-            Point p4 = new Point(HouseLayout.numTilesPerRow * FloorplanLayout.tileSideLength, 0);
+            Point p2 = new Point(0, HouseLayout.numTilesPerCol * FloorplanLayout.tileSideLength + 1);
+            Point p3 = new Point(HouseLayout.numTilesPerRow * FloorplanLayout.tileSideLength + 1, HouseLayout.numTilesPerCol * FloorplanLayout.tileSideLength + 1);
+            Point p4 = new Point(HouseLayout.numTilesPerRow * FloorplanLayout.tileSideLength + 1, 0);
 
             // Draw the house boundary
             canvasEditor.DrawLine(BlackPen, p1, p2);
@@ -307,6 +311,7 @@ namespace VacuumSim
             HouseLayout.gridLinesOn = false;
             HouseWidthSelector.Enabled = false;
             HouseHeightSelector.Enabled = false;
+            simStarted = true;
         }
 
         private void StopSimulationButton_Click(object sender, EventArgs e)
@@ -316,6 +321,7 @@ namespace VacuumSim
             HouseLayout.gridLinesOn = true;
             HouseWidthSelector.Enabled = true;
             HouseHeightSelector.Enabled = true;
+            simStarted = false;
 
             FloorCanvas.Invalidate(); // Re-trigger paint event
         }
