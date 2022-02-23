@@ -119,7 +119,12 @@ namespace VacuumSim
         private void FloorCanvas_Paint(object sender, PaintEventArgs e)
         {
             Graphics canvasEditor = e.Graphics;
-            canvasEditor.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
+
+            // Turn on anti-aliasing when simulation is running
+            if (simStarted)
+                canvasEditor.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
+            else
+                canvasEditor.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.None;
 
             /* Draw the floor layout. Each square in the grid is 4 ft^2 */
             for (int i = 0; i < HouseLayout.numTilesPerRow; i++)
@@ -268,7 +273,6 @@ namespace VacuumSim
         }
 
         /* Helper function to draw filled circles using FillEllipse */
-
         private void FillCircle(SolidBrush brush, float radius, float centerX, float centerY, Graphics canvasEditor)
         {
             canvasEditor.FillEllipse(brush, centerX - radius, centerY - radius, radius + radius, radius + radius);
