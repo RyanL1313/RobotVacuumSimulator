@@ -265,7 +265,6 @@ namespace VacuumSim
         }
 
         /* Draws the vacuum onto the canvas */
-
         private void DrawVacuum(Graphics canvasEditor)
         {
             // Draw vacuum whiskers
@@ -341,6 +340,7 @@ namespace VacuumSim
             HouseWidthSelector.Enabled = false;
             HouseHeightSelector.Enabled = false;
             RobotSpeedSelector.Enabled = false;
+            Simulation.simStarted = true;
             Simulation.simTimeElapsed = 0;
             VacDisplay.batterySecondsRemaining = (int)RobotBatteryLifeSelector.Value * 60;
         }
