@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using VacuumSim.Sim;
 
 namespace VacuumSim
 {
@@ -26,8 +27,7 @@ namespace VacuumSim
 
         private List<string> SimulationSpeeds = new List<string> { "1x", "5x", "50x" };
         private FloorplanLayout HouseLayout;
-        private VacuumDisplay Vacuum;
-        bool simStarted = false; // Probably need to make a Simulation class in the future and move this there
+        private VacuumDisplay VacDisplay;
 
         /// <summary>
         /// Initializes the algorithm selector to allow for choosing an algorithm type as specified by the PathAlgorithm enum.
@@ -62,7 +62,7 @@ namespace VacuumSim
 
             // Create objects needed for drawing to FloorCanvas
             HouseLayout = new FloorplanLayout();
-            Vacuum = new VacuumDisplay();
+            VacDisplay = new VacuumDisplay();
 
             this.DoubleBuffered = true; // Enable double buffering for smooth animation
         }
@@ -86,10 +86,8 @@ namespace VacuumSim
 
         private void HouseWidthSelector_ValueChanged(object sender, EventArgs e)
         {
-            if (HouseWidthSelector.Value < 2) // Minimum width is 2 ft (1 tile wide)
-                HouseWidthSelector.Value = 2;
-            else if (HouseWidthSelector.Value > 100) // Maximum width is 100 ft (50 tiles wide)
-                HouseWidthSelector.Value = 100;
+            if ((int)HouseWidthSelector.Value % 2 == 1) // Prevent non-even entries
+                HouseWidthSelector.Value += 1;
 
             HouseLayout.numTilesPerRow = (int)HouseWidthSelector.Value / 2; // Get number of tiles per row based on house width chosen by user
 
@@ -98,14 +96,31 @@ namespace VacuumSim
 
         private void HouseHeightSelector_ValueChanged(object sender, EventArgs e)
         {
-            if (HouseHeightSelector.Value < 2) // Minimum height is 2 ft (1 tile high)
-                HouseHeightSelector.Value = 2;
-            else if (HouseHeightSelector.Value > 80) // Maximum height is 80 ft (40 tiles high)
-                HouseHeightSelector.Value = 80;
+            if ((int)HouseHeightSelector.Value % 2 == 1) // Prevent non-even entries
+                HouseHeightSelector.Value += 1;
 
             HouseLayout.numTilesPerCol = (int)HouseHeightSelector.Value / 2; // Get number of tiles per column based on house height chosen by user
 
             FloorCanvas.Invalidate(); // Re-draw canvas to reflect change in house height
+        }
+
+        private void SimulationSpeedSelector_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            Simulation.simSpeed = Int32.Parse(SimulationSpeedSelector.SelectedItem.ToString().TrimEnd('x'));
+
+            // Set the vacuum timer to update every 1000 / (simulation speed) seconds
+            VacuumBodyTimer.Interval = 1000 / Simulation.simSpeed;
+        }
+
+        private void RobotSpeedSelector_ValueChanged(object sender, EventArgs e)
+        {
+            VacDisplay.vacuumSpeed = (int)RobotSpeedSelector.Value;
+        }
+
+        private void RobotBatteryLifeSelector_ValueChanged(object sender, EventArgs e)
+        {
+            BatteryLeftLabel.Text = "" + RobotBatteryLifeSelector.Value + " minutes";
+            VacDisplay.batterySecondsRemaining = (int)RobotBatteryLifeSelector.Value * 60;
         }
 
         private void FloorCanvas_Paint(object sender, PaintEventArgs e)
@@ -113,7 +128,7 @@ namespace VacuumSim
             Graphics canvasEditor = e.Graphics;
 
             // Turn on anti-aliasing when simulation is running
-            if (simStarted)
+            if (Simulation.simStarted)
                 canvasEditor.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
             else
                 canvasEditor.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.None;
@@ -232,7 +247,7 @@ namespace VacuumSim
 
         private void DrawHouseBoundaryLines(Graphics canvasEditor)
         {
-            if (!simStarted) // No need to draw the boundary lines if the grid is still being displayed
+            if (!Simulation.simStarted) // No need to draw the boundary lines if the grid is still being displayed
                 return;
 
             Pen BlackPen = new Pen(Color.Black);
@@ -255,13 +270,13 @@ namespace VacuumSim
         {
             // Draw vacuum whiskers
             Pen charcoalGrayPen = new Pen(Color.FromArgb(255, 72, 70, 70));
-            PointF whiskersStart = new PointF(Vacuum.whiskersStartingCoords[0], Vacuum.whiskersStartingCoords[1]);
-            PointF whiskersEnd = new PointF(Vacuum.whiskersEndingCoords[0], Vacuum.whiskersEndingCoords[1]);
+            PointF whiskersStart = new PointF(VacDisplay.whiskersStartingCoords[0], VacDisplay.whiskersStartingCoords[1]);
+            PointF whiskersEnd = new PointF(VacDisplay.whiskersEndingCoords[0], VacDisplay.whiskersEndingCoords[1]);
             canvasEditor.DrawLine(charcoalGrayPen, whiskersStart, whiskersEnd);
 
             // Draw vacuum body
             SolidBrush charcoalGrayBrush = new SolidBrush(Color.FromArgb(255, 72, 70, 70));
-            FillCircle(charcoalGrayBrush, VacuumDisplay.vacuumDiameter / 2, Vacuum.vacuumCoords[0], Vacuum.vacuumCoords[1], canvasEditor);
+            FillCircle(charcoalGrayBrush, VacuumDisplay.vacuumDiameter / 2, VacDisplay.vacuumCoords[0], VacDisplay.vacuumCoords[1], canvasEditor);
         }
 
         /* Helper function to draw filled circles using FillEllipse */
@@ -275,49 +290,73 @@ namespace VacuumSim
             // TO-DO: Calculate next (x, y) position of vacuum based on selected algorithm (backend)
 
             // Initial attempt at animating the vacuum to go in a circle
-            // 12 inches/second = half tile length/second
-            Vacuum.vacuumCoords[0] += (int)(FloorplanLayout.tileSideLength / 2 * (float)Math.Cos((Math.PI * Vacuum.vacuumHeading) / 180));
-            Vacuum.vacuumCoords[1] += (int)(FloorplanLayout.tileSideLength / 2 * (float)Math.Sin((Math.PI * Vacuum.vacuumHeading) / 180));
+            VacDisplay.vacuumCoords[0] += VacDisplay.vacuumSpeed * (float)Math.Cos((Math.PI * VacDisplay.vacuumHeading) / 180);
+            VacDisplay.vacuumCoords[1] += VacDisplay.vacuumSpeed * (float)Math.Sin((Math.PI * VacDisplay.vacuumHeading) / 180);
+
+            // Update simulation data
+            Simulation.simTimeElapsed++;
+            VacDisplay.batterySecondsRemaining--;
+
+            BatteryLeftLabel.Text = "" + (VacDisplay.batterySecondsRemaining >= 60 ? VacDisplay.batterySecondsRemaining / 60 + " minutes"
+                                  : VacDisplay.batterySecondsRemaining + " seconds");
+
+            if (VacDisplay.batterySecondsRemaining <= 0)
+            {
+                VacuumBodyTimer.Enabled = false;
+                VacuumWhiskersTimer.Enabled = false;
+                HouseLayout.gridLinesOn = true;
+                HouseWidthSelector.Enabled = true;
+                HouseHeightSelector.Enabled = true;
+                RobotSpeedSelector.Enabled = true;
+                Simulation.simStarted = false;
+            }
 
             FloorCanvas.Invalidate(); // Re-trigger paint event
 
-            Vacuum.vacuumHeading = (Vacuum.vacuumHeading + 45) % 360;
+            VacDisplay.vacuumHeading = (VacDisplay.vacuumHeading + 45) % 360;
         }
 
         private void VacuumWhiskersTimer_Tick(object sender, EventArgs e)
         {
             // Choose fixed start (x, y) coordinates of whiskers based on vacuum heading
-            Vacuum.whiskersStartingCoords[0] = Vacuum.vacuumCoords[0] + (VacuumDisplay.vacuumDiameter / 2) * (float)Math.Cos((Math.PI * Vacuum.vacuumHeading - 30) / 180);
-            Vacuum.whiskersStartingCoords[1] = Vacuum.vacuumCoords[1] + (VacuumDisplay.vacuumDiameter / 2) * (float)Math.Sin((Math.PI * Vacuum.vacuumHeading - 30) / 180);
+            VacDisplay.whiskersStartingCoords[0] = VacDisplay.vacuumCoords[0] + (VacuumDisplay.vacuumDiameter / 2) * (float)Math.Cos((Math.PI * VacDisplay.vacuumHeading - 30) / 180);
+            VacDisplay.whiskersStartingCoords[1] = VacDisplay.vacuumCoords[1] + (VacuumDisplay.vacuumDiameter / 2) * (float)Math.Sin((Math.PI * VacDisplay.vacuumHeading - 30) / 180);
 
             // Calculate ending (x, y) coordinates of whiskers
             // Also, remember that 2 inch long whiskers = tile side length (2 ft = 24 inches) / 12
             float lenWhiskersExtendFromVacuum = FloorplanLayout.tileSideLength / 12;
-            Vacuum.whiskersHeadingWRTVacuum = (Vacuum.whiskersHeadingWRTVacuum + 30) % 120;
-            Vacuum.whiskersEndingCoords[0] = Vacuum.vacuumCoords[0] + (VacuumDisplay.vacuumDiameter / 2 + lenWhiskersExtendFromVacuum) * (float)Math.Cos((Math.PI * Vacuum.vacuumHeading - Vacuum.whiskersHeadingWRTVacuum) / 180);
-            Vacuum.whiskersEndingCoords[1] = Vacuum.vacuumCoords[1] + (VacuumDisplay.vacuumDiameter / 2 + lenWhiskersExtendFromVacuum) * (float)Math.Sin((Math.PI * Vacuum.vacuumHeading - Vacuum.whiskersHeadingWRTVacuum) / 180);
+            VacDisplay.whiskersHeadingWRTVacuum = (VacDisplay.whiskersHeadingWRTVacuum + 30) % 270;
+            VacDisplay.whiskersEndingCoords[0] = VacDisplay.vacuumCoords[0] + (VacuumDisplay.vacuumDiameter / 2 + lenWhiskersExtendFromVacuum) * (float)Math.Cos((Math.PI * VacDisplay.vacuumHeading - VacDisplay.whiskersHeadingWRTVacuum) / 180);
+            VacDisplay.whiskersEndingCoords[1] = VacDisplay.vacuumCoords[1] + (VacuumDisplay.vacuumDiameter / 2 + lenWhiskersExtendFromVacuum) * (float)Math.Sin((Math.PI * VacDisplay.vacuumHeading - VacDisplay.whiskersHeadingWRTVacuum) / 180);
 
             FloorCanvas.Invalidate(); // Re-trigger paint event
         }
 
         private void StartSimulationButton_Click(object sender, EventArgs e)
         {
+            // Set initial values
             VacuumBodyTimer.Enabled = true;
             VacuumWhiskersTimer.Enabled = true;
             HouseLayout.gridLinesOn = false;
             HouseWidthSelector.Enabled = false;
             HouseHeightSelector.Enabled = false;
-            simStarted = true;
+            RobotSpeedSelector.Enabled = false;
+            Simulation.simTimeElapsed = 0;
+            VacDisplay.batterySecondsRemaining = (int)RobotBatteryLifeSelector.Value * 60;
         }
 
         private void StopSimulationButton_Click(object sender, EventArgs e)
         {
+            // Reset values
             VacuumBodyTimer.Enabled = false;
             VacuumWhiskersTimer.Enabled = false;
             HouseLayout.gridLinesOn = true;
             HouseWidthSelector.Enabled = true;
             HouseHeightSelector.Enabled = true;
-            simStarted = false;
+            RobotSpeedSelector.Enabled = true;
+            Simulation.simStarted = false;
+            Simulation.simTimeElapsed = 0;
+            VacDisplay.batterySecondsRemaining = (int)RobotBatteryLifeSelector.Value * 60;
 
             FloorCanvas.Invalidate(); // Re-trigger paint event
         }
