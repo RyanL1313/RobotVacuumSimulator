@@ -16,7 +16,7 @@ namespace VacuumSim
 
         public static void LoadTileGridData(string path, FloorplanLayout HouseLayout)
         {
-            string[] lines = File.ReadAllLines("../../../UI/Floorplan/DefaultFloorPlan.txt");
+            string[] lines = File.ReadAllLines("../../../UI/Floorplan/DefaultFloorplan.txt");
 
             int row = 0;
             int col = 0;

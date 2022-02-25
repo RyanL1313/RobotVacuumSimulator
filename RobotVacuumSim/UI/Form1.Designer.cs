@@ -34,10 +34,11 @@ namespace VacuumSim
             this.LeftPane = new System.Windows.Forms.SplitContainer();
             this.ObstacleSelector = new System.Windows.Forms.ComboBox();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.LoadSavedFloorplanButton = new System.Windows.Forms.Button();
             this.SaveSimulationButton = new System.Windows.Forms.Button();
             this.LoadSimulationButton = new System.Windows.Forms.Button();
             this.SaveFloorplanButton = new System.Windows.Forms.Button();
-            this.LoadFloorplanButton = new System.Windows.Forms.Button();
+            this.LoadDefaultFloorplanButton = new System.Windows.Forms.Button();
             this.HouseDimensionsGroupBox = new System.Windows.Forms.GroupBox();
             this.RoomWidthLabel = new System.Windows.Forms.Label();
             this.RoomHeightLabel = new System.Windows.Forms.Label();
@@ -66,6 +67,8 @@ namespace VacuumSim
             this.RobotBatteryLifeSelector = new System.Windows.Forms.NumericUpDown();
             this.RobotSectionLabel = new System.Windows.Forms.Label();
             this.CenterSplitPane = new System.Windows.Forms.SplitContainer();
+            this.SimTimeElapsedLabel = new System.Windows.Forms.Label();
+            this.SimTimeElapsedTitleLabel = new System.Windows.Forms.Label();
             this.BatteryLeftLabel = new System.Windows.Forms.Label();
             this.BatteryLeftTitleLabel = new System.Windows.Forms.Label();
             this.FloorCanvas = new System.Windows.Forms.PictureBox();
@@ -140,10 +143,11 @@ namespace VacuumSim
             // groupBox1
             // 
             this.groupBox1.AutoSize = true;
+            this.groupBox1.Controls.Add(this.LoadSavedFloorplanButton);
             this.groupBox1.Controls.Add(this.SaveSimulationButton);
             this.groupBox1.Controls.Add(this.LoadSimulationButton);
             this.groupBox1.Controls.Add(this.SaveFloorplanButton);
-            this.groupBox1.Controls.Add(this.LoadFloorplanButton);
+            this.groupBox1.Controls.Add(this.LoadDefaultFloorplanButton);
             this.groupBox1.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.groupBox1.Location = new System.Drawing.Point(0, 501);
             this.groupBox1.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
@@ -153,6 +157,17 @@ namespace VacuumSim
             this.groupBox1.TabIndex = 13;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Load/Save";
+            // 
+            // LoadSavedFloorplanButton
+            // 
+            this.LoadSavedFloorplanButton.Location = new System.Drawing.Point(6, 46);
+            this.LoadSavedFloorplanButton.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.LoadSavedFloorplanButton.Name = "LoadSavedFloorplanButton";
+            this.LoadSavedFloorplanButton.Size = new System.Drawing.Size(152, 22);
+            this.LoadSavedFloorplanButton.TabIndex = 16;
+            this.LoadSavedFloorplanButton.Text = "Load Saved Floorplan";
+            this.LoadSavedFloorplanButton.UseVisualStyleBackColor = true;
+            this.LoadSavedFloorplanButton.Click += new System.EventHandler(this.LoadSavedFloorplanButton_Click);
             // 
             // SaveSimulationButton
             // 
@@ -176,7 +191,7 @@ namespace VacuumSim
             // 
             // SaveFloorplanButton
             // 
-            this.SaveFloorplanButton.Location = new System.Drawing.Point(5, 48);
+            this.SaveFloorplanButton.Location = new System.Drawing.Point(270, 20);
             this.SaveFloorplanButton.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.SaveFloorplanButton.Name = "SaveFloorplanButton";
             this.SaveFloorplanButton.Size = new System.Drawing.Size(108, 22);
@@ -185,16 +200,16 @@ namespace VacuumSim
             this.SaveFloorplanButton.UseVisualStyleBackColor = true;
             this.SaveFloorplanButton.Click += new System.EventHandler(this.SaveFloorplanButton_Click);
             // 
-            // LoadFloorplanButton
+            // LoadDefaultFloorplanButton
             // 
-            this.LoadFloorplanButton.Location = new System.Drawing.Point(5, 24);
-            this.LoadFloorplanButton.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
-            this.LoadFloorplanButton.Name = "LoadFloorplanButton";
-            this.LoadFloorplanButton.Size = new System.Drawing.Size(108, 22);
-            this.LoadFloorplanButton.TabIndex = 12;
-            this.LoadFloorplanButton.Text = "Load Floorplan";
-            this.LoadFloorplanButton.UseVisualStyleBackColor = true;
-            this.LoadFloorplanButton.Click += new System.EventHandler(this.LoadFloorplanButton_Click);
+            this.LoadDefaultFloorplanButton.Location = new System.Drawing.Point(7, 20);
+            this.LoadDefaultFloorplanButton.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.LoadDefaultFloorplanButton.Name = "LoadDefaultFloorplanButton";
+            this.LoadDefaultFloorplanButton.Size = new System.Drawing.Size(151, 22);
+            this.LoadDefaultFloorplanButton.TabIndex = 12;
+            this.LoadDefaultFloorplanButton.Text = "Load Default Floorplan";
+            this.LoadDefaultFloorplanButton.UseVisualStyleBackColor = true;
+            this.LoadDefaultFloorplanButton.Click += new System.EventHandler(this.LoadDefaultFloorplanButton_Click);
             // 
             // HouseDimensionsGroupBox
             // 
@@ -606,6 +621,8 @@ namespace VacuumSim
             // 
             // CenterSplitPane.Panel2
             // 
+            this.CenterSplitPane.Panel2.Controls.Add(this.SimTimeElapsedLabel);
+            this.CenterSplitPane.Panel2.Controls.Add(this.SimTimeElapsedTitleLabel);
             this.CenterSplitPane.Panel2.Controls.Add(this.BatteryLeftLabel);
             this.CenterSplitPane.Panel2.Controls.Add(this.BatteryLeftTitleLabel);
             this.CenterSplitPane.Panel2.Controls.Add(this.FloorCanvas);
@@ -613,6 +630,28 @@ namespace VacuumSim
             this.CenterSplitPane.SplitterDistance = 773;
             this.CenterSplitPane.SplitterWidth = 1;
             this.CenterSplitPane.TabIndex = 0;
+            // 
+            // SimTimeElapsedLabel
+            // 
+            this.SimTimeElapsedLabel.AutoSize = true;
+            this.SimTimeElapsedLabel.BackColor = System.Drawing.SystemColors.Window;
+            this.SimTimeElapsedLabel.Font = new System.Drawing.Font("Georgia", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            this.SimTimeElapsedLabel.Location = new System.Drawing.Point(663, 648);
+            this.SimTimeElapsedLabel.Name = "SimTimeElapsedLabel";
+            this.SimTimeElapsedLabel.Size = new System.Drawing.Size(70, 16);
+            this.SimTimeElapsedLabel.TabIndex = 4;
+            this.SimTimeElapsedLabel.Text = "0 Seconds";
+            // 
+            // SimTimeElapsedTitleLabel
+            // 
+            this.SimTimeElapsedTitleLabel.AutoSize = true;
+            this.SimTimeElapsedTitleLabel.BackColor = System.Drawing.SystemColors.Window;
+            this.SimTimeElapsedTitleLabel.Font = new System.Drawing.Font("Georgia", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            this.SimTimeElapsedTitleLabel.Location = new System.Drawing.Point(505, 648);
+            this.SimTimeElapsedTitleLabel.Name = "SimTimeElapsedTitleLabel";
+            this.SimTimeElapsedTitleLabel.Size = new System.Drawing.Size(163, 16);
+            this.SimTimeElapsedTitleLabel.TabIndex = 3;
+            this.SimTimeElapsedTitleLabel.Text = "Simulation Time Elapsed:";
             // 
             // BatteryLeftLabel
             // 
@@ -640,7 +679,7 @@ namespace VacuumSim
             // 
             this.FloorCanvas.BackColor = System.Drawing.SystemColors.Window;
             this.FloorCanvas.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.FloorCanvas.Location = new System.Drawing.Point(1, 0);
+            this.FloorCanvas.Location = new System.Drawing.Point(5, 0);
             this.FloorCanvas.Name = "FloorCanvas";
             this.FloorCanvas.Size = new System.Drawing.Size(947, 758);
             this.FloorCanvas.TabIndex = 0;
@@ -733,7 +772,7 @@ namespace VacuumSim
         private System.Windows.Forms.Button SaveSimulationButton;
         private System.Windows.Forms.Button LoadSimulationButton;
         private System.Windows.Forms.Button SaveFloorplanButton;
-        private System.Windows.Forms.Button LoadFloorplanButton;
+        private System.Windows.Forms.Button LoadDefaultFloorplanButton;
         private System.Windows.Forms.RadioButton radioButton1;
         private System.Windows.Forms.PictureBox FloorCanvas;
         private System.Windows.Forms.ComboBox ObstacleSelector;
@@ -741,6 +780,9 @@ namespace VacuumSim
         private System.Windows.Forms.Timer VacuumWhiskersTimer;
         private System.Windows.Forms.Label BatteryLeftLabel;
         private System.Windows.Forms.Label BatteryLeftTitleLabel;
+        private System.Windows.Forms.Button LoadSavedFloorplanButton;
+        private System.Windows.Forms.Label SimTimeElapsedLabel;
+        private System.Windows.Forms.Label SimTimeElapsedTitleLabel;
     }
 }
 
