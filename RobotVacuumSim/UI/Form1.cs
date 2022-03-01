@@ -29,7 +29,6 @@ namespace VacuumSim
 
         private List<string> SimulationSpeeds = new List<string> { "1x", "5x", "50x" };
         private FloorplanLayout HouseLayout;
-        private FloorplanLayout DesignerModeHouseLayout; // Only used when showing preview of adding rooms or chairs/tables
         private VacuumDisplay VacDisplay;
 
         /// <summary>
@@ -65,7 +64,7 @@ namespace VacuumSim
 
             // Create objects needed for drawing to FloorCanvas
             HouseLayout = new FloorplanLayout();
-            DesignerModeHouseLayout = new FloorplanLayout();
+            FloorCanvasDesigner.FloorplanHouseDesigner = new FloorplanLayout();
             VacDisplay = new VacuumDisplay();
 
             // Enable double buffering for FloorCanvas
@@ -213,23 +212,21 @@ namespace VacuumSim
 
             Point canvasCoords = FloorCanvas.PointToClient(Cursor.Position);
 
-            // Get obstacle located at selected tile
+            // Get obstacle located at selected tile and currently selected obstacle
             string strObstacleAtTile = ObstacleSelector.SelectedItem.ToString();
             ObstacleType obstacleAtTile = FloorplanLayout.GetObstacleTypeFromString(strObstacleAtTile);
+            ObstacleType selectedObstacle = FloorplanLayout.GetObstacleTypeFromString(ObstacleSelector.SelectedItem.ToString());
 
             // Make sure user clicks within the grid
             if (canvasCoords.X >= HouseLayout.numTilesPerRow * FloorplanLayout.tileSideLength ||
                 (canvasCoords.X <= 0 ||
                 canvasCoords.Y >= HouseLayout.numTilesPerCol * FloorplanLayout.tileSideLength) ||
                 canvasCoords.Y <= 0)
-                return;
-
-            // Get the correct house layout to modify
-            FloorplanLayout ActiveLayout = FloorCanvasDesigner.currentlyAddingChairTableOrRoom ? DesignerModeHouseLayout : HouseLayout;   
+                return;  
 
             if (ObstacleSelector.SelectedItem.ToString() == "Chair" || ObstacleSelector.SelectedItem.ToString() == "Table")
             {
-                FloorCanvasDesigner.AddChairOrTableToFloorplan(ObstacleSelector.SelectedItem.ToString(), DesignerModeHouseLayout);
+                //FloorCanvasDesigner.AddChairOrTableToFloorplan(ObstacleSelector.SelectedItem.ToString());
             }
 
             HouseLayout.ModifyTile(canvasCoords.X, canvasCoords.Y, obstacleAtTile);
@@ -240,7 +237,7 @@ namespace VacuumSim
         private void FloorCanvas_MouseUp(object sender, MouseEventArgs e)
         {
             if (FloorCanvasDesigner.successAddingChairTableOrRoom)
-                HouseLayout = DesignerModeHouseLayout; // Copy the designer mode house layout to the actual house layout
+                HouseLayout = FloorCanvasDesigner.FloorplanHouseDesigner; // Copy the designer mode house layout to the actual house layout
 
             FloorCanvasDesigner.currentlyAddingChairTableOrRoom = false;
         }

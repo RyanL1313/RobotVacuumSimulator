@@ -18,7 +18,7 @@ namespace VacuumSim.UI.FloorplanGraphics
         public static bool chairTableDrawingModeOn = false; // Is the user currently in chair/table drawing mode?
         public static bool currentlyAddingChairTableOrRoom = false; // Is the user currently adding a chair/table/room?
         public static bool successAddingChairTableOrRoom = false; // Was the previous attempt at adding a chair/table/room successful?
-
+        public static FloorplanLayout FloorplanHouseDesigner; // Floorplan that gets used when adding chair, table, or room
         /// <summary>
         /// Turn on anti-aliasing when simulation is running
         /// </summary>
@@ -154,6 +154,11 @@ namespace VacuumSim.UI.FloorplanGraphics
         private static void FillCircle(SolidBrush brush, float radius, float centerX, float centerY, Graphics CanvasEditor)
         {
             CanvasEditor.FillEllipse(brush, centerX - radius, centerY - radius, radius + radius, radius + radius);
+        }
+
+        public static void AddChairOrTableToFloorplan(ObstacleType selectedObstacle)
+        {
+
         }
     }
 }
