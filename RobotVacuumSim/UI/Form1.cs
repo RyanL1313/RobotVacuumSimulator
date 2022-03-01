@@ -29,6 +29,7 @@ namespace VacuumSim
 
         private List<string> SimulationSpeeds = new List<string> { "1x", "5x", "50x" };
         private FloorplanLayout HouseLayout;
+        private FloorplanLayout DesignerModeHouseLayout; // Only used when showing preview of adding rooms or chairs/tables
         private VacuumDisplay VacDisplay;
 
         /// <summary>
@@ -45,9 +46,9 @@ namespace VacuumSim
         private void InitFloorTileSelector()
         {
             // Set the data source of the dropdown box to be the values of our ObstacleType enum
-            ObstacleSelector.DataSource = Enum.GetValues(typeof(ObstacleType));
+            //ObstacleSelector.DataSource = Enum.GetValues(typeof(ObstacleType));
             // Set the default value to the ObstacleType.WALL;
-            ObstacleSelector.SelectedItem = ObstacleType.Wall;
+            ObstacleSelector.SelectedIndex = 0;
         }
 
         private void InitSimulationSpeedSelector()
@@ -64,6 +65,7 @@ namespace VacuumSim
 
             // Create objects needed for drawing to FloorCanvas
             HouseLayout = new FloorplanLayout();
+            DesignerModeHouseLayout = new FloorplanLayout();
             VacDisplay = new VacuumDisplay();
 
             // Enable double buffering for FloorCanvas
@@ -88,6 +90,42 @@ namespace VacuumSim
             }
         }
 
+        private void ObstacleSelector_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (ObstacleSelector.SelectedItem.ToString() == "Room")
+            {
+                RoomWidthSelector.Enabled = true;
+                RoomHeightSelector.Enabled = true;
+                ChairTableWidthSelector.Enabled = false;
+                ChairTableHeightSelector.Enabled = false;
+                RoomCreatorModeButton.Enabled = true;
+                FloorCanvasDesigner.chairTableDrawingModeOn = false;
+            }
+            else if (ObstacleSelector.SelectedItem.ToString() == "Chair" || ObstacleSelector.SelectedItem.ToString() == "Table")
+            {
+                ChairTableWidthSelector.Enabled = true;
+                ChairTableHeightSelector.Enabled = true;
+                RoomWidthSelector.Enabled = false;
+                RoomHeightSelector.Enabled = false;
+                RoomCreatorModeButton.Enabled = false;
+                FloorCanvasDesigner.chairTableDrawingModeOn = true;
+                FloorCanvasDesigner.roomDrawingModeOn = false;
+                RoomCreatorModeButton.Text = "Room Creator Mode: OFF";
+            }
+            else // Chest is selected
+            {
+                RoomWidthSelector.Enabled = false;
+                RoomHeightSelector.Enabled = false;
+                RoomCreatorModeButton.Enabled = false;
+                ChairTableWidthSelector.Enabled = false;
+                ChairTableHeightSelector.Enabled = false;
+                RoomCreatorModeButton.Enabled = false;
+                FloorCanvasDesigner.chairTableDrawingModeOn = false;
+                FloorCanvasDesigner.roomDrawingModeOn = false;
+                RoomCreatorModeButton.Text = "Room Creator Mode: OFF";
+            }
+        }
+
         private void HouseWidthSelector_ValueChanged(object sender, EventArgs e)
         {
             if ((int)HouseWidthSelector.Value % 2 == 1) // Prevent non-even entries
@@ -106,6 +144,30 @@ namespace VacuumSim
             HouseLayout.numTilesPerCol = (int)HouseHeightSelector.Value / 2; // Get number of tiles per column based on house height chosen by user
 
             FloorCanvas.Invalidate(); // Re-draw canvas to reflect change in house height
+        }
+
+        private void RoomWidthSelector_ValueChanged(object sender, EventArgs e)
+        {
+            if ((int)RoomWidthSelector.Value % 2 == 1) // Prevent non-even entries
+                RoomWidthSelector.Value += 1;
+        }
+
+        private void RoomHeightSelector_ValueChanged(object sender, EventArgs e)
+        {
+            if ((int)RoomHeightSelector.Value % 2 == 1) // Prevent non-even entries
+                RoomHeightSelector.Value += 1;
+        }
+
+        private void ChairTableWidthSelector_ValueChanged(object sender, EventArgs e)
+        {
+            if ((int)ChairTableWidthSelector.Value % 2 == 1) // Prevent non-even entries
+                ChairTableWidthSelector.Value += 1;
+        }
+
+        private void ChairTableHeightSelector_ValueChanged(object sender, EventArgs e)
+        {
+            if ((int)ChairTableHeightSelector.Value % 2 == 1) // Prevent non-even entries
+                ChairTableHeightSelector.Value += 1;
         }
 
         private void SimulationSpeedSelector_SelectedIndexChanged(object sender, EventArgs e)
@@ -132,10 +194,10 @@ namespace VacuumSim
         {
             Graphics canvasEditor = e.Graphics;
 
-            FloorCanvasDrawer.SetAntiAliasing(canvasEditor);
-            FloorCanvasDrawer.DrawFloorplan(canvasEditor, HouseLayout, VacDisplay);
-            FloorCanvasDrawer.DrawHouseBoundaryLines(canvasEditor, HouseLayout);
-            FloorCanvasDrawer.DrawVacuum(canvasEditor, VacDisplay);
+            FloorCanvasDesigner.SetAntiAliasing(canvasEditor);
+            FloorCanvasDesigner.DrawFloorplan(canvasEditor, HouseLayout, VacDisplay);
+            FloorCanvasDesigner.DrawHouseBoundaryLines(canvasEditor, HouseLayout);
+            FloorCanvasDesigner.DrawVacuum(canvasEditor, VacDisplay);
         }
 
         /// <summary>
@@ -145,67 +207,42 @@ namespace VacuumSim
         /// </summary>
         private void FloorCanvas_Click(object sender, MouseEventArgs e)
         {
-            // Check that the sim is not running
-            if (!VacuumBodyTimer.Enabled)
+            // Prevent drawing while simulation is running and if left click wasn't pressed
+            if (Simulation.simStarted || e.Button == MouseButtons.Left)
+                return;
+
+            Point canvasCoords = FloorCanvas.PointToClient(Cursor.Position);
+
+            // Get obstacle located at selected tile
+            string strObstacleAtTile = ObstacleSelector.SelectedItem.ToString();
+            ObstacleType obstacleAtTile = FloorplanLayout.GetObstacleTypeFromString(strObstacleAtTile);
+
+            // Make sure user clicks within the grid
+            if (canvasCoords.X >= HouseLayout.numTilesPerRow * FloorplanLayout.tileSideLength ||
+                (canvasCoords.X <= 0 ||
+                canvasCoords.Y >= HouseLayout.numTilesPerCol * FloorplanLayout.tileSideLength) ||
+                canvasCoords.Y <= 0)
+                return;
+
+            // Get the correct house layout to modify
+            FloorplanLayout ActiveLayout = FloorCanvasDesigner.currentlyAddingChairTableOrRoom ? DesignerModeHouseLayout : HouseLayout;   
+
+            if (ObstacleSelector.SelectedItem.ToString() == "Chair" || ObstacleSelector.SelectedItem.ToString() == "Table")
             {
-                if (e.Button == MouseButtons.Left)
-                {
-                    Point canvasCoords = FloorCanvas.PointToClient(Cursor.Position);
-
-                    // Get obstacle located at selected tile
-                    string strObstacleAtTile = ObstacleSelector.SelectedItem.ToString();
-                    ObstacleType obstacleAtTile = FloorplanLayout.GetObstacleTypeFromString(strObstacleAtTile);
-
-                    // Make sure user clicks within the grid
-                    if (canvasCoords.X >= HouseLayout.numTilesPerRow * FloorplanLayout.tileSideLength ||
-                        (canvasCoords.X <= 0 ||
-                        canvasCoords.Y >= HouseLayout.numTilesPerCol * FloorplanLayout.tileSideLength) ||
-                        canvasCoords.Y <= 0)
-                        return;
-
-                    // Only allow user to draw on floor tiles
-                    if (obstacleAtTile != ObstacleType.Floor)
-                        return;
-
-                    // Process chair/table drawing
-                    if (FloorplanLayout.GetObstacleTypeFromString(ObstacleSelector.SelectedItem.ToString()) == ObstacleType.Chair ||
-                        FloorplanLayout.GetObstacleTypeFromString(ObstacleSelector.SelectedItem.ToString()) == ObstacleType.Table)
-                    {
-                        //FloorCanvasDrawer.AddChairOrTableToFloorplan(ObstacleSelector.SelectedItem.ToString(), canvasCoords)
-                    }
-
-                    // Return if 
-                    if (HouseLayout.GetTileFromCoordinates(canvasCoords.X, canvasCoords.Y).obstacle == obstacleAtTile)
-                        return;
-
-                    HouseLayout.ModifyTile(canvasCoords.X, canvasCoords.Y, obstacleAtTile);
-
-                    FloorCanvas.Invalidate(); // Re-trigger paint event
-                }
+                FloorCanvasDesigner.AddChairOrTableToFloorplan(ObstacleSelector.SelectedItem.ToString(), DesignerModeHouseLayout);
             }
-        }
 
-        private void SaveFloorplanButton_Click(object sender, EventArgs e)
-        {
-            // Modify this in the future
-            FloorplanFileWriter.SaveTileGridData("../../../DefaultFloorplan.txt", HouseLayout);
-        }
-
-        private void LoadDefaultFloorplanButton_Click(object sender, EventArgs e)
-        {
-            HouseWidthSelector.Value = 50; // 25 tiles wide
-            HouseHeightSelector.Value = 40; // 20 tiles high
-
-            // Read the floorplan data file and store it in HouseLayoutAccessor.floorLayout
-            // Modify this in the future
-            FloorplanFileReader.LoadTileGridData("../../../DefaultFloorplan.txt", HouseLayout);
+            HouseLayout.ModifyTile(canvasCoords.X, canvasCoords.Y, obstacleAtTile);
 
             FloorCanvas.Invalidate(); // Re-trigger paint event
         }
 
-        private void LoadSavedFloorplanButton_Click(object sender, EventArgs e)
+        private void FloorCanvas_MouseUp(object sender, MouseEventArgs e)
         {
+            if (FloorCanvasDesigner.successAddingChairTableOrRoom)
+                HouseLayout = DesignerModeHouseLayout; // Copy the designer mode house layout to the actual house layout
 
+            FloorCanvasDesigner.currentlyAddingChairTableOrRoom = false;
         }
 
         private void VacuumBodyTimer_Tick(object sender, EventArgs e)
@@ -239,6 +276,29 @@ namespace VacuumSim
             FloorCanvas.Invalidate(); // Re-trigger paint event
         }
 
+        private void SaveFloorplanButton_Click(object sender, EventArgs e)
+        {
+            // Modify this in the future
+            FloorplanFileWriter.SaveTileGridData("../../../DefaultFloorplan.txt", HouseLayout);
+        }
+
+        private void LoadDefaultFloorplanButton_Click(object sender, EventArgs e)
+        {
+            HouseWidthSelector.Value = 50; // 25 tiles wide
+            HouseHeightSelector.Value = 40; // 20 tiles high
+
+            // Read the floorplan data file and store it in HouseLayoutAccessor.floorLayout
+            // Modify this in the future
+            FloorplanFileReader.LoadTileGridData("../../../DefaultFloorplan.txt", HouseLayout);
+
+            FloorCanvas.Invalidate(); // Re-trigger paint event
+        }
+
+        private void LoadSavedFloorplanButton_Click(object sender, EventArgs e)
+        {
+
+        }
+
         private void StartSimulationButton_Click(object sender, EventArgs e)
         {
             SetInitialSimulationValues();
@@ -247,6 +307,21 @@ namespace VacuumSim
         private void StopSimulationButton_Click(object sender, EventArgs e)
         {
             ResetSimulationValues();
+        }
+
+        private void RoomCreatorModeButton_Click(object sender, EventArgs e)
+        {
+            FloorCanvasDesigner.roomDrawingModeOn = !FloorCanvasDesigner.roomDrawingModeOn;
+            RoomCreatorModeButton.Text = FloorCanvasDesigner.roomDrawingModeOn ? "Room Creator Mode: ON" : "Room Creator Mode: OFF";
+        }
+
+        private void EraserModeButton_Click(object sender, EventArgs e)
+        {
+            // Alternate between drawing and eraser modes
+            FloorCanvasDesigner.eraserModeOn = !FloorCanvasDesigner.eraserModeOn;
+         
+            // Update eraser mode button text
+            EraserModeButton.Text = FloorCanvasDesigner.eraserModeOn ? "Eraser Mode: ON" : "Eraser Mode: OFF";
         }
 
         /// <summary>

@@ -6,8 +6,12 @@ using System.Threading.Tasks;
 
 namespace VacuumSim
 {
+    // Some obstacle types can be chosen by the user (Chest, Chair, Table)
+    // and others are just for use exclusively by us (Floor, Wall, Doorway, Error, Success)
+    // Note: Error and Success are only used by the designer mode house layout in Form1.cs
+    // Error == red tile, Success == green tile
     public enum ObstacleType
-    { Floor, Wall, Chest, Table, Chair, Doorway };
+    { Floor, Wall, Chest, Chair, Table, Doorway, Error, Success };
 
     public struct Tile
     {

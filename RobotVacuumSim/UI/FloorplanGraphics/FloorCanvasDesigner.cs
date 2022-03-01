@@ -11,8 +11,14 @@ using VacuumSim.Sim;
 /// </summary>
 namespace VacuumSim.UI.FloorplanGraphics
 {
-    public class FloorCanvasDrawer
+    public class FloorCanvasDesigner
     {
+        public static bool eraserModeOn = false; // Is the user currently drawing in eraser mode?
+        public static bool roomDrawingModeOn = false; // Is the user currently in room drawing mode?
+        public static bool chairTableDrawingModeOn = false; // Is the user currently in chair/table drawing mode?
+        public static bool currentlyAddingChairTableOrRoom = false; // Is the user currently adding a chair/table/room?
+        public static bool successAddingChairTableOrRoom = false; // Was the previous attempt at adding a chair/table/room successful?
+
         /// <summary>
         /// Turn on anti-aliasing when simulation is running
         /// </summary>
