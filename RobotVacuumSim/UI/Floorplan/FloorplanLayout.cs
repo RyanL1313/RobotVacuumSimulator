@@ -7,19 +7,23 @@ using System.Threading.Tasks;
 namespace VacuumSim
 {
     public enum ObstacleType
-    { None, Wall, Chest, Table, Chair };
+    { Floor, Wall, Chest, Table, Chair, Doorway };
 
     public struct Tile
     {
         public int x; // x coordinate of top left tile corner
         public int y; // y coordinate of top left tile corner
         public ObstacleType obstacle;
+        public int groupID; // ID of obstacle group this tile belongs to
+        public int roomID; // ID of room this tile belongs to
 
         public Tile(int x, int y, ObstacleType obstacle)
         {
             this.x = x;
             this.y = y;
             this.obstacle = obstacle;
+            this.groupID = -1; // Originally belongs to no group, just regular floor tile
+            this.roomID = -1; // Originally belongs to no room
         }
     }
 
@@ -27,11 +31,15 @@ namespace VacuumSim
     {
         public const int maxTilesPerRow = 50; // Maximum tiles allowed per row
         public const int maxTilesPerCol = 40; // Maximum tiles allowed per column
+        public const int minTilesPerRow = 10; // Minimum tiles allowed per row
+        public const int minTilesPerCol = 5; // Minimum tiles allowed per column
         public int numTilesPerRow { get; set; } = 25; // Default value
         public int numTilesPerCol { get; set; } = 20; // Default value
         public const int tileSideLength = 15; // Pixel length of each side of the tiles
         public Tile[,] floorLayout { get; set; } // 2D array of tiles
         public bool gridLinesOn { get; set; } = true; // Should grid lines currently be displaying?
+        public static int numObstacleGroups = 0; // Amount of obstacle groups currently drawn to the canvas
+        public static int numRooms = 0; // Number of rooms present in the house
 
         /* Feel free to remove this gigantic comment block later. */
         /* Creates the 2D array of tiles and sets the tiles' default attributes */
@@ -51,7 +59,7 @@ namespace VacuumSim
             {
                 for (int j = 0; j < maxTilesPerCol; j++)
                 {
-                    floorLayout[i, j] = new Tile(i * tileSideLength, j * tileSideLength, ObstacleType.None);
+                    floorLayout[i, j] = new Tile(i * tileSideLength, j * tileSideLength, ObstacleType.Floor);
                 }
             }
         }
@@ -102,10 +110,10 @@ namespace VacuumSim
         public static ObstacleType GetObstacleTypeFromString(string strObstacle)
         {
             string lowercase = strObstacle.ToLower();
-            ObstacleType ret = ObstacleType.None;
+            ObstacleType ret = ObstacleType.Floor;
 
             if (lowercase.Equals("blank") || lowercase.Equals("none"))
-                ret = ObstacleType.None;
+                ret = ObstacleType.Floor;
             else if (lowercase.Equals("wall"))
                 ret = ObstacleType.Wall;
             else if (lowercase.Equals("chest"))

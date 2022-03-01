@@ -36,7 +36,7 @@ namespace VacuumSim.UI.FloorplanGraphics
             {
                 for (int j = 0; j < HouseLayout.numTilesPerCol; j++)
                 {
-                    if (HouseLayout.floorLayout[i, j].obstacle == ObstacleType.None && HouseLayout.gridLinesOn) // Blank tile
+                    if (HouseLayout.floorLayout[i, j].obstacle == ObstacleType.Floor && HouseLayout.gridLinesOn) // Blank tile
                     {
                         DrawTileOutline(i, j, new Pen(Color.Black), CanvasEditor);
                     }

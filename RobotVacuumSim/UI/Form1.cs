@@ -152,7 +152,9 @@ namespace VacuumSim
                 {
                     Point canvasCoords = FloorCanvas.PointToClient(Cursor.Position);
 
-                    string selectedObstruction = ObstacleSelector.SelectedItem.ToString();
+                    // Get obstacle located at selected tile
+                    string strObstacleAtTile = ObstacleSelector.SelectedItem.ToString();
+                    ObstacleType obstacleAtTile = FloorplanLayout.GetObstacleTypeFromString(strObstacleAtTile);
 
                     // Make sure user clicks within the grid
                     if (canvasCoords.X >= HouseLayout.numTilesPerRow * FloorplanLayout.tileSideLength ||
@@ -161,15 +163,24 @@ namespace VacuumSim
                         canvasCoords.Y <= 0)
                         return;
 
-                    ObstacleType ob = FloorplanLayout.GetObstacleTypeFromString(selectedObstruction);
+                    // Only allow user to draw on floor tiles
+                    if (obstacleAtTile != ObstacleType.Floor)
+                        return;
 
-                    // Check that we aren't writing the same value that already exists
-                    if (HouseLayout.GetTileFromCoordinates(canvasCoords.X, canvasCoords.Y).obstacle != ob)
+                    // Process chair/table drawing
+                    if (FloorplanLayout.GetObstacleTypeFromString(ObstacleSelector.SelectedItem.ToString()) == ObstacleType.Chair ||
+                        FloorplanLayout.GetObstacleTypeFromString(ObstacleSelector.SelectedItem.ToString()) == ObstacleType.Table)
                     {
-                        HouseLayout.ModifyTile(canvasCoords.X, canvasCoords.Y, ob);
-
-                        FloorCanvas.Invalidate(); // Re-trigger paint event
+                        //FloorCanvasDrawer.AddChairOrTableToFloorplan(ObstacleSelector.SelectedItem.ToString(), canvasCoords)
                     }
+
+                    // Return if 
+                    if (HouseLayout.GetTileFromCoordinates(canvasCoords.X, canvasCoords.Y).obstacle == obstacleAtTile)
+                        return;
+
+                    HouseLayout.ModifyTile(canvasCoords.X, canvasCoords.Y, obstacleAtTile);
+
+                    FloorCanvas.Invalidate(); // Re-trigger paint event
                 }
             }
         }
@@ -278,6 +289,11 @@ namespace VacuumSim
             VacDisplay.batterySecondsRemaining = (int)RobotBatteryLifeSelector.Value * 60;
 
             FloorCanvas.Invalidate(); // Re-trigger paint event
+        }
+
+        private void Form1_Load(object sender, EventArgs e)
+        {
+
         }
     }
 

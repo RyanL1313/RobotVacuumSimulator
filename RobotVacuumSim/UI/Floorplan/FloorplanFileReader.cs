@@ -22,7 +22,7 @@ namespace VacuumSim
             int col = 0;
             string strOb = "";
 
-            ObstacleType ob = ObstacleType.None;
+            ObstacleType ob = ObstacleType.Floor;
 
             // Iterate over each row in the .txt file
             for (int i = 0; i < HouseLayout.numTilesPerCol; i++)
