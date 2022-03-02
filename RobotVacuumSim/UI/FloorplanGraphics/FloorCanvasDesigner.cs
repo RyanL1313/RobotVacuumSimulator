@@ -14,11 +14,13 @@ namespace VacuumSim.UI.FloorplanGraphics
     public class FloorCanvasDesigner
     {
         public static bool eraserModeOn = false; // Is the user currently drawing in eraser mode?
-        public static bool roomDrawingModeOn = false; // Is the user currently in room drawing mode?
+        public static bool roomCreatorModeOn = false; // Is the user currently in room creator mode?
         public static bool chairTableDrawingModeOn = false; // Is the user currently in chair/table drawing mode?
-        public static bool currentlyAddingChairTableOrRoom = false; // Is the user currently adding a chair/table/room?
-        public static bool successAddingChairTableOrRoom = false; // Was the previous attempt at adding a chair/table/room successful?
-        public static FloorplanLayout FloorplanHouseDesigner; // Floorplan that gets used when adding chair, table, or room
+        public static bool currentlyAddingObstacle = false; // Is the user currently adding an obstacle?
+        public static bool successAddingObstacle = true; // Was the previous attempt at adding an obstacle successful?
+        public static ObstacleType currentObstacleBeingAdded; // Current obstacle being added
+        public static FloorplanLayout FloorplanHouseDesigner; // Floorplan that gets used when adding obstacle
+
         /// <summary>
         /// Turn on anti-aliasing when simulation is running
         /// </summary>
@@ -35,32 +37,43 @@ namespace VacuumSim.UI.FloorplanGraphics
         /// Draws the floorplan to FloorCanvas based on HouseLayout's 2D array of tiles
         /// </summary>
         /// <param name="CanvasEditor"> Graphics object to edit FloorCanvas </param>
-        /// <param name="HouseLayout"> The floorplan layout </param>
+        /// <param name="HouseLayout"> The current floorplan layout </param>
         public static void DrawFloorplan(Graphics CanvasEditor, FloorplanLayout HouseLayout, VacuumDisplay VacDisplay)
         {
-            for (int i = 0; i < HouseLayout.numTilesPerRow; i++)
+            // Get the current layout, depending on if we're in design mode or just displaying the floorplan
+            FloorplanLayout CurrentLayout = currentlyAddingObstacle ? FloorplanHouseDesigner : HouseLayout;
+
+            for (int i = 0; i < CurrentLayout.numTilesPerRow; i++)
             {
-                for (int j = 0; j < HouseLayout.numTilesPerCol; j++)
+                for (int j = 0; j < CurrentLayout.numTilesPerCol; j++)
                 {
-                    if (HouseLayout.floorLayout[i, j].obstacle == ObstacleType.Floor && HouseLayout.gridLinesOn) // Blank tile
+                    if ((CurrentLayout.floorLayout[i, j].obstacle == ObstacleType.Floor || CurrentLayout.floorLayout[i, j].obstacle == ObstacleType.Doorway) && CurrentLayout.gridLinesOn) // Blank tile
                     {
                         DrawTileOutline(i, j, new Pen(Color.Black), CanvasEditor);
                     }
-                    else if (HouseLayout.floorLayout[i, j].obstacle == ObstacleType.Wall) // Wall tile
+                    else if (CurrentLayout.floorLayout[i, j].obstacle == ObstacleType.Wall) // Wall tile
                     {
                         PaintTile(i, j, new SolidBrush(Color.Black), CanvasEditor);
                     }
-                    else if (HouseLayout.floorLayout[i, j].obstacle == ObstacleType.Chest) // Chest tile
+                    else if (CurrentLayout.floorLayout[i, j].obstacle == ObstacleType.Chest) // Chest tile
                     {
-                        PaintTile(i, j, new SolidBrush(Color.Brown), CanvasEditor);
+                        PaintTile(i, j, new SolidBrush(Color.Sienna), CanvasEditor);
                     }
-                    else if (HouseLayout.floorLayout[i, j].obstacle == ObstacleType.Chair) // Chair tile
+                    else if (CurrentLayout.floorLayout[i, j].obstacle == ObstacleType.Chair) // Chair tile
                     {
-                        PaintTile(i, j, new SolidBrush(Color.Green), CanvasEditor);
+                        PaintTile(i, j, new SolidBrush(Color.DarkOrange), CanvasEditor);
                     }
-                    else if (HouseLayout.floorLayout[i, j].obstacle == ObstacleType.Table) // Table tile
+                    else if (CurrentLayout.floorLayout[i, j].obstacle == ObstacleType.Table) // Table tile
                     {
-                        PaintTile(i, j, new SolidBrush(Color.Blue), CanvasEditor);
+                        PaintTile(i, j, new SolidBrush(Color.DodgerBlue), CanvasEditor);
+                    }
+                    else if (CurrentLayout.floorLayout[i, j].obstacle == ObstacleType.Success) // Success tile
+                    {
+                        PaintTile(i, j, new SolidBrush(Color.LimeGreen), CanvasEditor);
+                    }
+                    else if (CurrentLayout.floorLayout[i, j].obstacle == ObstacleType.Error) // Error tile
+                    {
+                        PaintTile(i, j, new SolidBrush(Color.Red), CanvasEditor);
                     }
                 }
             }
@@ -156,9 +169,58 @@ namespace VacuumSim.UI.FloorplanGraphics
             CanvasEditor.FillEllipse(brush, centerX - radius, centerY - radius, radius + radius, radius + radius);
         }
 
-        public static void AddChairOrTableToFloorplan(ObstacleType selectedObstacle)
+        public static void AttemptAddChairOrTableToFloorplan(ObstacleType selectedObstacle, int xTileIndex, int yTileIndex, int widthInFeet, int heightInFeet)
         {
+            currentObstacleBeingAdded = selectedObstacle;
+            int chairTableWidthInTiles = widthInFeet / 2;
+            int chairTableHeightInTiles = heightInFeet / 2;
+            successAddingObstacle = true; // Initially set to true, could get changed if obstacle is in invalid position
 
+            // Check if chair/table can be placed at this location
+            for (int i = xTileIndex; i < xTileIndex + chairTableWidthInTiles; i++)
+            {
+                for (int j = yTileIndex; j < yTileIndex + chairTableHeightInTiles; j++)
+                {
+                    // Check if tile is out of bounds or non-floor obstacle already present at this tile
+                    if ((i >= FloorplanHouseDesigner.numTilesPerRow || j >= FloorplanHouseDesigner.numTilesPerCol) || FloorplanHouseDesigner.floorLayout[i, j].obstacle != ObstacleType.Floor)
+                        successAddingObstacle = false;
+                }
+            }
+
+            // If chair/table can't be placed here, mark the tiles that the chair/table is covering as error tiles
+            if (!successAddingObstacle)
+            {
+                for (int i = xTileIndex; i < xTileIndex + chairTableWidthInTiles && i < FloorplanHouseDesigner.numTilesPerRow; i++)
+                {
+                    for (int j = yTileIndex; j < yTileIndex + chairTableHeightInTiles && j < FloorplanHouseDesigner.numTilesPerCol; j++)
+                    {
+                        FloorplanHouseDesigner.ModifyTileBasedOnIndices(i, j, ObstacleType.Error);
+                    }
+                }
+            }
+            else // Chair/table can be placed here. Mark the associated tiles as success tiles
+            {
+                for (int i = xTileIndex; i < xTileIndex + chairTableWidthInTiles && i < FloorplanHouseDesigner.numTilesPerRow; i++)
+                {
+                    for (int j = yTileIndex; j < yTileIndex + chairTableHeightInTiles && j < FloorplanHouseDesigner.numTilesPerCol; j++)
+                    {
+                        FloorplanHouseDesigner.ModifyTileBasedOnIndices(i, j, ObstacleType.Success);
+                    }
+                }
+            }
         }
+
+        public static void ChangeSuccessTilesToCurrentObstacle()
+        {
+            for (int i = 0; i < FloorplanHouseDesigner.numTilesPerRow; i++)
+            {
+                for (int j = 0; j < FloorplanHouseDesigner.numTilesPerCol; j++)
+                {
+                    if (FloorplanHouseDesigner.floorLayout[i, j].obstacle == ObstacleType.Success)
+                        FloorplanHouseDesigner.ModifyTileBasedOnIndices(i, j, currentObstacleBeingAdded);
+                }
+            }
+        }
+
     }
 }

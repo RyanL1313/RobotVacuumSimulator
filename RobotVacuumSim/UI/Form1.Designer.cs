@@ -267,7 +267,6 @@ namespace VacuumSim
             // 
             // RoomCreatorModeButton
             // 
-            this.RoomCreatorModeButton.Enabled = false;
             this.RoomCreatorModeButton.Location = new System.Drawing.Point(6, 92);
             this.RoomCreatorModeButton.Name = "RoomCreatorModeButton";
             this.RoomCreatorModeButton.Size = new System.Drawing.Size(152, 25);
@@ -353,7 +352,6 @@ namespace VacuumSim
             // 
             this.ObstacleSelector.FormattingEnabled = true;
             this.ObstacleSelector.Items.AddRange(new object[] {
-            "Room",
             "Chair",
             "Table",
             "Chest"});
