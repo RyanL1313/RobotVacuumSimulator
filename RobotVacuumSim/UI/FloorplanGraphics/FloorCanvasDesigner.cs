@@ -19,6 +19,7 @@ namespace VacuumSim.UI.FloorplanGraphics
         public static bool currentlyAddingObstacle = false; // Is the user currently adding an obstacle?
         public static bool successAddingObstacle = true; // Was the previous attempt at adding an obstacle successful?
         public static ObstacleType currentObstacleBeingAdded; // Current obstacle being added
+        public static int[] currentIndicesOfSelectedTile = { -1, -1 }; // col, row indices of tile currently selected
         public static FloorplanLayout FloorplanHouseDesigner; // Floorplan that gets used when adding obstacle
 
         /// <summary>
@@ -210,6 +211,21 @@ namespace VacuumSim.UI.FloorplanGraphics
             }
         }
 
+        public static void AttemptAddChestToFloorplan(ObstacleType selectedObstacle, int xTileIndex, int yTileIndex)
+        {
+            currentObstacleBeingAdded = selectedObstacle;
+            successAddingObstacle = true; // Initially set to true, could get changed if obstacle is in invalid position
+
+            // Check if chest can be placed at this location
+            if ((xTileIndex >= FloorplanHouseDesigner.numTilesPerRow || yTileIndex >= FloorplanHouseDesigner.numTilesPerCol) || FloorplanHouseDesigner.floorLayout[xTileIndex, yTileIndex].obstacle != ObstacleType.Floor)
+                successAddingObstacle = false;
+
+            // If chest can't be placed here, mark the tiles that the chest is covering as error tiles
+            if (!successAddingObstacle)
+                FloorplanHouseDesigner.ModifyTileBasedOnIndices(xTileIndex, yTileIndex, ObstacleType.Error);
+            else // Chest can be placed here. Mark the associated tiles as success tiles
+                FloorplanHouseDesigner.ModifyTileBasedOnIndices(xTileIndex, yTileIndex, ObstacleType.Success);
+        }
         public static void ChangeSuccessTilesToCurrentObstacle()
         {
             for (int i = 0; i < FloorplanHouseDesigner.numTilesPerRow; i++)

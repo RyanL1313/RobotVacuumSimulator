@@ -211,6 +211,15 @@ namespace VacuumSim
             Point canvasCoords = FloorCanvas.PointToClient(Cursor.Position);
             int[] selectedTileIndices = FloorplanLayout.GetTileIndices(canvasCoords.X, canvasCoords.Y);
 
+            // Make sure we don't re-draw the canvas if the user is still selecting the same tile (efficiency concerns)
+            if (selectedTileIndices[0] == FloorCanvasDesigner.currentIndicesOfSelectedTile[0] && selectedTileIndices[1] == FloorCanvasDesigner.currentIndicesOfSelectedTile[1])
+                return;
+            else
+            {
+                FloorCanvasDesigner.currentIndicesOfSelectedTile[0] = selectedTileIndices[0];
+                FloorCanvasDesigner.currentIndicesOfSelectedTile[1] = selectedTileIndices[1];
+            }
+
             // Make sure user clicked within the grid
             if (canvasCoords.X >= HouseLayout.numTilesPerRow * FloorplanLayout.tileSideLength ||
                 (canvasCoords.X <= 0 ||
@@ -243,7 +252,7 @@ namespace VacuumSim
                 }
                 else // Process attempt to add chest to floorplan
                 {
-                    //FloorCanvasDesigner.AttemptAddChestToFloorplan(selectedTileIndices[0], selectedTileIndices[1]);
+                    FloorCanvasDesigner.AttemptAddChestToFloorplan(selectedObstacle, selectedTileIndices[0], selectedTileIndices[1]);
                 }
             }
 
