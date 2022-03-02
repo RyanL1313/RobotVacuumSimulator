@@ -247,7 +247,6 @@ namespace VacuumSim
                 }
                 else if (selectedObstacle == ObstacleType.Chair || selectedObstacle == ObstacleType.Table) // Process attempt to add chair/table to floorplan
                 {
-                    //MessageBox.Show("[0]:" + selectedTileIndices[0] + " [1]:" + selectedTileIndices[1]);
                     FloorCanvasDesigner.AttemptAddChairOrTableToFloorplan(selectedObstacle, selectedTileIndices[0], selectedTileIndices[1], (int)ChairTableWidthSelector.Value, (int)ChairTableHeightSelector.Value);
                 }
                 else // Process attempt to add chest to floorplan
@@ -261,6 +260,14 @@ namespace VacuumSim
 
         private void FloorCanvas_MouseUp(object sender, MouseEventArgs e)
         {
+            // Make sure user clicked within the grid
+            Point canvasCoords = FloorCanvas.PointToClient(Cursor.Position);
+            if (canvasCoords.X >= HouseLayout.numTilesPerRow * FloorplanLayout.tileSideLength ||
+                (canvasCoords.X <= 0 ||
+                canvasCoords.Y >= HouseLayout.numTilesPerCol * FloorplanLayout.tileSideLength) ||
+                canvasCoords.Y <= 0)
+                return;
+
             if (FloorCanvasDesigner.successAddingObstacle)
             {
                 FloorCanvasDesigner.ChangeSuccessTilesToCurrentObstacle(); // Change success tiles in FloorplanHouseDesigner to be the same obstacle type that was just added
