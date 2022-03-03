@@ -170,18 +170,18 @@ namespace VacuumSim.UI.FloorplanGraphics
 
             // Prevent drawing the chair/table legs again if we've already drawn them once
             // We know we've already drawn them if we are not currently checking the upper left tile associated with the table/chair
-            if ((rowIndex != (int)chairOrTableCoordinates[3, 0] / FloorplanLayout.tileSideLength || colIndex != (int)chairOrTableCoordinates[3, 1] / FloorplanLayout.tileSideLength) && !currentlyAddingObstacle)
+            if ((rowIndex != (int)chairOrTableCoordinates[FloorplanLayout.UL, 0] / FloorplanLayout.tileSideLength || colIndex != (int)chairOrTableCoordinates[FloorplanLayout.UL, 1] / FloorplanLayout.tileSideLength) && !currentlyAddingObstacle)
                 return;
 
             // Draw the chair/table legs (unless they are being covered up as the user is adding an obstacle)
-            if (CurrentLayout.floorLayout[(int)chairOrTableCoordinates[0, 0] / FloorplanLayout.tileSideLength, (int)chairOrTableCoordinates[0, 1] / FloorplanLayout.tileSideLength].obstacle != ObstacleType.Error)
-                FillCircle(brush, FloorplanLayout.chairAndTableLegRadius, chairOrTableCoordinates[0, 0], chairOrTableCoordinates[0, 1], CanvasEditor);
-            if (CurrentLayout.floorLayout[(int)chairOrTableCoordinates[1, 0] / FloorplanLayout.tileSideLength, (int)chairOrTableCoordinates[1, 1] / FloorplanLayout.tileSideLength].obstacle != ObstacleType.Error)
-                FillCircle(brush, FloorplanLayout.chairAndTableLegRadius, chairOrTableCoordinates[1, 0], chairOrTableCoordinates[1, 1], CanvasEditor);
-            if (CurrentLayout.floorLayout[(int)chairOrTableCoordinates[2, 0] / FloorplanLayout.tileSideLength, (int)chairOrTableCoordinates[2, 1] / FloorplanLayout.tileSideLength].obstacle != ObstacleType.Error)
-                FillCircle(brush, FloorplanLayout.chairAndTableLegRadius, chairOrTableCoordinates[2, 0], chairOrTableCoordinates[2, 1], CanvasEditor);
-            if (CurrentLayout.floorLayout[(int)chairOrTableCoordinates[3, 0] / FloorplanLayout.tileSideLength, (int)chairOrTableCoordinates[3, 1] / FloorplanLayout.tileSideLength].obstacle != ObstacleType.Error)
-                FillCircle(brush, FloorplanLayout.chairAndTableLegRadius, chairOrTableCoordinates[3, 0], chairOrTableCoordinates[3, 1], CanvasEditor);
+            if (CurrentLayout.floorLayout[(int)chairOrTableCoordinates[FloorplanLayout.LL, 0] / FloorplanLayout.tileSideLength, (int)chairOrTableCoordinates[FloorplanLayout.LL, 1] / FloorplanLayout.tileSideLength].obstacle != ObstacleType.Error)
+                FillCircle(brush, FloorplanLayout.chairAndTableLegRadius, chairOrTableCoordinates[FloorplanLayout.LL, 0], chairOrTableCoordinates[FloorplanLayout.LL, 1], CanvasEditor);
+            if (CurrentLayout.floorLayout[(int)chairOrTableCoordinates[FloorplanLayout.LR, 0] / FloorplanLayout.tileSideLength, (int)chairOrTableCoordinates[FloorplanLayout.LR, 1] / FloorplanLayout.tileSideLength].obstacle != ObstacleType.Error)
+                FillCircle(brush, FloorplanLayout.chairAndTableLegRadius, chairOrTableCoordinates[FloorplanLayout.LR, 0], chairOrTableCoordinates[FloorplanLayout.LR, 1], CanvasEditor);
+            if (CurrentLayout.floorLayout[(int)chairOrTableCoordinates[FloorplanLayout.UR, 0] / FloorplanLayout.tileSideLength, (int)chairOrTableCoordinates[FloorplanLayout.UR, 1] / FloorplanLayout.tileSideLength].obstacle != ObstacleType.Error)
+                FillCircle(brush, FloorplanLayout.chairAndTableLegRadius, chairOrTableCoordinates[FloorplanLayout.UR, 0], chairOrTableCoordinates[FloorplanLayout.UR, 1], CanvasEditor);
+            if (CurrentLayout.floorLayout[(int)chairOrTableCoordinates[FloorplanLayout.UL, 0] / FloorplanLayout.tileSideLength, (int)chairOrTableCoordinates[FloorplanLayout.UL, 1] / FloorplanLayout.tileSideLength].obstacle != ObstacleType.Error)
+                FillCircle(brush, FloorplanLayout.chairAndTableLegRadius, chairOrTableCoordinates[FloorplanLayout.UL, 0], chairOrTableCoordinates[FloorplanLayout.UL, 1], CanvasEditor);
         }
 
         /// <summary>
@@ -247,23 +247,33 @@ namespace VacuumSim.UI.FloorplanGraphics
             if ((xTileIndex >= FloorplanHouseDesigner.numTilesPerRow || yTileIndex >= FloorplanHouseDesigner.numTilesPerCol) || FloorplanHouseDesigner.floorLayout[xTileIndex, yTileIndex].obstacle != ObstacleType.Floor)
                 successAddingObstacle = false;
 
-            // If chest can't be placed here, mark the tiles that the chest is covering as error tiles
+            // If chest can't be placed here, mark the tile that the chest is covering as an error tile
             if (!successAddingObstacle)
                 FloorplanHouseDesigner.ModifyTileBasedOnIndices(xTileIndex, yTileIndex, ObstacleType.Error);
             else // Chest can be placed here. Mark the associated tile as a success tile
-            {
                 FloorplanHouseDesigner.ModifyTileBasedOnIndices(xTileIndex, yTileIndex, ObstacleType.Success);
+        }
+
+        public static void RemoveChairOrTableFromFloorplan(FloorplanLayout HouseLayout, int xTileIndex, int yTileIndex)
+        {
+            int[,] legIndices = HouseLayout.GetChairOrTableLegIndices(HouseLayout.floorLayout[xTileIndex, yTileIndex]);
+
+            // Iterate through each affected tile and set them to floor tiles
+            for (int i = legIndices[FloorplanLayout.UL, 0]; i <= legIndices[FloorplanLayout.UR, 0]; i++)
+            {
+                for (int j = legIndices[FloorplanLayout.UL, 1]; j <= legIndices[FloorplanLayout.LL, 1]; j++)
+                {
+                    HouseLayout.floorLayout[i, j].obstacle = ObstacleType.Floor;
+                    HouseLayout.floorLayout[i, j].groupID = -1;
+                }
             }
         }
 
-        public static void RemoveChairOrTableFromFloorplan(int xTileIndex, int yTileIndex)
+        public static void RemoveChestFromFloorplan(FloorplanLayout HouseLayout, int xTileIndex, int yTileIndex)
         {
-
-        }
-
-        public static void RemoveChestFromFloorplan(int xTileIndex, int yTileIndex)
-        {
-
+            // Set the tile to be a floor tile
+            HouseLayout.floorLayout[xTileIndex, yTileIndex].obstacle = ObstacleType.Floor;
+            HouseLayout.floorLayout[xTileIndex, yTileIndex].groupID = -1;
         }
 
         public static void ChangeSuccessTilesToCurrentObstacle()

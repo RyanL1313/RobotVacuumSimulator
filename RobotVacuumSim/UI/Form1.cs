@@ -212,7 +212,7 @@ namespace VacuumSim
             int[] selectedTileIndices = FloorplanLayout.GetTileIndices(canvasCoords.X, canvasCoords.Y);
 
             // Make sure we don't re-draw the canvas if the user is still selecting the same tile (efficiency concerns)
-            if (selectedTileIndices[0] == FloorCanvasDesigner.currentIndicesOfSelectedTile[0] && selectedTileIndices[1] == FloorCanvasDesigner.currentIndicesOfSelectedTile[1])
+            if (!FloorCanvasDesigner.eraserModeOn && selectedTileIndices[0] == FloorCanvasDesigner.currentIndicesOfSelectedTile[0] && selectedTileIndices[1] == FloorCanvasDesigner.currentIndicesOfSelectedTile[1])
                 return;
             else
             {
@@ -228,28 +228,25 @@ namespace VacuumSim
                 canvasCoords.Y <= 0)
                 return;
 
-            // Get currently selected obstacle
+            // Get currently obstacle selected from combo box and obstacle located at selected tile
             ObstacleType selectedObstacle = FloorplanLayout.GetObstacleTypeFromString(ObstacleSelector.SelectedItem.ToString());
+            ObstacleType curObstacleAtTile = HouseLayout.floorLayout[selectedTileIndices[0], selectedTileIndices[1]].obstacle;
 
             // If eraser mode is on, remove item that is at this tile
             if (FloorCanvasDesigner.eraserModeOn)
             {
                 // Process attempt to remove room from floorplan
-                if (FloorCanvasDesigner.roomCreatorModeOn)
+                if (curObstacleAtTile == ObstacleType.Wall)
                 {
-                    //FloorCanvasDesigner.RemoveRoomFromFloorplan(selectedTileIndices[0], selectedTileIndices[1], (int)RoomWidthSelector.Value, (int)RoomHeightSelector.Value);
+                    //FloorCanvasDesigner.RemoveRoomFromFloorplan(HouseLayout, selectedTileIndices[0], selectedTileIndices[1]);
                 }
-                else if (selectedObstacle == ObstacleType.Chair || selectedObstacle == ObstacleType.Table) // Process attempt to add chair/table to floorplan
+                else if (curObstacleAtTile == ObstacleType.Chair || curObstacleAtTile == ObstacleType.Table) // Process attempt to add chair/table to floorplan
                 {
-                    FloorCanvasDesigner.RemoveChairOrTableFromFloorplan(selectedTileIndices[0], selectedTileIndices[1]);
+                    FloorCanvasDesigner.RemoveChairOrTableFromFloorplan(HouseLayout, selectedTileIndices[0], selectedTileIndices[1]);
                 }
-                else if (selectedObstacle == ObstacleType.Chest) // Process attempt to add chest to floorplan
+                else if (curObstacleAtTile == ObstacleType.Chest) // Process attempt to add chest to floorplan
                 {
-                    FloorCanvasDesigner.RemoveChestFromFloorplan(selectedTileIndices[0], selectedTileIndices[1]);
-                }
-                else // Wall tile. Will remove this in future after room designer functionality is implemented because user shouldn't be able to add individual wall tiles
-                {
-                    HouseLayout.floorLayout[selectedTileIndices[0], selectedTileIndices[1]].obstacle = ObstacleType.Wall;
+                    FloorCanvasDesigner.RemoveChestFromFloorplan(HouseLayout, selectedTileIndices[0], selectedTileIndices[1]);
                 }
             }
             else // Otherwise, in drawing mode. Draw room/obstacle
@@ -285,7 +282,7 @@ namespace VacuumSim
             if (Simulation.simStarted)
                 return;
 
-            if (FloorCanvasDesigner.successAddingObstacle)
+            if (FloorCanvasDesigner.successAddingObstacle && !FloorCanvasDesigner.eraserModeOn)
             {
                 FloorCanvasDesigner.ChangeSuccessTilesToCurrentObstacle(); // Change success tiles in FloorplanHouseDesigner to be the same obstacle type that was just added         
                 HouseLayout.DeepCopyFloorplan(FloorCanvasDesigner.FloorplanHouseDesigner); // Copy the designer mode house layout to now be the actual house layout

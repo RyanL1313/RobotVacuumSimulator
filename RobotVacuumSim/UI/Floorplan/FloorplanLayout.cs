@@ -43,6 +43,10 @@ namespace VacuumSim
         public int numObstacleGroups = 0; // Amount of obstacle groups currently drawn to the canvas
         public int numRooms = 0; // Number of rooms present in the house
         public const float chairAndTableLegRadius = (2.0f * tileSideLength) / 24.0f; // Chairs/Tables will have a 2 inch radius (4 inch diameter)
+        public const int LL = 0; // Used to access lower left leg of chair/table
+        public const int LR = 1; // Used to access lower right leg of chair/table
+        public const int UR = 2; // Used to access upper right leg of chair/table
+        public const int UL = 3; // Used to access upper left leg of chair/table
 
         /* Feel free to remove this gigantic comment block later. */
         /* Creates the 2D array of tiles and sets the tiles' default attributes */
@@ -174,7 +178,7 @@ namespace VacuumSim
         /// a chair/table leg on the next move.
         /// </summary>
         /// <param name="chairOrTableTile"> The chair/table tile that was encountered </param>
-        /// <returns></returns>
+        /// <returns> A 4x2 array for the four coordinate pairs </returns>
         public float[,] GetChairOrTableLegCoordinates(Tile chairOrTableTile)
         {
             int[,] indices = new int[4, 2];
@@ -190,41 +194,41 @@ namespace VacuumSim
             }
 
             // Find the indices of the lower left tile associated with this chair/table
-            while (indices[0, 0] - 1 >= 0 && floorLayout[indices[0, 0] - 1, indices[0, 1]].groupID == tileGroupID)
-                indices[0, 0]--;
-            while (indices[0, 1] + 1 < numTilesPerCol && floorLayout[indices[0, 0], indices[0, 1] + 1].groupID == tileGroupID)
-                indices[0, 1]++;
+            while (indices[LL, 0] - 1 >= 0 && floorLayout[indices[LL, 0] - 1, indices[LL, 1]].groupID == tileGroupID)
+                indices[LL, 0]--;
+            while (indices[LL, 1] + 1 < numTilesPerCol && floorLayout[indices[LL, 0], indices[LL, 1] + 1].groupID == tileGroupID)
+                indices[LL, 1]++;
 
             // Find the indices of the lower right tile associated with this chair/table
-            while (indices[1, 0] + 1 < numTilesPerRow && floorLayout[indices[1, 0] + 1, indices[1, 1]].groupID == tileGroupID)
-                indices[1, 0]++;
-            while (indices[1, 1] + 1 < numTilesPerCol && floorLayout[indices[1, 0], indices[1, 1] + 1].groupID == tileGroupID)
-                indices[1, 1]++;
+            while (indices[LR, 0] + 1 < numTilesPerRow && floorLayout[indices[LR, 0] + 1, indices[LR, 1]].groupID == tileGroupID)
+                indices[LR, 0]++;
+            while (indices[LR, 1] + 1 < numTilesPerCol && floorLayout[indices[LR, 0], indices[LR, 1] + 1].groupID == tileGroupID)
+                indices[LR, 1]++;
 
             // Find the indices of the upper right tile associated with this chair/table
-            while (indices[2, 0] + 1 < numTilesPerRow && floorLayout[indices[2, 0] + 1, indices[2, 1]].groupID == tileGroupID)
-                indices[2, 0]++;
-            while (indices[2, 1] - 1 >= 0 && floorLayout[indices[2, 0], indices[2, 1] - 1].groupID == tileGroupID)
-                indices[2, 1]--;
+            while (indices[UR, 0] + 1 < numTilesPerRow && floorLayout[indices[UR, 0] + 1, indices[UR, 1]].groupID == tileGroupID)
+                indices[UR, 0]++;
+            while (indices[UR, 1] - 1 >= 0 && floorLayout[indices[UR, 0], indices[UR, 1] - 1].groupID == tileGroupID)
+                indices[UR, 1]--;
 
             // Find the indices of the upper left tile associated with this chair/table
-            while (indices[3, 0] - 1 >= 0 && floorLayout[indices[3, 0] - 1, indices[3, 1]].groupID == tileGroupID)
-                indices[3, 0]--;
-            while (indices[3, 1] - 1 >= 0 && floorLayout[indices[3, 0], indices[3, 1] - 1].groupID == tileGroupID)
-                indices[3, 1]--;
+            while (indices[UL, 0] - 1 >= 0 && floorLayout[indices[UL, 0] - 1, indices[UL, 1]].groupID == tileGroupID)
+                indices[UL, 0]--;
+            while (indices[UL, 1] - 1 >= 0 && floorLayout[indices[UL, 0], indices[UL, 1] - 1].groupID == tileGroupID)
+                indices[UL, 1]--;
 
             float[,] coordinates = new float[4, 2];
 
             // Get coordinates of circle centers that represent the chair/table's legs
             // Translated 1 radius length horizontally and vertically so it resides entirely in the tile
-            coordinates[0, 0] = indices[0, 0] * tileSideLength + chairAndTableLegRadius;
-            coordinates[0, 1] = indices[0, 1] * tileSideLength + tileSideLength - chairAndTableLegRadius;
-            coordinates[1, 0] = indices[1, 0] * tileSideLength + tileSideLength - chairAndTableLegRadius;
-            coordinates[1, 1] = indices[1, 1] * tileSideLength + tileSideLength - chairAndTableLegRadius;
-            coordinates[2, 0] = indices[2, 0] * tileSideLength + tileSideLength - chairAndTableLegRadius;
-            coordinates[2, 1] = indices[2, 1] * tileSideLength + chairAndTableLegRadius;
-            coordinates[3, 0] = indices[3, 0] * tileSideLength + chairAndTableLegRadius;
-            coordinates[3, 1] = indices[3, 1] * tileSideLength + chairAndTableLegRadius;
+            coordinates[LL, 0] = indices[LL, 0] * tileSideLength + chairAndTableLegRadius;
+            coordinates[LL, 1] = indices[LL, 1] * tileSideLength + tileSideLength - chairAndTableLegRadius;
+            coordinates[LR, 0] = indices[LR, 0] * tileSideLength + tileSideLength - chairAndTableLegRadius;
+            coordinates[LR, 1] = indices[LR, 1] * tileSideLength + tileSideLength - chairAndTableLegRadius;
+            coordinates[UR, 0] = indices[UR, 0] * tileSideLength + tileSideLength - chairAndTableLegRadius;
+            coordinates[UR, 1] = indices[UR, 1] * tileSideLength + chairAndTableLegRadius;
+            coordinates[UL, 0] = indices[UL, 0] * tileSideLength + chairAndTableLegRadius;
+            coordinates[UL, 1] = indices[UL, 1] * tileSideLength + chairAndTableLegRadius;
 
             return coordinates;
         }
