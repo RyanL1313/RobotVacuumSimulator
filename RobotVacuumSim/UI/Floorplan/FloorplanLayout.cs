@@ -42,6 +42,7 @@ namespace VacuumSim
         public bool gridLinesOn { get; set; } = true; // Should grid lines currently be displaying?
         public int numObstacleGroups = 0; // Amount of obstacle groups currently drawn to the canvas
         public int numRooms = 0; // Number of rooms present in the house
+        public const float chairAndTableLegRadius = (2.0f * tileSideLength) / 24.0f; // Chairs/Tables will have a 2 inch radius (4 inch diameter)
 
         /* Feel free to remove this gigantic comment block later. */
         /* Creates the 2D array of tiles and sets the tiles' default attributes */
@@ -168,25 +169,84 @@ namespace VacuumSim
         }
 
         /// <summary>
-        /// Returns all four coordinate pairs of chair or table leg locations
+        /// Returns all four coordinate pairs of chair or table leg locations (the center of the circles that represent the legs)
         /// Can be used by the pathing algorithms to check if the vacuum collides with
         /// a chair/table leg on the next move.
         /// </summary>
-        /// <param name="chairOrTableTile"> The chair/table tile that was encountered</param>
+        /// <param name="chairOrTableTile"> The chair/table tile that was encountered </param>
         /// <returns></returns>
-        /*public int[][] GetChairOrTableLegCoordinates(Tile chairOrTableTile)
+        public float[,] GetChairOrTableLegCoordinates(Tile chairOrTableTile)
         {
-            int[,] coordinates = new int[4, 2];
+            int[,] indices = new int[4, 2];
+            int tileRowIndex = chairOrTableTile.x / tileSideLength;
+            int tileColIndex = chairOrTableTile.y / tileSideLength;
+            int tileGroupID = chairOrTableTile.groupID;
 
+            // Initially set the corners' indices to the selected indices
+            for (int i = 0; i < 4; i++)
+            {
+                indices[i, 0] = tileRowIndex;
+                indices[i, 1] = tileColIndex;
+            }
 
+            // Find the indices of the lower left tile associated with this chair/table
+            while (indices[0, 0] - 1 >= 0 && floorLayout[indices[0, 0] - 1, indices[0, 1]].groupID == tileGroupID)
+                indices[0, 0]--;
+            while (indices[0, 1] + 1 < numTilesPerCol && floorLayout[indices[0, 0], indices[0, 1] + 1].groupID == tileGroupID)
+                indices[0, 1]++;
+
+            // Find the indices of the lower right tile associated with this chair/table
+            while (indices[1, 0] + 1 < numTilesPerRow && floorLayout[indices[1, 0] + 1, indices[1, 1]].groupID == tileGroupID)
+                indices[1, 0]++;
+            while (indices[1, 1] + 1 < numTilesPerCol && floorLayout[indices[1, 0], indices[1, 1] + 1].groupID == tileGroupID)
+                indices[1, 1]++;
+
+            // Find the indices of the upper right tile associated with this chair/table
+            while (indices[2, 0] + 1 < numTilesPerRow && floorLayout[indices[2, 0] + 1, indices[2, 1]].groupID == tileGroupID)
+                indices[2, 0]++;
+            while (indices[2, 1] - 1 >= 0 && floorLayout[indices[2, 0], indices[2, 1] - 1].groupID == tileGroupID)
+                indices[2, 1]--;
+
+            // Find the indices of the upper left tile associated with this chair/table
+            while (indices[3, 0] - 1 >= 0 && floorLayout[indices[3, 0] - 1, indices[3, 1]].groupID == tileGroupID)
+                indices[3, 0]--;
+            while (indices[3, 1] - 1 >= 0 && floorLayout[indices[3, 0], indices[3, 1] - 1].groupID == tileGroupID)
+                indices[3, 1]--;
+
+            float[,] coordinates = new float[4, 2];
+
+            // Get coordinates of circle centers that represent the chair/table's legs
+            // Translated 1 radius length horizontally and vertically so it resides entirely in the tile
+            coordinates[0, 0] = indices[0, 0] * tileSideLength + chairAndTableLegRadius;
+            coordinates[0, 1] = indices[0, 1] * tileSideLength + tileSideLength - chairAndTableLegRadius;
+            coordinates[1, 0] = indices[1, 0] * tileSideLength + tileSideLength - chairAndTableLegRadius;
+            coordinates[1, 1] = indices[1, 1] * tileSideLength + tileSideLength - chairAndTableLegRadius;
+            coordinates[2, 0] = indices[2, 0] * tileSideLength + tileSideLength - chairAndTableLegRadius;
+            coordinates[2, 1] = indices[2, 1] * tileSideLength + chairAndTableLegRadius;
+            coordinates[3, 0] = indices[3, 0] * tileSideLength + chairAndTableLegRadius;
+            coordinates[3, 1] = indices[3, 1] * tileSideLength + chairAndTableLegRadius;
+
+            return coordinates;
         }
 
-        public int[][] GetChairOrTableLegIndices(Tile chairOrTableTile)
+        /// <summary>
+        /// Returns all four pairs of indices of a chair/table's leg locations
+        /// </summary>
+        /// <param name="chairOrTableTile"> The chair/table tile that was encountered </param>
+        /// <returns></returns>
+        public int[,] GetChairOrTableLegIndices(Tile chairOrTableTile)
         {
-            int[,] coordinates = GetChairOrTableLegCoordinates(Chair)
+            float[,] coordinates = GetChairOrTableLegCoordinates(chairOrTableTile);
             int[,] indices = new int[4, 2];
 
+            // Convert coordinates to indices
+            for (int i = 0; i < 4; i++)
+            {
+                indices[i, 0] = (int)coordinates[i, 0] / tileSideLength;
+                indices[i, 1] = (int)coordinates[i, 1] / tileSideLength;
+            }
 
-        }*/
+            return indices;
+        }
     }
 }

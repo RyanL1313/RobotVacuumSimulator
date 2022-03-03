@@ -216,6 +216,7 @@ namespace VacuumSim
                 return;
             else
             {
+                // Set the indices of currently selected tile
                 FloorCanvasDesigner.currentIndicesOfSelectedTile[0] = selectedTileIndices[0];
                 FloorCanvasDesigner.currentIndicesOfSelectedTile[1] = selectedTileIndices[1];
             }
@@ -233,7 +234,23 @@ namespace VacuumSim
             // If eraser mode is on, remove item that is at this tile
             if (FloorCanvasDesigner.eraserModeOn)
             {
-
+                // Process attempt to remove room from floorplan
+                if (FloorCanvasDesigner.roomCreatorModeOn)
+                {
+                    //FloorCanvasDesigner.RemoveRoomFromFloorplan(selectedTileIndices[0], selectedTileIndices[1], (int)RoomWidthSelector.Value, (int)RoomHeightSelector.Value);
+                }
+                else if (selectedObstacle == ObstacleType.Chair || selectedObstacle == ObstacleType.Table) // Process attempt to add chair/table to floorplan
+                {
+                    FloorCanvasDesigner.RemoveChairOrTableFromFloorplan(selectedTileIndices[0], selectedTileIndices[1]);
+                }
+                else if (selectedObstacle == ObstacleType.Chest) // Process attempt to add chest to floorplan
+                {
+                    FloorCanvasDesigner.RemoveChestFromFloorplan(selectedTileIndices[0], selectedTileIndices[1]);
+                }
+                else // Wall tile. Will remove this in future after room designer functionality is implemented because user shouldn't be able to add individual wall tiles
+                {
+                    HouseLayout.floorLayout[selectedTileIndices[0], selectedTileIndices[1]].obstacle = ObstacleType.Wall;
+                }
             }
             else // Otherwise, in drawing mode. Draw room/obstacle
             {
@@ -323,7 +340,7 @@ namespace VacuumSim
 
             // Read the floorplan data file and store it in HouseLayoutAccessor.floorLayout
             // Modify this in the future
-            FloorplanFileReader.LoadTileGridData("../../../DefaultFloorplan.txt", HouseLayout);
+            FloorplanFileReader.LoadTileGridData("../../../UI/Floorplan/DefaultFloorplan.txt", HouseLayout);
 
             FloorCanvas.Invalidate(); // Re-trigger paint event
         }
