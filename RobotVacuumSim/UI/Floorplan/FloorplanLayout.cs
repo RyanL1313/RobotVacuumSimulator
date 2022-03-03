@@ -166,5 +166,27 @@ namespace VacuumSim
 
             return ret;
         }
+
+        /// <summary>
+        /// Returns all four coordinate pairs of chair or table leg locations
+        /// Can be used by the pathing algorithms to check if the vacuum collides with
+        /// a chair/table leg on the next move.
+        /// </summary>
+        /// <param name="chairOrTableTile"> The chair/table tile that was encountered</param>
+        /// <returns></returns>
+        /*public int[][] GetChairOrTableLegCoordinates(Tile chairOrTableTile)
+        {
+            int[,] coordinates = new int[4, 2];
+
+
+        }
+
+        public int[][] GetChairOrTableLegIndices(Tile chairOrTableTile)
+        {
+            int[,] coordinates = GetChairOrTableLegCoordinates(Chair)
+            int[,] indices = new int[4, 2];
+
+
+        }*/
     }
 }
