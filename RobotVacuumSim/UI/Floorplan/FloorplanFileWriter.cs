@@ -9,6 +9,8 @@ namespace VacuumSim
 {
     public class FloorplanFileWriter
     {
+        public static int currentObstacleGroupNumber = 0; // Group number of most recent obstacle that was added. Gets saved to the .txt file to be used when the floor plan is loaded again
+
         public FloorplanFileWriter()
         {
 
@@ -16,18 +18,20 @@ namespace VacuumSim
 
         public static void SaveTileGridData(string path, FloorplanLayout HouseLayout)
         {
-            string[] lines = new string[HouseLayout.numTilesPerCol]; // NumTilesPerCol is technically the number of rows. Confusing, I know
+            string[] lines = new string[HouseLayout.numTilesPerCol + 1]; // NumTilesPerCol is technically the number of rows. Confusing, I know. The +1 is for the extra top row of data
+
+            lines[0] = "SavedGroupID " + currentObstacleGroupNumber; // Save the obstacle group number we were on 
 
             for (int i = 0; i < HouseLayout.numTilesPerCol; i++)
             {
-                lines[i] = i + " " + "0" + " " + HouseLayout.floorLayout[0, i].obstacle; // First value in row
+                lines[i + 1] = i + " " + "0" + " " + HouseLayout.floorLayout[0, i].obstacle + " " + HouseLayout.floorLayout[0, i].groupID; // First value in row
                 for (int j = 1; j < HouseLayout.numTilesPerRow; j++)
                 {
-                    lines[i] = lines[i] + " " + i + " " + j + " " + HouseLayout.floorLayout[j, i].obstacle;
+                    lines[i + 1] = lines[i + 1] + " " + i + " " + j + " " + HouseLayout.floorLayout[j, i].obstacle + " " + HouseLayout.floorLayout[0, i].groupID;
                 }
             }
 
-            File.WriteAllLines("../../../UI/Floorplan/SavedFloorplan.txt", lines);
+            File.WriteAllLines(path, lines);
         }
     }
 }

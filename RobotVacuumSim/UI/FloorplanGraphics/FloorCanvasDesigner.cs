@@ -62,11 +62,17 @@ namespace VacuumSim.UI.FloorplanGraphics
                     }
                     else if (CurrentLayout.floorLayout[i, j].obstacle == ObstacleType.Chair) // Chair tile
                     {
-                        PaintTile(i, j, new SolidBrush(Color.DarkOrange), CanvasEditor);
+                        if (CurrentLayout.gridLinesOn)
+                            DrawTileOutline(i, j, new Pen(Color.Black), CanvasEditor);
+
+                        DrawChairOrTable(i, j, CurrentLayout, new SolidBrush(Color.DarkSlateBlue), CanvasEditor);
                     }
                     else if (CurrentLayout.floorLayout[i, j].obstacle == ObstacleType.Table) // Table tile
                     {
-                        PaintTile(i, j, new SolidBrush(Color.DodgerBlue), CanvasEditor);
+                        if (CurrentLayout.gridLinesOn)
+                            DrawTileOutline(i, j, new Pen(Color.Black), CanvasEditor);
+
+                        DrawChairOrTable(i, j, CurrentLayout, new SolidBrush(Color.Tomato), CanvasEditor);
                     }
                     else if (CurrentLayout.floorLayout[i, j].obstacle == ObstacleType.Success) // Success tile
                     {
@@ -157,6 +163,76 @@ namespace VacuumSim.UI.FloorplanGraphics
             FillCircle(charcoalGrayBrush, VacuumDisplay.vacuumDiameter / 2, VacDisplay.vacuumCoords[0], VacDisplay.vacuumCoords[1], CanvasEditor);
         }
 
+        public static void DrawChairOrTable(int rowIndex, int colIndex, FloorplanLayout CurrentLayout, SolidBrush brush, Graphics CanvasEditor)
+        {
+            int selectedTileGroupID = CurrentLayout.floorLayout[rowIndex, colIndex].groupID; // Get group ID of this chair/table
+
+            // Will hold coordinates of tiles corresponding to chair/table corners
+            int[] lowerLeftCorner = new int[2];
+            int[] lowerRightCorner = new int[2];
+            int[] upperRightCorner = new int[2];
+            int[] upperLeftCorner = new int[2];
+
+            // Initially set the corners' indices to the selected indices
+            lowerLeftCorner[0] = rowIndex;
+            lowerLeftCorner[1] = colIndex;
+            lowerRightCorner[0] = rowIndex;
+            lowerRightCorner[1] = colIndex;
+            upperRightCorner[0] = rowIndex;
+            upperRightCorner[1] = colIndex;
+            upperLeftCorner[0] = rowIndex;
+            upperLeftCorner[1] = colIndex;
+
+            // Find the indices of the lower left tile associated with this chair/table
+            while (lowerLeftCorner[0] - 1 >= 0 && CurrentLayout.floorLayout[lowerLeftCorner[0] - 1, lowerLeftCorner[1]].groupID == selectedTileGroupID)
+                lowerLeftCorner[0]--;
+            while (lowerLeftCorner[1] + 1 < CurrentLayout.numTilesPerCol && CurrentLayout.floorLayout[lowerLeftCorner[0], lowerLeftCorner[1] + 1].groupID == selectedTileGroupID)
+                lowerLeftCorner[1]++;
+
+            // Find the indices of the lower right tile associated with this chair/table
+            while (lowerRightCorner[0] + 1 < CurrentLayout.numTilesPerRow && CurrentLayout.floorLayout[lowerRightCorner[0] + 1, lowerRightCorner[1]].groupID == selectedTileGroupID)
+                lowerRightCorner[0]++;
+            while (lowerRightCorner[1] + 1 < CurrentLayout.numTilesPerCol && CurrentLayout.floorLayout[lowerRightCorner[0], lowerRightCorner[1] + 1].groupID == selectedTileGroupID)
+                lowerRightCorner[1]++;
+
+            // Find the indices of the upper right tile associated with this chair/table
+            while (upperRightCorner[0] + 1 < CurrentLayout.numTilesPerRow && CurrentLayout.floorLayout[upperRightCorner[0] + 1, upperRightCorner[1]].groupID == selectedTileGroupID)
+                upperRightCorner[0]++;
+            while (upperRightCorner[1] - 1 >= 0 && CurrentLayout.floorLayout[upperRightCorner[0], upperRightCorner[1] - 1].groupID == selectedTileGroupID)
+                upperRightCorner[1]--;
+
+            // Find the indices of the upper left tile associated with this chair/table
+            while (upperLeftCorner[0] - 1 >= 0 && CurrentLayout.floorLayout[upperLeftCorner[0] - 1, upperLeftCorner[1]].groupID == selectedTileGroupID)
+                upperLeftCorner[0]--;
+            while (upperLeftCorner[1] - 1 >= 0 && CurrentLayout.floorLayout[upperLeftCorner[0], upperLeftCorner[1] - 1].groupID == selectedTileGroupID)
+                upperLeftCorner[1]--;
+
+            // Prevent drawing the chair/table legs again if we've already drawn them once
+            // We know we've already drawn them if we are not currently checking the upper left tile associated with the table/chair
+            if ((rowIndex != upperLeftCorner[0] || colIndex != upperLeftCorner[1]) && !currentlyAddingObstacle)
+                return;
+
+            // Chairs/Tables will have a 2 inch radius (4 inch diameter)
+            float legRadius = (2.0f * FloorplanLayout.tileSideLength) / 24.0f;
+
+            // Get coordinates of circle centers that represent the chair/table's legs
+            // Translated 1 radius length horizontally and vertically so it resides entirely in the tile
+            float lowerLeftLegCoordsX = lowerLeftCorner[0] * FloorplanLayout.tileSideLength + legRadius;
+            float lowerLeftLegCoordsY = lowerLeftCorner[1] * FloorplanLayout.tileSideLength + FloorplanLayout.tileSideLength - legRadius;
+            float lowerRightLegCoordsX = lowerRightCorner[0] * FloorplanLayout.tileSideLength + FloorplanLayout.tileSideLength - legRadius;
+            float lowerRightLegCoordsY = lowerRightCorner[1] * FloorplanLayout.tileSideLength + FloorplanLayout.tileSideLength - legRadius;
+            float upperRightLegCoordsX = upperRightCorner[0] * FloorplanLayout.tileSideLength + FloorplanLayout.tileSideLength - legRadius;
+            float upperRightLegCoordsY = upperRightCorner[1] * FloorplanLayout.tileSideLength + legRadius;
+            float upperLeftLegCoordsX = upperLeftCorner[0] * FloorplanLayout.tileSideLength + legRadius;
+            float upperLeftLegCoordsY = upperLeftCorner[1] * FloorplanLayout.tileSideLength + legRadius;
+
+            // Draw the chair/table legs
+            FillCircle(brush, legRadius, lowerLeftLegCoordsX, lowerLeftLegCoordsY, CanvasEditor);
+            FillCircle(brush, legRadius, lowerRightLegCoordsX, lowerRightLegCoordsY, CanvasEditor);
+            FillCircle(brush, legRadius, upperRightLegCoordsX, upperRightLegCoordsY, CanvasEditor);
+            FillCircle(brush, legRadius, upperLeftLegCoordsX, upperLeftLegCoordsY, CanvasEditor);
+        }
+
         /// <summary>
         /// Helper function to draw a filled circle
         /// </summary>
@@ -223,9 +299,12 @@ namespace VacuumSim.UI.FloorplanGraphics
             // If chest can't be placed here, mark the tiles that the chest is covering as error tiles
             if (!successAddingObstacle)
                 FloorplanHouseDesigner.ModifyTileBasedOnIndices(xTileIndex, yTileIndex, ObstacleType.Error);
-            else // Chest can be placed here. Mark the associated tiles as success tiles
+            else // Chest can be placed here. Mark the associated tile as a success tile
+            {
                 FloorplanHouseDesigner.ModifyTileBasedOnIndices(xTileIndex, yTileIndex, ObstacleType.Success);
+            }
         }
+
         public static void ChangeSuccessTilesToCurrentObstacle()
         {
             for (int i = 0; i < FloorplanHouseDesigner.numTilesPerRow; i++)
@@ -233,10 +312,14 @@ namespace VacuumSim.UI.FloorplanGraphics
                 for (int j = 0; j < FloorplanHouseDesigner.numTilesPerCol; j++)
                 {
                     if (FloorplanHouseDesigner.floorLayout[i, j].obstacle == ObstacleType.Success)
+                    {
                         FloorplanHouseDesigner.ModifyTileBasedOnIndices(i, j, currentObstacleBeingAdded);
+                        FloorplanHouseDesigner.floorLayout[i, j].groupID = FloorplanFileWriter.currentObstacleGroupNumber; // Assign group ID
+                    }
                 }
             }
-        }
 
+            FloorplanFileWriter.currentObstacleGroupNumber++; // Obstacle was successfully placed, assign its corresponding tiles a group ID
+        }
     }
 }

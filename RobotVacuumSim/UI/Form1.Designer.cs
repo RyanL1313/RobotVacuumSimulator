@@ -354,7 +354,8 @@ namespace VacuumSim
             this.ObstacleSelector.Items.AddRange(new object[] {
             "Chair",
             "Table",
-            "Chest"});
+            "Chest",
+            "Wall"});
             this.ObstacleSelector.Location = new System.Drawing.Point(4, 415);
             this.ObstacleSelector.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.ObstacleSelector.Name = "ObstacleSelector";

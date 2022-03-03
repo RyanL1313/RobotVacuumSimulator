@@ -227,8 +227,7 @@ namespace VacuumSim
                 canvasCoords.Y <= 0)
                 return;
 
-            // Get obstacle located at selected tile and currently selected obstacle
-            ObstacleType obstacleAtTile = HouseLayout.floorLayout[selectedTileIndices[0], selectedTileIndices[1]].obstacle;
+            // Get currently selected obstacle
             ObstacleType selectedObstacle = FloorplanLayout.GetObstacleTypeFromString(ObstacleSelector.SelectedItem.ToString());
 
             // If eraser mode is on, remove item that is at this tile
@@ -240,6 +239,7 @@ namespace VacuumSim
             {
                 FloorCanvasDesigner.currentlyAddingObstacle = true;
                 FloorCanvasDesigner.FloorplanHouseDesigner.DeepCopyFloorplan(HouseLayout); // Copy the actual house layout into the designer house layout
+
                 // Process attempt to add room to floorplan
                 if (FloorCanvasDesigner.roomCreatorModeOn)
                 {
@@ -249,9 +249,13 @@ namespace VacuumSim
                 {
                     FloorCanvasDesigner.AttemptAddChairOrTableToFloorplan(selectedObstacle, selectedTileIndices[0], selectedTileIndices[1], (int)ChairTableWidthSelector.Value, (int)ChairTableHeightSelector.Value);
                 }
-                else // Process attempt to add chest to floorplan
+                else if (selectedObstacle == ObstacleType.Chest) // Process attempt to add chest to floorplan
                 {
                     FloorCanvasDesigner.AttemptAddChestToFloorplan(selectedObstacle, selectedTileIndices[0], selectedTileIndices[1]);
+                }
+                else // Wall tile. Will remove this in future after room designer functionality is implemented because user shouldn't be able to add individual wall tiles
+                {
+                    HouseLayout.floorLayout[selectedTileIndices[0], selectedTileIndices[1]].obstacle = ObstacleType.Wall;
                 }
             }
 
@@ -260,17 +264,13 @@ namespace VacuumSim
 
         private void FloorCanvas_MouseUp(object sender, MouseEventArgs e)
         {
-            // Make sure user clicked within the grid
-            Point canvasCoords = FloorCanvas.PointToClient(Cursor.Position);
-            if (canvasCoords.X >= HouseLayout.numTilesPerRow * FloorplanLayout.tileSideLength ||
-                (canvasCoords.X <= 0 ||
-                canvasCoords.Y >= HouseLayout.numTilesPerCol * FloorplanLayout.tileSideLength) ||
-                canvasCoords.Y <= 0)
+            // Prevent event when simulation is running
+            if (Simulation.simStarted)
                 return;
 
             if (FloorCanvasDesigner.successAddingObstacle)
             {
-                FloorCanvasDesigner.ChangeSuccessTilesToCurrentObstacle(); // Change success tiles in FloorplanHouseDesigner to be the same obstacle type that was just added
+                FloorCanvasDesigner.ChangeSuccessTilesToCurrentObstacle(); // Change success tiles in FloorplanHouseDesigner to be the same obstacle type that was just added         
                 HouseLayout.DeepCopyFloorplan(FloorCanvasDesigner.FloorplanHouseDesigner); // Copy the designer mode house layout to now be the actual house layout
             }
 
@@ -313,7 +313,7 @@ namespace VacuumSim
         private void SaveFloorplanButton_Click(object sender, EventArgs e)
         {
             // Modify this in the future
-            FloorplanFileWriter.SaveTileGridData("../../../DefaultFloorplan.txt", HouseLayout);
+            FloorplanFileWriter.SaveTileGridData("../../../UI/Floorplan/DefaultFloorplan.txt", HouseLayout);
         }
 
         private void LoadDefaultFloorplanButton_Click(object sender, EventArgs e)
@@ -372,9 +372,18 @@ namespace VacuumSim
             RobotBatteryLifeSelector.Enabled = false;
             StartSimulationButton.Enabled = false;
             StopSimulationButton.Enabled = true;
+            LoadDefaultFloorplanButton.Enabled = false;
+            LoadSavedFloorplanButton.Enabled = false;
+            SaveFloorplanButton.Enabled = false;
+            EraserModeButton.Enabled = false;
+            RoomCreatorModeButton.Enabled = false;
+            ChairTableWidthSelector.Enabled = false;
+            ChairTableHeightSelector.Enabled = false;
+            ObstacleSelector.Enabled = false;
             Simulation.simStarted = true;
             Simulation.simTimeElapsed = 0;
             FloorCanvasCalculator.frameCount = 0;
+            
             VacDisplay.batterySecondsRemaining = (int)RobotBatteryLifeSelector.Value * 60;
         }
 
@@ -392,6 +401,14 @@ namespace VacuumSim
             RobotBatteryLifeSelector.Enabled = true;
             StartSimulationButton.Enabled = true;
             StopSimulationButton.Enabled = false;
+            LoadDefaultFloorplanButton.Enabled = true;
+            LoadSavedFloorplanButton.Enabled = true;
+            SaveFloorplanButton.Enabled = true;
+            EraserModeButton.Enabled = true;
+            RoomCreatorModeButton.Enabled = true;
+            ChairTableWidthSelector.Enabled = true;
+            ChairTableHeightSelector.Enabled = true;
+            ObstacleSelector.Enabled = true;
             Simulation.simStarted = false;
             Simulation.simTimeElapsed = 0;
             FloorCanvasCalculator.frameCount = 0;

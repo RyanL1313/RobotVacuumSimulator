@@ -137,10 +137,12 @@ namespace VacuumSim
                 for (int j = 0; j < numTilesPerCol; j++)
                 {
                     ModifyTileBasedOnIndices(i, j, source.floorLayout[i, j].obstacle);
+                    floorLayout[i, j].groupID = source.floorLayout[i, j].groupID;
                     numTilesPerRow = source.numTilesPerRow;
                     numTilesPerCol = source.numTilesPerCol;
                     numRooms = source.numRooms;
                     numObstacleGroups = source.numObstacleGroups;
+                    gridLinesOn = source.gridLinesOn;
                 }
             }
         }
