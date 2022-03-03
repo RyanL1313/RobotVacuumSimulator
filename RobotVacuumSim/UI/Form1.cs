@@ -194,7 +194,6 @@ namespace VacuumSim
 
         private void LoadSavedFloorplanButton_Click(object sender, EventArgs e)
         {
-
         }
 
         private void VacuumBodyTimer_Tick(object sender, EventArgs e)
@@ -278,6 +277,13 @@ namespace VacuumSim
             VacDisplay.batterySecondsRemaining = (int)RobotBatteryLifeSelector.Value * 60;
 
             FloorCanvas.Invalidate(); // Re-trigger paint event
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            Tile T1 = HouseLayout.GetTileFromRowCol(0, 0);
+            T1.CleanTile(0.5f);
+            MessageBox.Show(T1.GetDirtinessAsString(2) + " " + T1.IsDirty());
         }
     }
 

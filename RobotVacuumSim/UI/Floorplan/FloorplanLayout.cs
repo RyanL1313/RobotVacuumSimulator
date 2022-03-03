@@ -9,20 +9,6 @@ namespace VacuumSim
     public enum ObstacleType
     { None, Wall, Chest, Table, Chair };
 
-    public struct Tile
-    {
-        public int x; // x coordinate of top left tile corner
-        public int y; // y coordinate of top left tile corner
-        public ObstacleType obstacle;
-
-        public Tile(int x, int y, ObstacleType obstacle)
-        {
-            this.x = x;
-            this.y = y;
-            this.obstacle = obstacle;
-        }
-    }
-
     public class FloorplanLayout
     {
         public const int maxTilesPerRow = 50; // Maximum tiles allowed per row
@@ -42,6 +28,7 @@ namespace VacuumSim
         /* tile based on the row and column and another helper method */
         /* (GetTileFromCoordinates) to easily access a tile based on the coordinates */
         /* clicked on by the user. */
+
         public FloorplanLayout()
         {
             floorLayout = new Tile[maxTilesPerRow, maxTilesPerRow]; // Create the 2D array of tiles
@@ -51,18 +38,20 @@ namespace VacuumSim
             {
                 for (int j = 0; j < maxTilesPerCol; j++)
                 {
-                    floorLayout[i, j] = new Tile(i * tileSideLength, j * tileSideLength, ObstacleType.None);
+                    floorLayout[i, j] = new Tile(i * tileSideLength, j * tileSideLength, ObstacleType.None, 0.67f);
                 }
             }
         }
 
         /* Returns the Tile object by requested row and column. */
+
         public Tile GetTileFromRowCol(int row, int col)
         {
             return floorLayout[col, row];
         }
 
         /* Returns the Tile object located at the (x, y) coordinates in the FloorCanvas PictureBox */
+
         public Tile GetTileFromCoordinates(int x, int y)
         {
             int xTileIndex = x / tileSideLength;
@@ -72,18 +61,21 @@ namespace VacuumSim
         }
 
         /* Returns the maximum x coordinates. Vacuum should not go past this. */
+
         public int GetMaximumXCoordinates()
         {
             return numTilesPerRow * tileSideLength;
         }
 
         /* Returns the maximum y coordinates. Vacuum should not go past this. */
+
         public int GetMaximumYCoordinates()
         {
             return numTilesPerCol * tileSideLength;
         }
 
         /* Modifies the obstacle located in a certain tile based on the (x, y) coordinates in the FloorCanvas PictureBox */
+
         public bool ModifyTile(int x, int y, ObstacleType ob)
         {
             // Get row, col indices of selected tile based on the coordinates selected by the user
@@ -99,6 +91,7 @@ namespace VacuumSim
         }
 
         /* Returns the ObstacleType enum value associated with an obstacle string */
+
         public static ObstacleType GetObstacleTypeFromString(string strObstacle)
         {
             string lowercase = strObstacle.ToLower();
