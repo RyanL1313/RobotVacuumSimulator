@@ -74,7 +74,6 @@ namespace VacuumSim
             this.FloorCanvas = new System.Windows.Forms.PictureBox();
             this.VacuumBodyTimer = new System.Windows.Forms.Timer(this.components);
             this.VacuumWhiskersTimer = new System.Windows.Forms.Timer(this.components);
-            this.button1 = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.LeftPane)).BeginInit();
             this.LeftPane.Panel1.SuspendLayout();
             this.LeftPane.Panel2.SuspendLayout();
@@ -415,7 +414,6 @@ namespace VacuumSim
             // 
             // ControlsPane.Panel1
             // 
-            this.ControlsPane.Panel1.Controls.Add(this.button1);
             this.ControlsPane.Panel1.Controls.Add(this.SimulationSpeedLabel);
             this.ControlsPane.Panel1.Controls.Add(this.SimulationSpeedSelector);
             this.ControlsPane.Panel1.Controls.Add(this.StopSimulationButton);
@@ -700,16 +698,6 @@ namespace VacuumSim
             this.VacuumWhiskersTimer.Interval = 10;
             this.VacuumWhiskersTimer.Tick += new System.EventHandler(this.VacuumWhiskersTimer_Tick);
             // 
-            // button1
-            // 
-            this.button1.Location = new System.Drawing.Point(120, 101);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(75, 23);
-            this.button1.TabIndex = 11;
-            this.button1.Text = "button1";
-            this.button1.UseVisualStyleBackColor = true;
-            this.button1.Click += new System.EventHandler(this.button1_Click);
-            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
@@ -795,7 +783,6 @@ namespace VacuumSim
         private System.Windows.Forms.Button LoadSavedFloorplanButton;
         private System.Windows.Forms.Label SimTimeElapsedLabel;
         private System.Windows.Forms.Label SimTimeElapsedTitleLabel;
-        private System.Windows.Forms.Button button1;
     }
 }
 

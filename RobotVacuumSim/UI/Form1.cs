@@ -278,13 +278,6 @@ namespace VacuumSim
 
             FloorCanvas.Invalidate(); // Re-trigger paint event
         }
-
-        private void button1_Click(object sender, EventArgs e)
-        {
-            Tile T1 = HouseLayout.GetTileFromRowCol(0, 0);
-            T1.CleanTile(0.5f);
-            MessageBox.Show(T1.GetDirtinessAsString(2) + " " + T1.IsDirty());
-        }
     }
 
     /// <summary>
