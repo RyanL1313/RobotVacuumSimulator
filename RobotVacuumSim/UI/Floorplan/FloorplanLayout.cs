@@ -126,8 +126,10 @@ namespace VacuumSim
             return ret;
         }
 
-        /* Returns a hashed number to give an ID a floorplan
-           Completely arbitary hashing method but kinda fun. */
+        /* Returns a 'hashed' number to give an ID a floorplan
+           Completely arbitary hashing method but kinda fun.
+           Totally open to changing this up later.
+        */
 
         public string GetFloorPlanID()
         {
