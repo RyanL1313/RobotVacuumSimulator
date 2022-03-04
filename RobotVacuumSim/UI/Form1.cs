@@ -195,9 +195,9 @@ namespace VacuumSim
 
             FloorCanvasDesigner.SetAntiAliasing(canvasEditor);
             FloorCanvasDesigner.PaintChairAndTableBackgrounds(canvasEditor, HouseLayout);
+            FloorCanvasDesigner.DrawVacuum(canvasEditor, VacDisplay);
             FloorCanvasDesigner.DrawFloorplan(canvasEditor, HouseLayout, VacDisplay);
             FloorCanvasDesigner.DrawHouseBoundaryLines(canvasEditor, HouseLayout);
-            FloorCanvasDesigner.DrawVacuum(canvasEditor, VacDisplay);
         }
 
         /// <summary>
