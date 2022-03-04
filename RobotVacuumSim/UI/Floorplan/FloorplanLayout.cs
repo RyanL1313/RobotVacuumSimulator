@@ -42,6 +42,7 @@ namespace VacuumSim
         /* tile based on the row and column and another helper method */
         /* (GetTileFromCoordinates) to easily access a tile based on the coordinates */
         /* clicked on by the user. */
+
         public FloorplanLayout()
         {
             floorLayout = new Tile[maxTilesPerRow, maxTilesPerRow]; // Create the 2D array of tiles
@@ -57,12 +58,14 @@ namespace VacuumSim
         }
 
         /* Returns the Tile object by requested row and column. */
+
         public Tile GetTileFromRowCol(int row, int col)
         {
             return floorLayout[col, row];
         }
 
         /* Returns the Tile object located at the (x, y) coordinates in the FloorCanvas PictureBox */
+
         public Tile GetTileFromCoordinates(int x, int y)
         {
             int xTileIndex = x / tileSideLength;
@@ -72,18 +75,21 @@ namespace VacuumSim
         }
 
         /* Returns the maximum x coordinates. Vacuum should not go past this. */
+
         public int GetMaximumXCoordinates()
         {
             return numTilesPerRow * tileSideLength;
         }
 
         /* Returns the maximum y coordinates. Vacuum should not go past this. */
+
         public int GetMaximumYCoordinates()
         {
             return numTilesPerCol * tileSideLength;
         }
 
         /* Modifies the obstacle located in a certain tile based on the (x, y) coordinates in the FloorCanvas PictureBox */
+
         public bool ModifyTile(int x, int y, ObstacleType ob)
         {
             // Get row, col indices of selected tile based on the coordinates selected by the user
@@ -99,6 +105,7 @@ namespace VacuumSim
         }
 
         /* Returns the ObstacleType enum value associated with an obstacle string */
+
         public static ObstacleType GetObstacleTypeFromString(string strObstacle)
         {
             string lowercase = strObstacle.ToLower();
@@ -116,6 +123,63 @@ namespace VacuumSim
                 ret = ObstacleType.Table;
 
             return ret;
+        }
+
+        /* Returns a 'hashed' number to give an ID a floorplan
+           Completely arbitary hashing method but kinda fun.
+           Totally open to changing this up later.
+        */
+
+        public string GetFloorPlanID()
+        {
+            string uuid = "";           // string to build the ID
+            int count = 0;
+            for (int i = 0; i < numTilesPerRow; i++)
+            {
+                for (int j = 0; j < numTilesPerCol; j++)
+                {
+                    Tile t = GetTileFromRowCol(j, i);
+                    switch (t.obstacle)         // Add a number to count depending on the tile type
+                    {
+                        case ObstacleType.None:
+                            count += (int)ObstacleType.None;
+                            break;
+
+                        case ObstacleType.Wall:
+                            count += (int)ObstacleType.Wall;
+                            break;
+
+                        case ObstacleType.Chest:
+                            count += (int)ObstacleType.Chest;
+                            break;
+
+                        case ObstacleType.Table:
+                            count += (int)ObstacleType.Table;
+                            break;
+
+                        case ObstacleType.Chair:
+                            count += (int)ObstacleType.Chair;
+                            break;
+
+                        default:
+                            count += 1;
+                            break;
+                    }
+
+                    if (j == numTilesPerCol - 1)
+                    {
+                        // At the end of the column, add a character to the end of the id string
+                        uuid += (count % 10).ToString();
+                        count = 0;
+                    }
+                }
+            }
+
+            if (uuid.Length < 25)   // If the ID is longer than 25 chars, pad with zeros
+            {
+                uuid = uuid.PadRight(25, '0');
+            }
+            return uuid;
         }
     }
 }
