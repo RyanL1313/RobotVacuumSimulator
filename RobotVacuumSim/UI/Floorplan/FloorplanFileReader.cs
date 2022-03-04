@@ -21,6 +21,7 @@ namespace VacuumSim
 
             int row = 0;
             int col = 0;
+            int gid = 0;
             string strOb = "";
 
             ObstacleType ob = ObstacleType.Floor;
@@ -30,7 +31,7 @@ namespace VacuumSim
             FloorplanFileWriter.currentObstacleGroupNumber = Int32.Parse(topRowData[1]);
 
             // Iterate over each row of tile data in the .txt file
-            for (int i = 1; i < HouseLayout.numTilesPerCol; i++)
+            for (int i = 1; i <= HouseLayout.numTilesPerCol; i++)
             {
                 string[] rowTileData = lines[i].Split(" ");
                 int strIndex = 0;
@@ -43,7 +44,10 @@ namespace VacuumSim
                     strOb = rowTileData[strIndex++];
                     ob = FloorplanLayout.GetObstacleTypeFromString(strOb);
 
+                    gid = Int32.Parse(rowTileData[strIndex++]);
+
                     HouseLayout.floorLayout[col, row].obstacle = ob;
+                    HouseLayout.floorLayout[col, row].groupID = gid;
                 }
             }
         }

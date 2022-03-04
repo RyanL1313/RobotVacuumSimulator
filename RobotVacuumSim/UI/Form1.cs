@@ -238,6 +238,7 @@ namespace VacuumSim
                 // Process attempt to remove room from floorplan
                 if (curObstacleAtTile == ObstacleType.Wall)
                 {
+                    FloorCanvasDesigner.RemoveChestFromFloorplan(HouseLayout, selectedTileIndices[0], selectedTileIndices[1]); // temporary
                     //FloorCanvasDesigner.RemoveRoomFromFloorplan(HouseLayout, selectedTileIndices[0], selectedTileIndices[1]);
                 }
                 else if (curObstacleAtTile == ObstacleType.Chair || curObstacleAtTile == ObstacleType.Table) // Process attempt to add chair/table to floorplan
@@ -265,7 +266,7 @@ namespace VacuumSim
                 }
                 else if (selectedObstacle == ObstacleType.Chest) // Process attempt to add chest to floorplan
                 {
-                    FloorCanvasDesigner.AttemptAddChestToFloorplan(selectedObstacle, selectedTileIndices[0], selectedTileIndices[1]);
+                    FloorCanvasDesigner.AttemptAddChestToFloorplan(selectedTileIndices[0], selectedTileIndices[1]);
                 }
                 else // Wall tile. Will remove this in future after room designer functionality is implemented because user shouldn't be able to add individual wall tiles
                 {
@@ -327,7 +328,7 @@ namespace VacuumSim
         private void SaveFloorplanButton_Click(object sender, EventArgs e)
         {
             // Modify this in the future
-            FloorplanFileWriter.SaveTileGridData("../../../UI/Floorplan/DefaultFloorplan.txt", HouseLayout);
+            FloorplanFileWriter.SaveTileGridData("../../../UI/Floorplan/SavedFloorplan.txt", HouseLayout);
         }
 
         private void LoadDefaultFloorplanButton_Click(object sender, EventArgs e)

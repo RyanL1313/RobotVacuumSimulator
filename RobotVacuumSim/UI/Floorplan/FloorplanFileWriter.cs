@@ -22,12 +22,13 @@ namespace VacuumSim
 
             lines[0] = "SavedGroupID " + currentObstacleGroupNumber; // Save the obstacle group number we were on 
 
+            
             for (int i = 0; i < HouseLayout.numTilesPerCol; i++)
             {
                 lines[i + 1] = i + " " + "0" + " " + HouseLayout.floorLayout[0, i].obstacle + " " + HouseLayout.floorLayout[0, i].groupID; // First value in row
                 for (int j = 1; j < HouseLayout.numTilesPerRow; j++)
                 {
-                    lines[i + 1] = lines[i + 1] + " " + i + " " + j + " " + HouseLayout.floorLayout[j, i].obstacle + " " + HouseLayout.floorLayout[0, i].groupID;
+                    lines[i + 1] = lines[i + 1] + " " + i + " " + j + " " + HouseLayout.floorLayout[j, i].obstacle + " " + HouseLayout.floorLayout[j, i].groupID;
                 }
             }
 

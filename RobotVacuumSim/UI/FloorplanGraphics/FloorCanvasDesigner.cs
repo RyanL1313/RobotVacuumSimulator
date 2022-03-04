@@ -148,7 +148,7 @@ namespace VacuumSim.UI.FloorplanGraphics
         /// <summary>
         /// Draws the vacuum onto FloorCanvas
         /// </summary>
-        /// <param name="CanvasEditor">  </param>
+        /// <param name="CanvasEditor"> Graphics object to edit FloorCanvas </param>
         /// <param name="VacDisplay"> The display of the vacuum onto FloorCanvas </param>
         public static void DrawVacuum(Graphics CanvasEditor, VacuumDisplay VacDisplay)
         {
@@ -163,6 +163,14 @@ namespace VacuumSim.UI.FloorplanGraphics
             FillCircle(charcoalGrayBrush, VacuumDisplay.vacuumDiameter / 2, VacDisplay.vacuumCoords[0], VacDisplay.vacuumCoords[1], CanvasEditor);
         }
 
+        /// <summary>
+        /// Draws a chair or table, which consists of 4 circles for legs.
+        /// </summary>
+        /// <param name="rowIndex"> Index of selected row </param>
+        /// <param name="colIndex"> Index of selected column </param>
+        /// <param name="CurrentLayout"> The active layout (either the normal house or the designer mode house) </param>
+        /// <param name="brush"> Brush to draw the chair/table </param>
+        /// <param name="CanvasEditor"> Graphics object to edit FloorCanvas </param>
         public static void DrawChairOrTable(int rowIndex, int colIndex, FloorplanLayout CurrentLayout, SolidBrush brush, Graphics CanvasEditor)
         {
             // Get the coordinates of each leg of the chair/table
@@ -197,6 +205,14 @@ namespace VacuumSim.UI.FloorplanGraphics
             CanvasEditor.FillEllipse(brush, centerX - radius, centerY - radius, radius + radius, radius + radius);
         }
 
+        /// <summary>
+        /// Edits the "designer mode" floorplan to mark tiles as "Success" or "Error" if they can/cannot be placed here
+        /// </summary>
+        /// <param name="selectedObstacle"> Chair or Table being added </param>
+        /// <param name="xTileIndex"> The selected column </param>
+        /// <param name="yTileIndex"> The selected row </param>
+        /// <param name="widthInFeet"> Obstacle width in feet </param>
+        /// <param name="heightInFeet"> Obstacle height in feet </param>
         public static void AttemptAddChairOrTableToFloorplan(ObstacleType selectedObstacle, int xTileIndex, int yTileIndex, int widthInFeet, int heightInFeet)
         {
             currentObstacleBeingAdded = selectedObstacle;
@@ -238,9 +254,14 @@ namespace VacuumSim.UI.FloorplanGraphics
             }
         }
 
-        public static void AttemptAddChestToFloorplan(ObstacleType selectedObstacle, int xTileIndex, int yTileIndex)
+        /// <summary>
+        /// Edits the "designer mode" floorplan to mark chest tile as "Success" or "Error" if it can/cannot be placed here
+        /// </summary>
+        /// <param name="xTileIndex"> The selected column </param>
+        /// <param name="yTileIndex"> The selected row </param>
+        public static void AttemptAddChestToFloorplan(int xTileIndex, int yTileIndex)
         {
-            currentObstacleBeingAdded = selectedObstacle;
+            currentObstacleBeingAdded = ObstacleType.Chest;
             successAddingObstacle = true; // Initially set to true, could get changed if obstacle is in invalid position
 
             // Check if chest can be placed at this location
@@ -254,6 +275,12 @@ namespace VacuumSim.UI.FloorplanGraphics
                 FloorplanHouseDesigner.ModifyTileBasedOnIndices(xTileIndex, yTileIndex, ObstacleType.Success);
         }
 
+        /// <summary>
+        /// Removes all tiles making up a chair/table from the floorplan
+        /// </summary>
+        /// <param name="HouseLayout"> The floorplan layout for the actual house </param>
+        /// <param name="xTileIndex"> The selected column </param>
+        /// <param name="yTileIndex"> The selected row </param>
         public static void RemoveChairOrTableFromFloorplan(FloorplanLayout HouseLayout, int xTileIndex, int yTileIndex)
         {
             int[,] legIndices = HouseLayout.GetChairOrTableLegIndices(HouseLayout.floorLayout[xTileIndex, yTileIndex]);
@@ -269,6 +296,12 @@ namespace VacuumSim.UI.FloorplanGraphics
             }
         }
 
+        /// <summary>
+        /// Removes the tile making up a chest from the floorplan
+        /// </summary>
+        /// <param name="HouseLayout"> The floorplan layout for the actual house </param>
+        /// <param name="xTileIndex"> The selected column </param>
+        /// <param name="yTileIndex"> The selected row </param>
         public static void RemoveChestFromFloorplan(FloorplanLayout HouseLayout, int xTileIndex, int yTileIndex)
         {
             // Set the tile to be a floor tile
@@ -276,6 +309,9 @@ namespace VacuumSim.UI.FloorplanGraphics
             HouseLayout.floorLayout[xTileIndex, yTileIndex].groupID = -1;
         }
 
+        /// <summary>
+        /// Changes every tile in the "design mode" house layout with a Success obstacle to contain the obstacle currently selected
+        /// </summary>
         public static void ChangeSuccessTilesToCurrentObstacle()
         {
             for (int i = 0; i < FloorplanHouseDesigner.numTilesPerRow; i++)

@@ -86,6 +86,12 @@ namespace VacuumSim
             return floorLayout[xTileIndex, yTileIndex];
         }
 
+        /// <summary>
+        /// Returns the indices of a particular tile, given its coordinates on FloorCanvas
+        /// </summary>
+        /// <param name="selectedXCoord"> The x coordinate of the tile </param>
+        /// <param name="selectedYCoord"> The y coordinate of the tile </param>
+        /// <returns></returns>
         public static int[] GetTileIndices(int selectedXCoord, int selectedYCoord)
         {
             int[] retIndices = new int[2];
