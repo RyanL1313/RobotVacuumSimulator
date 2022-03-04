@@ -91,6 +91,9 @@ namespace VacuumSim
 
         private void ObstacleSelector_SelectedIndexChanged(object sender, EventArgs e)
         {
+            FloorCanvasDesigner.eraserModeOn = false;
+            EraserModeButton.Text = FloorCanvasDesigner.eraserModeOn ? "Eraser Mode: ON" : "Eraser Mode: OFF";
+
             if (ObstacleSelector.SelectedItem.ToString() == "Room")
             {
                 RoomWidthSelector.Enabled = true;
@@ -191,6 +194,7 @@ namespace VacuumSim
             Graphics canvasEditor = e.Graphics;
 
             FloorCanvasDesigner.SetAntiAliasing(canvasEditor);
+            FloorCanvasDesigner.PaintChairAndTableBackgrounds(canvasEditor, HouseLayout);
             FloorCanvasDesigner.DrawFloorplan(canvasEditor, HouseLayout, VacDisplay);
             FloorCanvasDesigner.DrawHouseBoundaryLines(canvasEditor, HouseLayout);
             FloorCanvasDesigner.DrawVacuum(canvasEditor, VacDisplay);

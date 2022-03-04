@@ -99,6 +99,24 @@ namespace VacuumSim.UI.FloorplanGraphics
         }
 
         /// <summary>
+        /// Paints a light sky blue background behind every chair/table tile
+        /// Might remove in future once we actually use a visual display of the floor covering being used.
+        /// </summary>
+        /// <param name="CurrentLayout"> The active FloorplanLayout object </param>
+        /// <param name="CanvasEditor"> Graphics object to edit FloorCanvas </param>
+        public static void PaintChairAndTableBackgrounds(Graphics CanvasEditor, FloorplanLayout CurrentLayout)
+        {
+            for (int i = 0; i < CurrentLayout.numTilesPerRow; i++)
+            {
+                for (int j = 0; j < CurrentLayout.numTilesPerCol; j++)
+                {
+                    if (CurrentLayout.floorLayout[i, j].obstacle == ObstacleType.Chair || CurrentLayout.floorLayout[i, j].obstacle == ObstacleType.Table)
+                        PaintTile(i, j, new SolidBrush(Color.LightSkyBlue), CanvasEditor);
+                }
+            }
+        }
+
+        /// <summary>
         /// Draw a tile (just the outline, no fill) using a Pen */
         /// </summary>
         /// <param name="colIndex"> Index of column </param>
