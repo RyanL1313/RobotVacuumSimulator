@@ -269,7 +269,6 @@ namespace VacuumSim
            Completely arbitary hashing method but kinda fun.
            Totally open to changing this up later.
         */
-
         public string GetFloorPlanID()
         {
             string uuid = "";           // string to build the ID
@@ -281,8 +280,8 @@ namespace VacuumSim
                     Tile t = GetTileFromRowCol(j, i);
                     switch (t.obstacle)         // Add a number to count depending on the tile type
                     {
-                        case ObstacleType.None:
-                            count += (int)ObstacleType.None;
+                        case ObstacleType.Floor:
+                            count += (int)ObstacleType.Floor;
                             break;
 
                         case ObstacleType.Wall:
