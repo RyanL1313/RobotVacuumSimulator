@@ -32,6 +32,19 @@ namespace VacuumSim
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
             this.LeftPane = new System.Windows.Forms.SplitContainer();
+            this.EraserModeButton = new System.Windows.Forms.Button();
+            this.ChairTableDimensionsGroupBox = new System.Windows.Forms.GroupBox();
+            this.ChairTableHeightLabel = new System.Windows.Forms.Label();
+            this.ChairTableWidthLabel = new System.Windows.Forms.Label();
+            this.ChairTableHeightSelector = new System.Windows.Forms.NumericUpDown();
+            this.ChairTableWidthSelector = new System.Windows.Forms.NumericUpDown();
+            this.ObstacleSelectorLabel = new System.Windows.Forms.Label();
+            this.RoomDimensionsGroupBox = new System.Windows.Forms.GroupBox();
+            this.RoomCreatorModeButton = new System.Windows.Forms.Button();
+            this.RoomWidthLabel = new System.Windows.Forms.Label();
+            this.RoomHeightLabel = new System.Windows.Forms.Label();
+            this.RoomWidthSelector = new System.Windows.Forms.NumericUpDown();
+            this.RoomHeightSelector = new System.Windows.Forms.NumericUpDown();
             this.ObstacleSelector = new System.Windows.Forms.ComboBox();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.LoadSavedFloorplanButton = new System.Windows.Forms.Button();
@@ -40,13 +53,11 @@ namespace VacuumSim
             this.SaveFloorplanButton = new System.Windows.Forms.Button();
             this.LoadDefaultFloorplanButton = new System.Windows.Forms.Button();
             this.HouseDimensionsGroupBox = new System.Windows.Forms.GroupBox();
-            this.RoomWidthLabel = new System.Windows.Forms.Label();
-            this.RoomHeightLabel = new System.Windows.Forms.Label();
+            this.HouseWidthLabel = new System.Windows.Forms.Label();
+            this.HouseHeightLabel = new System.Windows.Forms.Label();
             this.HouseWidthSelector = new System.Windows.Forms.NumericUpDown();
             this.HouseHeightSelector = new System.Windows.Forms.NumericUpDown();
             this.FloorTypeGroupBox = new System.Windows.Forms.GroupBox();
-            this.radioButton1 = new System.Windows.Forms.RadioButton();
-            this.WallRadioButton = new System.Windows.Forms.RadioButton();
             this.FriezeCutPileRadioButton = new System.Windows.Forms.RadioButton();
             this.CutPileRadioButton = new System.Windows.Forms.RadioButton();
             this.LoopPileRadioButton = new System.Windows.Forms.RadioButton();
@@ -78,6 +89,12 @@ namespace VacuumSim
             this.LeftPane.Panel1.SuspendLayout();
             this.LeftPane.Panel2.SuspendLayout();
             this.LeftPane.SuspendLayout();
+            this.ChairTableDimensionsGroupBox.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.ChairTableHeightSelector)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.ChairTableWidthSelector)).BeginInit();
+            this.RoomDimensionsGroupBox.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.RoomWidthSelector)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.RoomHeightSelector)).BeginInit();
             this.groupBox1.SuspendLayout();
             this.HouseDimensionsGroupBox.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.HouseWidthSelector)).BeginInit();
@@ -107,6 +124,10 @@ namespace VacuumSim
             // 
             // LeftPane.Panel1
             // 
+            this.LeftPane.Panel1.Controls.Add(this.EraserModeButton);
+            this.LeftPane.Panel1.Controls.Add(this.ChairTableDimensionsGroupBox);
+            this.LeftPane.Panel1.Controls.Add(this.ObstacleSelectorLabel);
+            this.LeftPane.Panel1.Controls.Add(this.RoomDimensionsGroupBox);
             this.LeftPane.Panel1.Controls.Add(this.ObstacleSelector);
             this.LeftPane.Panel1.Controls.Add(this.groupBox1);
             this.LeftPane.Panel1.Controls.Add(this.HouseDimensionsGroupBox);
@@ -125,20 +146,222 @@ namespace VacuumSim
             this.LeftPane.SplitterDistance = 384;
             this.LeftPane.TabIndex = 1;
             // 
+            // EraserModeButton
+            // 
+            this.EraserModeButton.Location = new System.Drawing.Point(3, 449);
+            this.EraserModeButton.Name = "EraserModeButton";
+            this.EraserModeButton.Size = new System.Drawing.Size(127, 25);
+            this.EraserModeButton.TabIndex = 15;
+            this.EraserModeButton.Text = "Eraser Mode: OFF";
+            this.EraserModeButton.UseVisualStyleBackColor = true;
+            this.EraserModeButton.Click += new System.EventHandler(this.EraserModeButton_Click);
+            // 
+            // ChairTableDimensionsGroupBox
+            // 
+            this.ChairTableDimensionsGroupBox.Controls.Add(this.ChairTableHeightLabel);
+            this.ChairTableDimensionsGroupBox.Controls.Add(this.ChairTableWidthLabel);
+            this.ChairTableDimensionsGroupBox.Controls.Add(this.ChairTableHeightSelector);
+            this.ChairTableDimensionsGroupBox.Controls.Add(this.ChairTableWidthSelector);
+            this.ChairTableDimensionsGroupBox.Location = new System.Drawing.Point(206, 402);
+            this.ChairTableDimensionsGroupBox.Name = "ChairTableDimensionsGroupBox";
+            this.ChairTableDimensionsGroupBox.Size = new System.Drawing.Size(178, 100);
+            this.ChairTableDimensionsGroupBox.TabIndex = 15;
+            this.ChairTableDimensionsGroupBox.TabStop = false;
+            this.ChairTableDimensionsGroupBox.Text = "Chair/Table Dimensions";
+            // 
+            // ChairTableHeightLabel
+            // 
+            this.ChairTableHeightLabel.AutoSize = true;
+            this.ChairTableHeightLabel.Location = new System.Drawing.Point(88, 29);
+            this.ChairTableHeightLabel.Name = "ChairTableHeightLabel";
+            this.ChairTableHeightLabel.Size = new System.Drawing.Size(62, 15);
+            this.ChairTableHeightLabel.TabIndex = 3;
+            this.ChairTableHeightLabel.Text = "Height (ft)";
+            // 
+            // ChairTableWidthLabel
+            // 
+            this.ChairTableWidthLabel.AutoSize = true;
+            this.ChairTableWidthLabel.Location = new System.Drawing.Point(6, 29);
+            this.ChairTableWidthLabel.Name = "ChairTableWidthLabel";
+            this.ChairTableWidthLabel.Size = new System.Drawing.Size(58, 15);
+            this.ChairTableWidthLabel.TabIndex = 2;
+            this.ChairTableWidthLabel.Text = "Width (ft)";
+            // 
+            // ChairTableHeightSelector
+            // 
+            this.ChairTableHeightSelector.Enabled = false;
+            this.ChairTableHeightSelector.Increment = new decimal(new int[] {
+            2,
+            0,
+            0,
+            0});
+            this.ChairTableHeightSelector.Location = new System.Drawing.Point(88, 47);
+            this.ChairTableHeightSelector.Maximum = new decimal(new int[] {
+            80,
+            0,
+            0,
+            0});
+            this.ChairTableHeightSelector.Minimum = new decimal(new int[] {
+            2,
+            0,
+            0,
+            0});
+            this.ChairTableHeightSelector.Name = "ChairTableHeightSelector";
+            this.ChairTableHeightSelector.Size = new System.Drawing.Size(65, 23);
+            this.ChairTableHeightSelector.TabIndex = 1;
+            this.ChairTableHeightSelector.Value = new decimal(new int[] {
+            2,
+            0,
+            0,
+            0});
+            this.ChairTableHeightSelector.ValueChanged += new System.EventHandler(this.ChairTableHeightSelector_ValueChanged);
+            // 
+            // ChairTableWidthSelector
+            // 
+            this.ChairTableWidthSelector.Enabled = false;
+            this.ChairTableWidthSelector.Increment = new decimal(new int[] {
+            2,
+            0,
+            0,
+            0});
+            this.ChairTableWidthSelector.Location = new System.Drawing.Point(4, 47);
+            this.ChairTableWidthSelector.Minimum = new decimal(new int[] {
+            2,
+            0,
+            0,
+            0});
+            this.ChairTableWidthSelector.Name = "ChairTableWidthSelector";
+            this.ChairTableWidthSelector.Size = new System.Drawing.Size(65, 23);
+            this.ChairTableWidthSelector.TabIndex = 0;
+            this.ChairTableWidthSelector.Value = new decimal(new int[] {
+            2,
+            0,
+            0,
+            0});
+            this.ChairTableWidthSelector.ValueChanged += new System.EventHandler(this.ChairTableWidthSelector_ValueChanged);
+            // 
+            // ObstacleSelectorLabel
+            // 
+            this.ObstacleSelectorLabel.Location = new System.Drawing.Point(7, 398);
+            this.ObstacleSelectorLabel.Name = "ObstacleSelectorLabel";
+            this.ObstacleSelectorLabel.Size = new System.Drawing.Size(73, 15);
+            this.ObstacleSelectorLabel.TabIndex = 14;
+            this.ObstacleSelectorLabel.Text = "Obstacle";
+            // 
+            // RoomDimensionsGroupBox
+            // 
+            this.RoomDimensionsGroupBox.AutoSize = true;
+            this.RoomDimensionsGroupBox.Controls.Add(this.RoomCreatorModeButton);
+            this.RoomDimensionsGroupBox.Controls.Add(this.RoomWidthLabel);
+            this.RoomDimensionsGroupBox.Controls.Add(this.RoomHeightLabel);
+            this.RoomDimensionsGroupBox.Controls.Add(this.RoomWidthSelector);
+            this.RoomDimensionsGroupBox.Controls.Add(this.RoomHeightSelector);
+            this.RoomDimensionsGroupBox.Location = new System.Drawing.Point(206, 254);
+            this.RoomDimensionsGroupBox.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.RoomDimensionsGroupBox.Name = "RoomDimensionsGroupBox";
+            this.RoomDimensionsGroupBox.Padding = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.RoomDimensionsGroupBox.Size = new System.Drawing.Size(178, 138);
+            this.RoomDimensionsGroupBox.TabIndex = 12;
+            this.RoomDimensionsGroupBox.TabStop = false;
+            this.RoomDimensionsGroupBox.Text = "Room Dimensions";
+            // 
+            // RoomCreatorModeButton
+            // 
+            this.RoomCreatorModeButton.Location = new System.Drawing.Point(6, 92);
+            this.RoomCreatorModeButton.Name = "RoomCreatorModeButton";
+            this.RoomCreatorModeButton.Size = new System.Drawing.Size(152, 25);
+            this.RoomCreatorModeButton.TabIndex = 14;
+            this.RoomCreatorModeButton.Text = "Room Creator Mode: OFF";
+            this.RoomCreatorModeButton.UseVisualStyleBackColor = true;
+            this.RoomCreatorModeButton.Click += new System.EventHandler(this.RoomCreatorModeButton_Click);
+            // 
+            // RoomWidthLabel
+            // 
+            this.RoomWidthLabel.Location = new System.Drawing.Point(5, 26);
+            this.RoomWidthLabel.Name = "RoomWidthLabel";
+            this.RoomWidthLabel.Size = new System.Drawing.Size(64, 15);
+            this.RoomWidthLabel.TabIndex = 9;
+            this.RoomWidthLabel.Text = "Width (ft)";
+            // 
+            // RoomHeightLabel
+            // 
+            this.RoomHeightLabel.Location = new System.Drawing.Point(88, 26);
+            this.RoomHeightLabel.Name = "RoomHeightLabel";
+            this.RoomHeightLabel.Size = new System.Drawing.Size(68, 15);
+            this.RoomHeightLabel.TabIndex = 10;
+            this.RoomHeightLabel.Text = "Height (ft)";
+            // 
+            // RoomWidthSelector
+            // 
+            this.RoomWidthSelector.BackColor = System.Drawing.SystemColors.Window;
+            this.RoomWidthSelector.Enabled = false;
+            this.RoomWidthSelector.Increment = new decimal(new int[] {
+            2,
+            0,
+            0,
+            0});
+            this.RoomWidthSelector.Location = new System.Drawing.Point(5, 54);
+            this.RoomWidthSelector.Margin = new System.Windows.Forms.Padding(9, 8, 9, 8);
+            this.RoomWidthSelector.Minimum = new decimal(new int[] {
+            2,
+            0,
+            0,
+            0});
+            this.RoomWidthSelector.Name = "RoomWidthSelector";
+            this.RoomWidthSelector.Size = new System.Drawing.Size(65, 23);
+            this.RoomWidthSelector.TabIndex = 7;
+            this.RoomWidthSelector.Value = new decimal(new int[] {
+            2,
+            0,
+            0,
+            0});
+            this.RoomWidthSelector.ValueChanged += new System.EventHandler(this.RoomWidthSelector_ValueChanged);
+            // 
+            // RoomHeightSelector
+            // 
+            this.RoomHeightSelector.BackColor = System.Drawing.SystemColors.Window;
+            this.RoomHeightSelector.Enabled = false;
+            this.RoomHeightSelector.Increment = new decimal(new int[] {
+            2,
+            0,
+            0,
+            0});
+            this.RoomHeightSelector.Location = new System.Drawing.Point(88, 54);
+            this.RoomHeightSelector.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.RoomHeightSelector.Maximum = new decimal(new int[] {
+            80,
+            0,
+            0,
+            0});
+            this.RoomHeightSelector.Minimum = new decimal(new int[] {
+            2,
+            0,
+            0,
+            0});
+            this.RoomHeightSelector.Name = "RoomHeightSelector";
+            this.RoomHeightSelector.Size = new System.Drawing.Size(65, 23);
+            this.RoomHeightSelector.TabIndex = 8;
+            this.RoomHeightSelector.Value = new decimal(new int[] {
+            2,
+            0,
+            0,
+            0});
+            this.RoomHeightSelector.ValueChanged += new System.EventHandler(this.RoomHeightSelector_ValueChanged);
+            // 
             // ObstacleSelector
             // 
             this.ObstacleSelector.FormattingEnabled = true;
             this.ObstacleSelector.Items.AddRange(new object[] {
-            "Blank",
-            "Wall",
-            "Chest",
             "Chair",
-            "Table"});
-            this.ObstacleSelector.Location = new System.Drawing.Point(3, 387);
+            "Table",
+            "Chest",
+            "Wall"});
+            this.ObstacleSelector.Location = new System.Drawing.Point(4, 415);
             this.ObstacleSelector.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.ObstacleSelector.Name = "ObstacleSelector";
-            this.ObstacleSelector.Size = new System.Drawing.Size(133, 23);
+            this.ObstacleSelector.Size = new System.Drawing.Size(112, 23);
             this.ObstacleSelector.TabIndex = 11;
+            this.ObstacleSelector.SelectedIndexChanged += new System.EventHandler(this.ObstacleSelector_SelectedIndexChanged);
             // 
             // groupBox1
             // 
@@ -214,34 +437,34 @@ namespace VacuumSim
             // HouseDimensionsGroupBox
             // 
             this.HouseDimensionsGroupBox.AutoSize = true;
-            this.HouseDimensionsGroupBox.Controls.Add(this.RoomWidthLabel);
-            this.HouseDimensionsGroupBox.Controls.Add(this.RoomHeightLabel);
+            this.HouseDimensionsGroupBox.Controls.Add(this.HouseWidthLabel);
+            this.HouseDimensionsGroupBox.Controls.Add(this.HouseHeightLabel);
             this.HouseDimensionsGroupBox.Controls.Add(this.HouseWidthSelector);
             this.HouseDimensionsGroupBox.Controls.Add(this.HouseHeightSelector);
             this.HouseDimensionsGroupBox.Location = new System.Drawing.Point(0, 254);
             this.HouseDimensionsGroupBox.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.HouseDimensionsGroupBox.Name = "HouseDimensionsGroupBox";
             this.HouseDimensionsGroupBox.Padding = new System.Windows.Forms.Padding(3, 2, 3, 2);
-            this.HouseDimensionsGroupBox.Size = new System.Drawing.Size(273, 103);
+            this.HouseDimensionsGroupBox.Size = new System.Drawing.Size(181, 134);
             this.HouseDimensionsGroupBox.TabIndex = 11;
             this.HouseDimensionsGroupBox.TabStop = false;
             this.HouseDimensionsGroupBox.Text = "House Dimensions";
             // 
-            // RoomWidthLabel
+            // HouseWidthLabel
             // 
-            this.RoomWidthLabel.Location = new System.Drawing.Point(5, 26);
-            this.RoomWidthLabel.Name = "RoomWidthLabel";
-            this.RoomWidthLabel.Size = new System.Drawing.Size(64, 15);
-            this.RoomWidthLabel.TabIndex = 9;
-            this.RoomWidthLabel.Text = "Width (ft)";
+            this.HouseWidthLabel.Location = new System.Drawing.Point(5, 26);
+            this.HouseWidthLabel.Name = "HouseWidthLabel";
+            this.HouseWidthLabel.Size = new System.Drawing.Size(64, 15);
+            this.HouseWidthLabel.TabIndex = 9;
+            this.HouseWidthLabel.Text = "Width (ft)";
             // 
-            // RoomHeightLabel
+            // HouseHeightLabel
             // 
-            this.RoomHeightLabel.Location = new System.Drawing.Point(88, 26);
-            this.RoomHeightLabel.Name = "RoomHeightLabel";
-            this.RoomHeightLabel.Size = new System.Drawing.Size(68, 15);
-            this.RoomHeightLabel.TabIndex = 10;
-            this.RoomHeightLabel.Text = "Height (ft)";
+            this.HouseHeightLabel.Location = new System.Drawing.Point(88, 26);
+            this.HouseHeightLabel.Name = "HouseHeightLabel";
+            this.HouseHeightLabel.Size = new System.Drawing.Size(68, 15);
+            this.HouseHeightLabel.TabIndex = 10;
+            this.HouseHeightLabel.Text = "Height (ft)";
             // 
             // HouseWidthSelector
             // 
@@ -254,7 +477,7 @@ namespace VacuumSim
             this.HouseWidthSelector.Location = new System.Drawing.Point(5, 54);
             this.HouseWidthSelector.Margin = new System.Windows.Forms.Padding(9, 8, 9, 8);
             this.HouseWidthSelector.Minimum = new decimal(new int[] {
-            2,
+            20,
             0,
             0,
             0});
@@ -284,7 +507,7 @@ namespace VacuumSim
             0,
             0});
             this.HouseHeightSelector.Minimum = new decimal(new int[] {
-            2,
+            10,
             0,
             0,
             0});
@@ -301,8 +524,6 @@ namespace VacuumSim
             // FloorTypeGroupBox
             // 
             this.FloorTypeGroupBox.AutoSize = true;
-            this.FloorTypeGroupBox.Controls.Add(this.radioButton1);
-            this.FloorTypeGroupBox.Controls.Add(this.WallRadioButton);
             this.FloorTypeGroupBox.Controls.Add(this.FriezeCutPileRadioButton);
             this.FloorTypeGroupBox.Controls.Add(this.CutPileRadioButton);
             this.FloorTypeGroupBox.Controls.Add(this.LoopPileRadioButton);
@@ -315,30 +536,6 @@ namespace VacuumSim
             this.FloorTypeGroupBox.TabIndex = 6;
             this.FloorTypeGroupBox.TabStop = false;
             this.FloorTypeGroupBox.Text = "Floor Types";
-            // 
-            // radioButton1
-            // 
-            this.radioButton1.AutoSize = true;
-            this.radioButton1.Location = new System.Drawing.Point(5, 133);
-            this.radioButton1.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
-            this.radioButton1.Name = "radioButton1";
-            this.radioButton1.Size = new System.Drawing.Size(48, 19);
-            this.radioButton1.TabIndex = 5;
-            this.radioButton1.TabStop = true;
-            this.radioButton1.Text = "Wall";
-            this.radioButton1.UseVisualStyleBackColor = true;
-            // 
-            // WallRadioButton
-            // 
-            this.WallRadioButton.AutoSize = true;
-            this.WallRadioButton.Location = new System.Drawing.Point(6, 110);
-            this.WallRadioButton.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
-            this.WallRadioButton.Name = "WallRadioButton";
-            this.WallRadioButton.Size = new System.Drawing.Size(48, 19);
-            this.WallRadioButton.TabIndex = 4;
-            this.WallRadioButton.TabStop = true;
-            this.WallRadioButton.Text = "Wall";
-            this.WallRadioButton.UseVisualStyleBackColor = true;
             // 
             // FriezeCutPileRadioButton
             // 
@@ -687,6 +884,7 @@ namespace VacuumSim
             this.FloorCanvas.Paint += new System.Windows.Forms.PaintEventHandler(this.FloorCanvas_Paint);
             this.FloorCanvas.MouseClick += new System.Windows.Forms.MouseEventHandler(this.FloorCanvas_Click);
             this.FloorCanvas.MouseMove += new System.Windows.Forms.MouseEventHandler(this.FloorCanvas_Click);
+            this.FloorCanvas.MouseUp += new System.Windows.Forms.MouseEventHandler(this.FloorCanvas_MouseUp);
             // 
             // VacuumBodyTimer
             // 
@@ -710,11 +908,19 @@ namespace VacuumSim
             this.MaximizeBox = false;
             this.Name = "Form1";
             this.Text = "Team 8 Robot Vaccuum Simulation";
+            this.Load += new System.EventHandler(this.Form1_Load);
             this.LeftPane.Panel1.ResumeLayout(false);
             this.LeftPane.Panel1.PerformLayout();
             this.LeftPane.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.LeftPane)).EndInit();
             this.LeftPane.ResumeLayout(false);
+            this.ChairTableDimensionsGroupBox.ResumeLayout(false);
+            this.ChairTableDimensionsGroupBox.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.ChairTableHeightSelector)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.ChairTableWidthSelector)).EndInit();
+            this.RoomDimensionsGroupBox.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.RoomWidthSelector)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.RoomHeightSelector)).EndInit();
             this.groupBox1.ResumeLayout(false);
             this.HouseDimensionsGroupBox.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.HouseWidthSelector)).EndInit();
@@ -751,12 +957,11 @@ namespace VacuumSim
         private System.Windows.Forms.ComboBox RobotPathAlgorithmSelector;
         private System.Windows.Forms.CheckBox RunAllAlgorithmsCheckbox;
         private System.Windows.Forms.GroupBox HouseDimensionsGroupBox;
-        private System.Windows.Forms.Label RoomWidthLabel;
-        private System.Windows.Forms.Label RoomHeightLabel;
+        private System.Windows.Forms.Label HouseWidthLabel;
+        private System.Windows.Forms.Label HouseHeightLabel;
         private System.Windows.Forms.NumericUpDown HouseWidthSelector;
         private System.Windows.Forms.NumericUpDown HouseHeightSelector;
         private System.Windows.Forms.GroupBox FloorTypeGroupBox;
-        private System.Windows.Forms.RadioButton WallRadioButton;
         private System.Windows.Forms.RadioButton FriezeCutPileRadioButton;
         private System.Windows.Forms.RadioButton CutPileRadioButton;
         private System.Windows.Forms.RadioButton LoopPileRadioButton;
@@ -773,7 +978,6 @@ namespace VacuumSim
         private System.Windows.Forms.Button LoadSimulationButton;
         private System.Windows.Forms.Button SaveFloorplanButton;
         private System.Windows.Forms.Button LoadDefaultFloorplanButton;
-        private System.Windows.Forms.RadioButton radioButton1;
         private System.Windows.Forms.PictureBox FloorCanvas;
         private System.Windows.Forms.ComboBox ObstacleSelector;
         private System.Windows.Forms.Timer VacuumBodyTimer;
@@ -783,6 +987,19 @@ namespace VacuumSim
         private System.Windows.Forms.Button LoadSavedFloorplanButton;
         private System.Windows.Forms.Label SimTimeElapsedLabel;
         private System.Windows.Forms.Label SimTimeElapsedTitleLabel;
+        private System.Windows.Forms.GroupBox RoomDimensionsGroupBox;
+        private System.Windows.Forms.Label RoomWidthLabel;
+        private System.Windows.Forms.Label RoomHeightLabel;
+        private System.Windows.Forms.NumericUpDown RoomWidthSelector;
+        private System.Windows.Forms.NumericUpDown RoomHeightSelector;
+        private System.Windows.Forms.Button RoomCreatorModeButton;
+        private System.Windows.Forms.Label ObstacleSelectorLabel;
+        private System.Windows.Forms.GroupBox ChairTableDimensionsGroupBox;
+        private System.Windows.Forms.Label ChairTableHeightLabel;
+        private System.Windows.Forms.Label ChairTableWidthLabel;
+        private System.Windows.Forms.NumericUpDown ChairTableHeightSelector;
+        private System.Windows.Forms.NumericUpDown ChairTableWidthSelector;
+        private System.Windows.Forms.Button EraserModeButton;
     }
 }
 
