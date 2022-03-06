@@ -38,7 +38,7 @@ namespace VacuumSim
             {
                 for (int j = 0; j < maxTilesPerCol; j++)
                 {
-                    floorLayout[i, j] = new Tile(i * tileSideLength, j * tileSideLength, ObstacleType.None, 0.67f);
+                    floorLayout[i, j] = new Tile(i * tileSideLength, j * tileSideLength, ObstacleType.None, 1.0f);
                 }
             }
         }

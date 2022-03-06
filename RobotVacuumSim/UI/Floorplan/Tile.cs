@@ -26,7 +26,9 @@ namespace VacuumSim
         // CleanTile reduces this tile's dirtiness level by a given efficiency percentgage float 0..1.
         public void CleanTile(float efficiency)
         {
-            this.Dirtiness = this.Dirtiness * efficiency;
+            float dirtinessDiff = this.Dirtiness * efficiency;
+
+            this.Dirtiness = this.Dirtiness - dirtinessDiff;
         }
 
         // GetDirtinessAsString returns the dirtiness level of a tile to the given precision.
