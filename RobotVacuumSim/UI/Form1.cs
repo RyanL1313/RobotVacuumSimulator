@@ -194,6 +194,7 @@ namespace VacuumSim
             Graphics canvasEditor = e.Graphics;
 
             FloorCanvasDesigner.SetAntiAliasing(canvasEditor);
+            // FloorCanvasDesigner.DisplayFloorCovering(canvasEditor, HouseLayout);
             FloorCanvasDesigner.PaintChairAndTableBackgrounds(canvasEditor, HouseLayout);
             FloorCanvasDesigner.DrawVacuum(canvasEditor, VacDisplay);
             FloorCanvasDesigner.DrawFloorplan(canvasEditor, HouseLayout, VacDisplay);
@@ -289,7 +290,7 @@ namespace VacuumSim
 
             if (FloorCanvasDesigner.successAddingObstacle && !FloorCanvasDesigner.eraserModeOn)
             {
-                FloorCanvasDesigner.ChangeSuccessTilesToCurrentObstacle(); // Change success tiles in FloorplanHouseDesigner to be the same obstacle type that was just added         
+                FloorCanvasDesigner.ChangeSuccessTilesToCurrentObstacle(); // Change success tiles in FloorplanHouseDesigner to be the same obstacle type that was just added
                 HouseLayout.DeepCopyFloorplan(FloorCanvasDesigner.FloorplanHouseDesigner); // Copy the designer mode house layout to now be the actual house layout
             }
 
@@ -349,7 +350,6 @@ namespace VacuumSim
 
         private void LoadSavedFloorplanButton_Click(object sender, EventArgs e)
         {
-
         }
 
         private void StartSimulationButton_Click(object sender, EventArgs e)
@@ -372,7 +372,7 @@ namespace VacuumSim
         {
             // Alternate between drawing and eraser modes
             FloorCanvasDesigner.eraserModeOn = !FloorCanvasDesigner.eraserModeOn;
-         
+
             // Update eraser mode button text
             EraserModeButton.Text = FloorCanvasDesigner.eraserModeOn ? "Eraser Mode: ON" : "Eraser Mode: OFF";
         }
@@ -402,7 +402,7 @@ namespace VacuumSim
             Simulation.simStarted = true;
             Simulation.simTimeElapsed = 0;
             FloorCanvasCalculator.frameCount = 0;
-            
+
             VacDisplay.batterySecondsRemaining = (int)RobotBatteryLifeSelector.Value * 60;
         }
 
@@ -438,7 +438,6 @@ namespace VacuumSim
 
         private void Form1_Load(object sender, EventArgs e)
         {
-
         }
     }
 

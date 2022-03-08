@@ -34,6 +34,11 @@ namespace VacuumSim.UI.FloorplanGraphics
                 CanvasEditor.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.None;
         }
 
+        public static void DisplayFloorCovering(Graphics CanvasEditor, FloorplanLayout HouseLayout)
+        {
+            //FloorplanLayout CurrentLayout = currentlyAddingObstacle ? FloorplanHouseDesigner : HouseLayout;
+        }
+
         /// <summary>
         /// Draws the floorplan to FloorCanvas based on HouseLayout's 2D array of tiles
         /// </summary>
@@ -43,6 +48,9 @@ namespace VacuumSim.UI.FloorplanGraphics
         {
             // Get the current layout, depending on if we're in design mode or just displaying the floorplan
             FloorplanLayout CurrentLayout = currentlyAddingObstacle ? FloorplanHouseDesigner : HouseLayout;
+
+            TextureBrush WallTextureBrush = new TextureBrush(Properties.Resources.wood);
+            WallTextureBrush.WrapMode = System.Drawing.Drawing2D.WrapMode.Tile;
 
             for (int i = 0; i < CurrentLayout.numTilesPerRow; i++)
             {
@@ -54,7 +62,8 @@ namespace VacuumSim.UI.FloorplanGraphics
                     }
                     else if (CurrentLayout.floorLayout[i, j].obstacle == ObstacleType.Wall) // Wall tile
                     {
-                        PaintTile(i, j, new SolidBrush(Color.Black), CanvasEditor);
+                        //PaintTile(i, j, new SolidBrush(Color.Black), CanvasEditor);
+                        PaintTile(i, j, WallTextureBrush, CanvasEditor);
                     }
                     else if (CurrentLayout.floorLayout[i, j].obstacle == ObstacleType.Chest) // Chest tile
                     {
@@ -93,7 +102,7 @@ namespace VacuumSim.UI.FloorplanGraphics
         /// <param name="colIndex"> Index of chosen column </param>
         /// <param name="brush"> Brush chosen to fill in the tile </param>
         /// <param name="canvasEditor"> Graphics object to edit FloorCanvas </param>
-        private static void PaintTile(int rowIndex, int colIndex, SolidBrush brush, Graphics canvasEditor)
+        private static void PaintTile(int rowIndex, int colIndex, Brush brush, Graphics canvasEditor)
         {
             canvasEditor.FillRectangle(brush, FloorplanLayout.tileSideLength * rowIndex, FloorplanLayout.tileSideLength * colIndex, FloorplanLayout.tileSideLength + 1, FloorplanLayout.tileSideLength + 1);
         }
