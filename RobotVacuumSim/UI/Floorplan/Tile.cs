@@ -13,6 +13,8 @@ namespace VacuumSim
         public int x; // x coordinate of top left tile corner
         public int y; // y coordinate of top left tile corner
         public ObstacleType obstacle;
+        public int groupID; // ID of obstacle group this tile belongs to
+        public int roomID; // ID of room this tile belongs to
 
         public float Dirtiness;
         private float dirtyThreshold = 0.05f;
