@@ -302,11 +302,9 @@ namespace VacuumSim
         {
             // TO-DO: Calculate next (x, y) position of vacuum based on selected algorithm (backend)
 
-            // Initial attempt at animating the vacuum to go in a circle
-            // Note: Vacuum should go vacuumSpeed / 4 distance after each timer tick because there's 4 frames per "simulation second"
-            // Remove this in future
-            VacDisplay.vacuumCoords[0] += (VacDisplay.vacuumSpeed / 4) * (float)Math.Cos((Math.PI * VacDisplay.vacuumHeading) / 180);
-            VacDisplay.vacuumCoords[1] += (VacDisplay.vacuumSpeed / 4) * (float)Math.Sin((Math.PI * VacDisplay.vacuumHeading) / 180);
+            // Animating the vacuum to go in a circle (change this to move the vacuum however you'd like)
+            VacDisplay.vacuumCoords[0] += FloorCanvasCalculator.GetDistanceTraveledPerFrame(VacDisplay.vacuumSpeed) * (float)Math.Cos((Math.PI * VacDisplay.vacuumHeading) / 180);
+            VacDisplay.vacuumCoords[1] += FloorCanvasCalculator.GetDistanceTraveledPerFrame(VacDisplay.vacuumSpeed) * (float)Math.Sin((Math.PI * VacDisplay.vacuumHeading) / 180);
 
             VacDisplay.vacuumHeading = (VacDisplay.vacuumHeading + 45) % 360;
 
