@@ -13,24 +13,6 @@ namespace VacuumSim
     public enum ObstacleType
     { Floor, Wall, Chest, Chair, Table, Doorway, Error, Success };
 
-    public struct Tile
-    {
-        public int x; // x coordinate of top left tile corner
-        public int y; // y coordinate of top left tile corner
-        public ObstacleType obstacle;
-        public int groupID; // ID of obstacle group this tile belongs to
-        public int roomID; // ID of room this tile belongs to
-
-        public Tile(int x, int y, ObstacleType obstacle)
-        {
-            this.x = x;
-            this.y = y;
-            this.obstacle = obstacle;
-            this.groupID = -1; // Originally belongs to no group, just regular floor tile
-            this.roomID = -1; // Originally belongs to no room
-        }
-    }
-
     public class FloorplanLayout
     {
         public const int maxTilesPerRow = 50; // Maximum tiles allowed per row
@@ -67,7 +49,7 @@ namespace VacuumSim
             {
                 for (int j = 0; j < maxTilesPerCol; j++)
                 {
-                    floorLayout[i, j] = new Tile(i * tileSideLength, j * tileSideLength, ObstacleType.Floor);
+                    floorLayout[i, j] = new Tile(i * tileSideLength, j * tileSideLength, ObstacleType.Floor, 1.0f);
                 }
             }
         }
@@ -123,6 +105,7 @@ namespace VacuumSim
         }
 
         /* Modifies the obstacle located in a certain tile based on the (x, y) coordinates in the FloorCanvas PictureBox */
+
         public void ModifyTileBasedOnCoordinates(int x, int y, ObstacleType ob)
         {
             // Get row, col indices of selected tile based on the coordinates selected by the user
@@ -136,8 +119,9 @@ namespace VacuumSim
         }
 
         /* Modifies the obstacle located in a certain tile based on the chosen indices of floorLayout */
+
         public void ModifyTileBasedOnIndices(int xTileIndex, int yTileIndex, ObstacleType ob)
-        { 
+        {
             if (xTileIndex > numTilesPerRow || yTileIndex > numTilesPerCol)
                 return; // Outside grid
 
@@ -146,6 +130,7 @@ namespace VacuumSim
 
         /* Copies every non-static attribute of "source". */
         /* Used when switching between designer floorplan layout and actual floorplan layout */
+
         public void DeepCopyFloorplan(FloorplanLayout source)
         {
             for (int i = 0; i < numTilesPerRow; i++)
@@ -269,6 +254,7 @@ namespace VacuumSim
            Completely arbitary hashing method but kinda fun.
            Totally open to changing this up later.
         */
+
         public string GetFloorPlanID()
         {
             string uuid = "";           // string to build the ID
