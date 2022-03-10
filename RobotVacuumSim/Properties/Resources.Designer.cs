@@ -61,22 +61,42 @@ namespace VacuumSim.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Icon Roomba {
+        internal static System.Drawing.Bitmap cutpile {
             get {
-                object obj = ResourceManager.GetObject("Roomba", resourceCulture);
-                return ((System.Drawing.Icon)(obj));
+                object obj = ResourceManager.GetObject("cutpile", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
             }
         }
         
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap wall_tex {
+        internal static System.Drawing.Bitmap frieze {
             get {
-                object obj = ResourceManager.GetObject("wall_tex", resourceCulture);
+                object obj = ResourceManager.GetObject("frieze", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap looppile {
+            get {
+                object obj = ResourceManager.GetObject("looppile", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
+        /// </summary>
+        internal static System.Drawing.Icon Roomba {
+            get {
+                object obj = ResourceManager.GetObject("Roomba", resourceCulture);
+                return ((System.Drawing.Icon)(obj));
             }
         }
         
