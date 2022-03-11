@@ -175,7 +175,7 @@ namespace VacuumSim
 
             // Set the vacuum timer to update every 1000 / (simulation speed) / 4 seconds
             // The reason I divide by 4 is so 4 frames appear each "simulation second"
-            VacuumBodyTimer.Interval = 1000 / Simulation.simSpeed / 4;
+            VacuumBodyTimer.Interval = 1000 / Simulation.simSpeed / FloorCanvasCalculator.framesPerSimSecond;
         }
 
         private void RobotSpeedSelector_ValueChanged(object sender, EventArgs e)

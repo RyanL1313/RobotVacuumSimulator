@@ -95,7 +95,7 @@ namespace VacuumSim.UI.FloorplanGraphics
         /// <param name="canvasEditor"> Graphics object to edit FloorCanvas </param>
         private static void PaintTile(int rowIndex, int colIndex, SolidBrush brush, Graphics canvasEditor)
         {
-            canvasEditor.FillRectangle(brush, FloorplanLayout.tileSideLength * rowIndex, FloorplanLayout.tileSideLength * colIndex, FloorplanLayout.tileSideLength + 1, FloorplanLayout.tileSideLength + 1);
+            canvasEditor.FillRectangle(brush, FloorplanLayout.tileSideLength * rowIndex, FloorplanLayout.tileSideLength * colIndex, FloorplanLayout.tileSideLength, FloorplanLayout.tileSideLength);
         }
 
         /// <summary>
@@ -152,9 +152,9 @@ namespace VacuumSim.UI.FloorplanGraphics
 
             // Get the vertices of the boundary
             Point p1 = new Point(0, 0);
-            Point p2 = new Point(0, HouseLayout.numTilesPerCol * FloorplanLayout.tileSideLength + 1);
-            Point p3 = new Point(HouseLayout.numTilesPerRow * FloorplanLayout.tileSideLength + 1, HouseLayout.numTilesPerCol * FloorplanLayout.tileSideLength + 1);
-            Point p4 = new Point(HouseLayout.numTilesPerRow * FloorplanLayout.tileSideLength + 1, 0);
+            Point p2 = new Point(0, HouseLayout.numTilesPerCol * FloorplanLayout.tileSideLength);
+            Point p3 = new Point(HouseLayout.numTilesPerRow * FloorplanLayout.tileSideLength, HouseLayout.numTilesPerCol * FloorplanLayout.tileSideLength);
+            Point p4 = new Point(HouseLayout.numTilesPerRow * FloorplanLayout.tileSideLength, 0);
 
             // Draw the house boundary
             CanvasEditor.DrawLine(BlackPen, p1, p2);

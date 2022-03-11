@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Drawing;
 using VacuumSim.Sim;
+using System.Diagnostics;
 
 namespace VacuumSim.UI.FloorplanGraphics
 {
@@ -23,15 +24,16 @@ namespace VacuumSim.UI.FloorplanGraphics
         public static void CalculateWhiskerCoordinates(VacuumDisplay VacDisplay)
         {
             // Choose fixed start (x, y) coordinates of whiskers based on vacuum heading
-            VacDisplay.whiskersStartingCoords[0] = VacDisplay.vacuumCoords[0] + (VacuumDisplay.vacuumDiameter / 2) * (float)Math.Cos((Math.PI * VacDisplay.vacuumHeading - 30) / 180);
-            VacDisplay.whiskersStartingCoords[1] = VacDisplay.vacuumCoords[1] + (VacuumDisplay.vacuumDiameter / 2) * (float)Math.Sin((Math.PI * VacDisplay.vacuumHeading - 30) / 180);
+            VacDisplay.whiskersStartingCoords[0] = VacDisplay.vacuumCoords[0] + (VacuumDisplay.vacuumDiameter / 2.0f) * (float)Math.Cos((Math.PI * VacDisplay.vacuumHeading - 30) / 180);
+            VacDisplay.whiskersStartingCoords[1] = VacDisplay.vacuumCoords[1] + (VacuumDisplay.vacuumDiameter / 2.0f) * (float)Math.Sin((Math.PI * VacDisplay.vacuumHeading - 30) / 180);
 
             // Calculate ending (x, y) coordinates of whiskers
-            // Also, remember that 2 inch long whiskers = tile side length (2 ft = 24 inches) / 12
-            float lenWhiskersExtendFromVacuum = FloorplanLayout.tileSideLength / 12;
+            // 2 inch long whiskers = tile side length (2 ft = 24 inches) / 12
+            // Also have to convert the 2 inches to screen coordinates
+            float lenWhiskersExtendFromVacuum = FloorplanLayout.tileSideLength / 12.0f;
             VacDisplay.whiskersHeadingWRTVacuum = (VacDisplay.whiskersHeadingWRTVacuum + 30) % 270;
-            VacDisplay.whiskersEndingCoords[0] = VacDisplay.vacuumCoords[0] + (VacuumDisplay.vacuumDiameter / 2 + lenWhiskersExtendFromVacuum) * (float)Math.Cos((Math.PI * VacDisplay.vacuumHeading - VacDisplay.whiskersHeadingWRTVacuum) / 180);
-            VacDisplay.whiskersEndingCoords[1] = VacDisplay.vacuumCoords[1] + (VacuumDisplay.vacuumDiameter / 2 + lenWhiskersExtendFromVacuum) * (float)Math.Sin((Math.PI * VacDisplay.vacuumHeading - VacDisplay.whiskersHeadingWRTVacuum) / 180);
+            VacDisplay.whiskersEndingCoords[0] = VacDisplay.vacuumCoords[0] + (VacuumDisplay.vacuumDiameter / 2.0f + lenWhiskersExtendFromVacuum) * (float)Math.Cos((Math.PI * VacDisplay.vacuumHeading - VacDisplay.whiskersHeadingWRTVacuum) / 180);
+            VacDisplay.whiskersEndingCoords[1] = VacDisplay.vacuumCoords[1] + (VacuumDisplay.vacuumDiameter / 2.0f + lenWhiskersExtendFromVacuum) * (float)Math.Sin((Math.PI * VacDisplay.vacuumHeading - VacDisplay.whiskersHeadingWRTVacuum) / 180);
         }
 
         /// <summary>

@@ -46,6 +46,8 @@ namespace VacuumSim
             this.y = y;
             this.obstacle = obstacle;
             this.Dirtiness = 0.5f;
+            this.groupID = -1;
+            this.roomID = -1;
         }
 
         // overloaded constructor for specifying float dirtiness.
@@ -54,6 +56,8 @@ namespace VacuumSim
             this.x = x;
             this.y = y;
             this.obstacle = obstacle;
+            this.groupID = -1;
+            this.roomID = -1;
 
             // Enforce given dirtiness is between 0-100 (percentage)
             if (dirtiness > 100.0f)
