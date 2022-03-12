@@ -300,8 +300,6 @@ namespace VacuumSim
             HouseWidthSelector.Value = 50; // 25 tiles wide
             HouseHeightSelector.Value = 40; // 20 tiles high
 
-            // Read the floorplan data file and store it in HouseLayoutAccessor.floorLayout
-            // Modify this in the future
             FloorplanFileReader.LoadTileGridData("../../../UI/Floorplan/DefaultFloorplan.txt", HouseLayout);
 
             FloorCanvas.Invalidate(); // Re-trigger paint event
@@ -309,7 +307,11 @@ namespace VacuumSim
 
         private void LoadSavedFloorplanButton_Click(object sender, EventArgs e)
         {
+            FloorplanFileReader.LoadTileGridData("../../../UI/Floorplan/SavedFloorplan.txt", HouseLayout);
 
+            // Set the house width and height selector values to the size of the newly-loaded floorplan
+            HouseWidthSelector.Value = HouseLayout.numTilesPerRow * 2;
+            HouseHeightSelector.Value = HouseLayout.numTilesPerCol * 2;
         }
 
         private void StartSimulationButton_Click(object sender, EventArgs e)
