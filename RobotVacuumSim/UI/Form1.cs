@@ -521,6 +521,8 @@ namespace VacuumSim
             HouseLayout.gridLinesOn = false;
             StartSimulationButton.Enabled = false;
             StopSimulationButton.Enabled = true;
+            FinishOrEditFloorplanButton.Enabled = false;
+            ControlsPane.Panel1.Enabled = false;
             Simulation.simStarted = true;
             Simulation.simTimeElapsed = 0;
             FloorCanvasCalculator.frameCount = 0;
@@ -538,6 +540,8 @@ namespace VacuumSim
             HouseLayout.gridLinesOn = true;
             StartSimulationButton.Enabled = true;
             StopSimulationButton.Enabled = false;
+            FinishOrEditFloorplanButton.Enabled = true;
+            ControlsPane.Panel1.Enabled = true;
             Simulation.simStarted = false;
             Simulation.simTimeElapsed = 0;
             FloorCanvasCalculator.frameCount = 0;

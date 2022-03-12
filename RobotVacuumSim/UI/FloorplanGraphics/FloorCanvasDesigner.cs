@@ -179,10 +179,10 @@ namespace VacuumSim.UI.FloorplanGraphics
             SolidBrush vacuumBrush;
 
             // Determine brush and pen color
-            if (!currentlyPlacingVacuum) // Not currently placing the vacuum. Draw it charcoal gray
+            if (!currentlyPlacingVacuum) // Not currently placing the vacuum. Draw it magenta
             {
-                whiskersPen = new Pen(Color.Indigo);
-                vacuumBrush = new SolidBrush(Color.Indigo);
+                whiskersPen = new Pen(Color.Magenta);
+                vacuumBrush = new SolidBrush(Color.Magenta);
             }
             else // Currently placing the vacuum. Will be red or lime green depending on if vacuum is in valid location or not
             {
@@ -254,7 +254,7 @@ namespace VacuumSim.UI.FloorplanGraphics
         /// <summary>
         /// This gets called as user is clicking and dragging the vacuum around.
         /// It sets the "vacuumPlacingLocationIsValid" flag to true or false depending on if the vacuum was placed in a valid location or not.
-        /// Then, in "FloorCanvas_MouseUp" in Form1.cs, it is decided if the vacuum can be placed or not, depending on if it was successfully placed or not
+        /// Then, in "FloorCanvas_MouseUp" in Form1.cs, it is decided if the vacuum can be placed or not, depending on if it was placed in a valid location or not
         /// </summary>
         /// <param name="HouseLayout"> The floorplan layout for the actual house </param>
         /// <param name="VacDisplay"> The display of the vacuum onto the canvas </param>
