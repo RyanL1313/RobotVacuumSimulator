@@ -34,9 +34,43 @@ namespace VacuumSim.UI.FloorplanGraphics
                 CanvasEditor.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.None;
         }
 
-        public static void DisplayFloorCovering(Graphics CanvasEditor, FloorplanLayout HouseLayout)
+        public static void DisplayFloorCovering(Graphics CanvasEditor, FloorplanLayout HouseLayout, string SelectedFloorType)
         {
-            //FloorplanLayout CurrentLayout = currentlyAddingObstacle ? FloorplanHouseDesigner : HouseLayout;
+            FloorplanLayout CurrentLayout = currentlyAddingObstacle ? FloorplanHouseDesigner : HouseLayout;
+            TextureBrush FloorTextureBrush;
+
+            switch (SelectedFloorType)
+            {
+                case "LoopPileRadioButton":
+                    FloorTextureBrush = new TextureBrush(Properties.Resources.looppile);
+                    break;
+
+                case "CutPileRadioButton":
+                    FloorTextureBrush = new TextureBrush(Properties.Resources.cutpile);
+                    break;
+
+                case "FriezeCutPileRadioButton":
+                    FloorTextureBrush = new TextureBrush(Properties.Resources.frieze);
+                    break;
+
+                default:
+                case "HardWoodRadioButton":
+                    FloorTextureBrush = new TextureBrush(Properties.Resources.wood);
+                    break;
+            }
+            //TextureBrush FloorTextureBrush = new TextureBrush(Properties.Resources.wood);
+            FloorTextureBrush.WrapMode = System.Drawing.Drawing2D.WrapMode.Tile;
+
+            for (int i = 0; i < CurrentLayout.numTilesPerRow; i++)
+            {
+                for (int j = 0; j < CurrentLayout.numTilesPerCol; j++)
+                {
+                    if ((CurrentLayout.floorLayout[i, j].obstacle == ObstacleType.Floor || CurrentLayout.floorLayout[i, j].obstacle == ObstacleType.Doorway)) // Blank tile
+                    {
+                        PaintTile(i, j, FloorTextureBrush, CanvasEditor);
+                    }
+                }
+            }
         }
 
         /// <summary>
@@ -49,9 +83,6 @@ namespace VacuumSim.UI.FloorplanGraphics
             // Get the current layout, depending on if we're in design mode or just displaying the floorplan
             FloorplanLayout CurrentLayout = currentlyAddingObstacle ? FloorplanHouseDesigner : HouseLayout;
 
-            TextureBrush WallTextureBrush = new TextureBrush(Properties.Resources.wood);
-            WallTextureBrush.WrapMode = System.Drawing.Drawing2D.WrapMode.Tile;
-
             for (int i = 0; i < CurrentLayout.numTilesPerRow; i++)
             {
                 for (int j = 0; j < CurrentLayout.numTilesPerCol; j++)
@@ -62,8 +93,7 @@ namespace VacuumSim.UI.FloorplanGraphics
                     }
                     else if (CurrentLayout.floorLayout[i, j].obstacle == ObstacleType.Wall) // Wall tile
                     {
-                        //PaintTile(i, j, new SolidBrush(Color.Black), CanvasEditor);
-                        PaintTile(i, j, WallTextureBrush, CanvasEditor);
+                        PaintTile(i, j, new SolidBrush(Color.Black), CanvasEditor);
                     }
                     else if (CurrentLayout.floorLayout[i, j].obstacle == ObstacleType.Chest) // Chest tile
                     {

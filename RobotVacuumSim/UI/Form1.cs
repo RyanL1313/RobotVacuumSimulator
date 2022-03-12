@@ -193,8 +193,11 @@ namespace VacuumSim
         {
             Graphics canvasEditor = e.Graphics;
 
+            var SelectedFloorType = FloorTypeGroupBox.Controls.OfType<RadioButton>()
+                           .FirstOrDefault(n => n.Checked).Name;
+
             FloorCanvasDesigner.SetAntiAliasing(canvasEditor);
-            // FloorCanvasDesigner.DisplayFloorCovering(canvasEditor, HouseLayout);
+            FloorCanvasDesigner.DisplayFloorCovering(canvasEditor, HouseLayout, SelectedFloorType);
             FloorCanvasDesigner.PaintChairAndTableBackgrounds(canvasEditor, HouseLayout);
             FloorCanvasDesigner.DrawVacuum(canvasEditor, VacDisplay);
             FloorCanvasDesigner.DrawFloorplan(canvasEditor, HouseLayout, VacDisplay);
@@ -399,6 +402,7 @@ namespace VacuumSim
             ChairTableWidthSelector.Enabled = false;
             ChairTableHeightSelector.Enabled = false;
             ObstacleSelector.Enabled = false;
+            FloorTypeGroupBox.Enabled = false;
             Simulation.simStarted = true;
             Simulation.simTimeElapsed = 0;
             FloorCanvasCalculator.frameCount = 0;
@@ -428,6 +432,7 @@ namespace VacuumSim
             ChairTableWidthSelector.Enabled = true;
             ChairTableHeightSelector.Enabled = true;
             ObstacleSelector.Enabled = true;
+            FloorTypeGroupBox.Enabled = true;
             Simulation.simStarted = false;
             Simulation.simTimeElapsed = 0;
             FloorCanvasCalculator.frameCount = 0;
@@ -438,6 +443,12 @@ namespace VacuumSim
 
         private void Form1_Load(object sender, EventArgs e)
         {
+        }
+
+        // Just forces a redraw
+        private void FloorTypeControlChanged(object sender, EventArgs e)
+        {
+            FloorCanvas.Invalidate();
         }
     }
 
