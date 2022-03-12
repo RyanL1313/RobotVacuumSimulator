@@ -22,6 +22,8 @@ namespace VacuumSim.UI.FloorplanGraphics
         public static int[] currentIndicesOfSelectedTile = { -1, -1 }; // col, row indices of tile currently selected
         public static FloorplanLayout FloorplanHouseDesigner; // Floorplan that gets used when adding obstacle
 
+        private const int TransparentTileOpacity = 127;
+
         /// <summary>
         /// Turn on anti-aliasing when simulation is running
         /// </summary>
@@ -104,22 +106,22 @@ namespace VacuumSim.UI.FloorplanGraphics
                         if (CurrentLayout.gridLinesOn)
                             DrawTileOutline(i, j, new Pen(Color.Black), CanvasEditor);
 
-                        DrawChairOrTable(i, j, CurrentLayout, new SolidBrush(Color.DarkSlateBlue), CanvasEditor);
+                        DrawChairOrTable(i, j, CurrentLayout, new SolidBrush(Color.FromArgb(TransparentTileOpacity, Color.DarkSlateBlue)), CanvasEditor);
                     }
                     else if (CurrentLayout.floorLayout[i, j].obstacle == ObstacleType.Table) // Table tile
                     {
                         if (CurrentLayout.gridLinesOn)
                             DrawTileOutline(i, j, new Pen(Color.Black), CanvasEditor);
 
-                        DrawChairOrTable(i, j, CurrentLayout, new SolidBrush(Color.Tomato), CanvasEditor);
+                        DrawChairOrTable(i, j, CurrentLayout, new SolidBrush(Color.FromArgb(TransparentTileOpacity, Color.Tomato)), CanvasEditor);
                     }
                     else if (CurrentLayout.floorLayout[i, j].obstacle == ObstacleType.Success) // Success tile
                     {
-                        PaintTile(i, j, new SolidBrush(Color.LimeGreen), CanvasEditor);
+                        PaintTile(i, j, new SolidBrush(Color.FromArgb(TransparentTileOpacity, Color.LimeGreen)), CanvasEditor);
                     }
                     else if (CurrentLayout.floorLayout[i, j].obstacle == ObstacleType.Error) // Error tile
                     {
-                        PaintTile(i, j, new SolidBrush(Color.Red), CanvasEditor);
+                        PaintTile(i, j, new SolidBrush(Color.FromArgb(TransparentTileOpacity, Color.Red)), CanvasEditor);
                     }
                 }
             }
@@ -150,7 +152,7 @@ namespace VacuumSim.UI.FloorplanGraphics
                 for (int j = 0; j < CurrentLayout.numTilesPerCol; j++)
                 {
                     if (CurrentLayout.floorLayout[i, j].obstacle == ObstacleType.Chair || CurrentLayout.floorLayout[i, j].obstacle == ObstacleType.Table)
-                        PaintTile(i, j, new SolidBrush(Color.LightSkyBlue), CanvasEditor);
+                        PaintTile(i, j, new SolidBrush(Color.FromArgb(TransparentTileOpacity, Color.LightSkyBlue)), CanvasEditor);
                 }
             }
         }
