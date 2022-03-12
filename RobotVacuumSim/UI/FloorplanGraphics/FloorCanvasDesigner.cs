@@ -13,6 +13,11 @@ namespace VacuumSim.UI.FloorplanGraphics
 {
     public class FloorCanvasDesigner
     {
+        public static bool editingFloorplan = true; // Is the user currently editing the floorplan?
+        public static bool settingVacuumAttributes = false; // Is the user in the vacuum attribute editing stage?
+        public static bool currentlyPlacingVacuum = false; // Is the user currently placing the vacuum?
+        public static bool vacuumPlacingLocationIsValid = true; // Is the vacuum currently being placed in a valid location?
+        public static bool successPlacingVacuum = false; // Was the previous attempt at placing the vacuum onto the floorplan successful?
         public static bool eraserModeOn = false; // Is the user currently drawing in eraser mode?
         public static bool roomCreatorModeOn = false; // Is the user currently in room creator mode?
         public static bool chairTableDrawingModeOn = false; // Is the user currently in chair/table drawing mode?
@@ -23,15 +28,12 @@ namespace VacuumSim.UI.FloorplanGraphics
         public static FloorplanLayout FloorplanHouseDesigner; // Floorplan that gets used when adding obstacle
 
         /// <summary>
-        /// Turn on anti-aliasing when simulation is running
+        /// Turns on anti-aliasing
         /// </summary>
         /// <param name="CanvasEditor"> Graphics object to edit FloorCanvas </param>
         public static void SetAntiAliasing(Graphics CanvasEditor)
         {
-            if (Simulation.simStarted)
-                CanvasEditor.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
-            else
-                CanvasEditor.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.None;
+            CanvasEditor.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
         }
 
         /// <summary>
@@ -170,15 +172,41 @@ namespace VacuumSim.UI.FloorplanGraphics
         /// <param name="VacDisplay"> The display of the vacuum onto FloorCanvas </param>
         public static void DrawVacuum(Graphics CanvasEditor, VacuumDisplay VacDisplay)
         {
+            if (!Simulation.simStarted && !successPlacingVacuum && !currentlyPlacingVacuum) // Don't draw vacuum if none of these cases are true
+                return;
+
+            Pen whiskersPen;
+            SolidBrush vacuumBrush;
+
+            // Determine brush and pen color
+            if (!currentlyPlacingVacuum) // Not currently placing the vacuum. Draw it charcoal gray
+            {
+                whiskersPen = new Pen(Color.Navy);
+                vacuumBrush = new SolidBrush(Color.Navy);
+            }
+            else // Currently placing the vacuum. Will be red or lime green depending on if vacuum is in valid location or not
+            {
+                if (vacuumPlacingLocationIsValid)
+                {
+                    whiskersPen = new Pen(Color.LimeGreen);
+                    vacuumBrush = new SolidBrush(Color.LimeGreen);
+                }
+                else
+                {
+                    whiskersPen = new Pen(Color.Red);
+                    vacuumBrush = new SolidBrush(Color.Red);
+                }
+            }
+
+            FloorCanvasCalculator.CalculateWhiskerCoordinates(VacDisplay);
+
             // Draw vacuum whiskers
-            Pen charcoalGrayPen = new Pen(Color.FromArgb(255, 72, 70, 70));
             PointF whiskersStart = new PointF(VacDisplay.whiskersStartingCoords[0], VacDisplay.whiskersStartingCoords[1]);
             PointF whiskersEnd = new PointF(VacDisplay.whiskersEndingCoords[0], VacDisplay.whiskersEndingCoords[1]);
-            CanvasEditor.DrawLine(charcoalGrayPen, whiskersStart, whiskersEnd);
+            CanvasEditor.DrawLine(whiskersPen, whiskersStart, whiskersEnd);
 
             // Draw vacuum body
-            SolidBrush charcoalGrayBrush = new SolidBrush(Color.FromArgb(255, 72, 70, 70));
-            FillCircle(charcoalGrayBrush, VacuumDisplay.vacuumDiameter / 2, VacDisplay.vacuumCoords[0], VacDisplay.vacuumCoords[1], CanvasEditor);
+            FillCircle(vacuumBrush, VacuumDisplay.vacuumDiameter / 2, VacDisplay.vacuumCoords[0], VacDisplay.vacuumCoords[1], CanvasEditor);
         }
 
         /// <summary>
@@ -221,6 +249,62 @@ namespace VacuumSim.UI.FloorplanGraphics
         private static void FillCircle(SolidBrush brush, float radius, float centerX, float centerY, Graphics CanvasEditor)
         {
             CanvasEditor.FillEllipse(brush, centerX - radius, centerY - radius, radius + radius, radius + radius);
+        }
+
+        public static void AttemptPlaceVacuum(FloorplanLayout HouseLayout, VacuumDisplay VacDisplay)
+        {
+            vacuumPlacingLocationIsValid = true; // Initially set to true, could get changed if vacuum is in invalid position
+
+            // Get center tile and its (x, y) indices
+            Tile tileContainingVacuumCenter = HouseLayout.GetTileFromCoordinates((int)VacDisplay.vacuumCoords[0], (int)VacDisplay.vacuumCoords[1]);
+
+            int[] centerTileIndices = FloorplanLayout.GetTileIndices(tileContainingVacuumCenter.x, tileContainingVacuumCenter.y);
+
+            // If tile containing vacuum center is a chest or wall tile, this is for sure invalid
+            if (tileContainingVacuumCenter.obstacle == ObstacleType.Chest || tileContainingVacuumCenter.obstacle == ObstacleType.Wall)
+            {
+                vacuumPlacingLocationIsValid = false;
+                return;
+            }
+
+            List<Tile> tilesVacuumCouldBeIn = new List<Tile>();
+
+            // Get all tiles surrounding the center tile (including tiles connected by a corner)
+            for (int i = centerTileIndices[0] - 1; i <= centerTileIndices[0] + 1; i++)
+            {
+                for (int j = centerTileIndices[1] - 1; j <= centerTileIndices[1] + 1; j++)
+                {
+                    if (i >= 0 && j >= 0 && i < HouseLayout.numTilesPerRow && j < HouseLayout.numTilesPerCol) // Make sure tile index is within grid
+                    {
+                        tilesVacuumCouldBeIn.Add(HouseLayout.floorLayout[i, j]);
+                    }
+                }
+            }
+
+            // Iterate through each possible tile and detect if the vacuum is touching any obstacles
+            foreach (Tile tile in tilesVacuumCouldBeIn)
+            {
+                if (tile.obstacle == ObstacleType.Floor || tile.obstacle == ObstacleType.Doorway)
+                    continue; // Vacuum can touch any part of this tile with no issues
+
+                // If radius > abs(center - xVert) COLLISION
+                // If radius > abs(center - yHoriz) COLLISION
+                if (tile.obstacle == ObstacleType.Wall || tile.obstacle == ObstacleType.Chest) // Check for circle intersection with line
+                {
+                    if (VacuumDisplay.vacuumDiameter / 2.0f > Math.Abs(VacDisplay.vacuumCoords[0] - tile.x))
+                        vacuumPlacingLocationIsValid = false; // Vacuum intersected with left vertical tile line
+                    else if (VacuumDisplay.vacuumDiameter / 2.0f > Math.Abs(VacDisplay.vacuumCoords[0] - tile.x + FloorplanLayout.tileSideLength))
+                        vacuumPlacingLocationIsValid = false; // Vacuum intersected with right vertical tile line
+                    else if (VacuumDisplay.vacuumDiameter / 2.0f > Math.Abs(VacDisplay.vacuumCoords[1] - tile.y))
+                        vacuumPlacingLocationIsValid = false; // Vacuum intersected with top vertical tile line
+                    else if (VacuumDisplay.vacuumDiameter / 2.0f > Math.Abs(VacDisplay.vacuumCoords[1] - tile.y + FloorplanLayout.tileSideLength))
+                        vacuumPlacingLocationIsValid = false; // Vacuum intersected with bottom vertical tile line
+                }
+                else if (tile.obstacle == ObstacleType.Chair || tile.obstacle == ObstacleType.Table) // Check for circle intersection with circle
+                {
+
+                }
+            }
         }
 
         /// <summary>

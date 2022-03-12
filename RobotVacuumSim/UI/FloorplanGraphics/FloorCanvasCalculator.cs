@@ -31,7 +31,10 @@ namespace VacuumSim.UI.FloorplanGraphics
             // 2 inch long whiskers = tile side length (2 ft = 24 inches) / 12
             // Also have to convert the 2 inches to screen coordinates
             float lenWhiskersExtendFromVacuum = FloorplanLayout.tileSideLength / 12.0f;
-            VacDisplay.whiskersHeadingWRTVacuum = (VacDisplay.whiskersHeadingWRTVacuum + 30) % 270;
+
+            if (Simulation.simStarted) // Only want to rotate whiskers during simulation timer ticks
+                VacDisplay.whiskersHeadingWRTVacuum = (VacDisplay.whiskersHeadingWRTVacuum + 30) % 270;
+
             VacDisplay.whiskersEndingCoords[0] = VacDisplay.vacuumCoords[0] + (VacuumDisplay.vacuumDiameter / 2.0f + lenWhiskersExtendFromVacuum) * (float)Math.Cos((Math.PI * VacDisplay.vacuumHeading - VacDisplay.whiskersHeadingWRTVacuum) / 180);
             VacDisplay.whiskersEndingCoords[1] = VacDisplay.vacuumCoords[1] + (VacuumDisplay.vacuumDiameter / 2.0f + lenWhiskersExtendFromVacuum) * (float)Math.Sin((Math.PI * VacDisplay.vacuumHeading - VacDisplay.whiskersHeadingWRTVacuum) / 180);
         }
