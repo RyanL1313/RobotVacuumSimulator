@@ -181,8 +181,8 @@ namespace VacuumSim.UI.FloorplanGraphics
             // Determine brush and pen color
             if (!currentlyPlacingVacuum) // Not currently placing the vacuum. Draw it charcoal gray
             {
-                whiskersPen = new Pen(Color.Navy);
-                vacuumBrush = new SolidBrush(Color.Navy);
+                whiskersPen = new Pen(Color.Indigo);
+                vacuumBrush = new SolidBrush(Color.Indigo);
             }
             else // Currently placing the vacuum. Will be red or lime green depending on if vacuum is in valid location or not
             {
@@ -287,22 +287,41 @@ namespace VacuumSim.UI.FloorplanGraphics
                 if (tile.obstacle == ObstacleType.Floor || tile.obstacle == ObstacleType.Doorway)
                     continue; // Vacuum can touch any part of this tile with no issues
 
-                // If radius > abs(center - xVert) COLLISION
-                // If radius > abs(center - yHoriz) COLLISION
+                float vacRadius = VacuumDisplay.vacuumDiameter / 2.0f;
+                float chairAndTableLegRadius = FloorplanLayout.chairAndTableLegRadius;
+                int lenTile = FloorplanLayout.tileSideLength;
+
+                // If vacRadius > abs(center - xVert) and vacuum is between upper and lower bounds of the tile ==> COLLISION
+                // If vacRadius > abs(center - yHoriz) and vacuum is between left and right bounds of the tile ==> COLLISION
                 if (tile.obstacle == ObstacleType.Wall || tile.obstacle == ObstacleType.Chest) // Check for circle intersection with line
                 {
-                    if (VacuumDisplay.vacuumDiameter / 2.0f > Math.Abs(VacDisplay.vacuumCoords[0] - tile.x))
+                    if (vacRadius > Math.Abs(VacDisplay.vacuumCoords[0] - tile.x) && (VacDisplay.vacuumCoords[1] + vacRadius > tile.y || VacDisplay.vacuumCoords[1] - vacRadius < tile.y + lenTile))
                         vacuumPlacingLocationIsValid = false; // Vacuum intersected with left vertical tile line
-                    else if (VacuumDisplay.vacuumDiameter / 2.0f > Math.Abs(VacDisplay.vacuumCoords[0] - tile.x + FloorplanLayout.tileSideLength))
+                    else if (vacRadius > Math.Abs(VacDisplay.vacuumCoords[0] - (tile.x + lenTile)) && (VacDisplay.vacuumCoords[1] + vacRadius > tile.y || VacDisplay.vacuumCoords[1] - vacRadius < tile.y + lenTile))
                         vacuumPlacingLocationIsValid = false; // Vacuum intersected with right vertical tile line
-                    else if (VacuumDisplay.vacuumDiameter / 2.0f > Math.Abs(VacDisplay.vacuumCoords[1] - tile.y))
+                    else if (vacRadius > Math.Abs(VacDisplay.vacuumCoords[1] - tile.y) && (VacDisplay.vacuumCoords[0] + vacRadius > tile.x || VacDisplay.vacuumCoords[0] - vacRadius < tile.x + lenTile))
                         vacuumPlacingLocationIsValid = false; // Vacuum intersected with top vertical tile line
-                    else if (VacuumDisplay.vacuumDiameter / 2.0f > Math.Abs(VacDisplay.vacuumCoords[1] - tile.y + FloorplanLayout.tileSideLength))
+                    else if (vacRadius > Math.Abs(VacDisplay.vacuumCoords[1] - (tile.y + lenTile)) && (VacDisplay.vacuumCoords[0] + vacRadius > tile.x || VacDisplay.vacuumCoords[0] - vacRadius < tile.x + lenTile))
                         vacuumPlacingLocationIsValid = false; // Vacuum intersected with bottom vertical tile line
                 }
                 else if (tile.obstacle == ObstacleType.Chair || tile.obstacle == ObstacleType.Table) // Check for circle intersection with circle
                 {
+                    float[,] chairOrTableLegCoords = HouseLayout.GetChairOrTableLegCoordinates(tile);
 
+                    // Iterate through each chair/table leg coordinate pair and check for collision with any of the legs
+                    for (int i = 0; i < 4; i++)
+                    {
+                        double sumCircleCenterDistSquared = Math.Pow(VacDisplay.vacuumCoords[0] - chairOrTableLegCoords[i, 0], 2) + Math.Pow(VacDisplay.vacuumCoords[1] - chairOrTableLegCoords[i, 1], 2);
+
+                        // Check if distance between circle centers is between the sum and difference of their radii
+                        // If so, the circles intersect
+                        if (sumCircleCenterDistSquared > Math.Pow(vacRadius - chairAndTableLegRadius, 2) && sumCircleCenterDistSquared < Math.Pow(vacRadius + chairAndTableLegRadius, 2))
+                            vacuumPlacingLocationIsValid = false;
+                        // Check if vacuum completely envelopes a chair/table leg without intersecting along the edge
+                        // This would still be a collision
+                        else if (vacRadius > Math.Sqrt(sumCircleCenterDistSquared) + chairAndTableLegRadius)
+                            vacuumPlacingLocationIsValid = false;
+                    }
                 }
             }
         }

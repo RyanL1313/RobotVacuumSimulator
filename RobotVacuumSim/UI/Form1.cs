@@ -180,6 +180,8 @@ namespace VacuumSim
         private void InitialVacuumHeadingSelector_ValueChanged(object sender, EventArgs e)
         {
             VacDisplay.vacuumHeading = (int)InitialVacuumHeadingSelector.Value;
+
+            FloorCanvas.Invalidate(); // Re-draw canvas to show new whiskers display
         }
 
         private void VacuumEfficiencySlider_Scroll(object sender, EventArgs e)
@@ -507,7 +509,6 @@ namespace VacuumSim
             SimulationSpeedLabel.Enabled = value;
             SimulationSpeedSelector.Enabled = value;
             StartSimulationButton.Enabled = value;
-            StopSimulationButton.Enabled = value;
         }
 
         /// <summary>
