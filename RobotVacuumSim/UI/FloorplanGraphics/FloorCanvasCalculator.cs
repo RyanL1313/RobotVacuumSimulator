@@ -91,7 +91,9 @@ namespace VacuumSim.UI.FloorplanGraphics
         /// <returns> The text that goes in the battery life label on FloorCanvas </returns>
         public static string GetBatteryRemainingText(VacuumDisplay VacDisplay)
         {
-            return "" + (VacDisplay.batterySecondsRemaining >= 60 ? VacDisplay.batterySecondsRemaining / 60 + " minutes" : VacDisplay.batterySecondsRemaining + " seconds");
+            string s = VacDisplay.batterySecondsRemaining == 1 || VacDisplay.batterySecondsRemaining / 60 == 1 ? "" : "s"; // Get extra 's' if plural
+
+            return "" + (VacDisplay.batterySecondsRemaining >= 60 ? VacDisplay.batterySecondsRemaining / 60 + " minute" + s : VacDisplay.batterySecondsRemaining + " second" + s);
         }
 
         /// <summary>
@@ -100,7 +102,9 @@ namespace VacuumSim.UI.FloorplanGraphics
         /// <returns> The text that goes in the elapsed time label on FloorCanvas </returns>
         public static string GetTimeElapsedText()
         {
-            return "" + (Simulation.simTimeElapsed >= 60 ? Simulation.simTimeElapsed / 60 + " minutes" : Simulation.simTimeElapsed + " seconds");
+            string s = Simulation.simTimeElapsed == 1 || Simulation.simTimeElapsed / 60 == 1 ? "" : "s"; // Get extra 's' if plural
+
+            return "" + (Simulation.simTimeElapsed >= 60 ? Simulation.simTimeElapsed / 60 + " minute" + s : Simulation.simTimeElapsed + " second" + s);
         }
     }
 }

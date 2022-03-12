@@ -189,6 +189,16 @@ namespace VacuumSim
             VacDisplay.batterySecondsRemaining = (int)RobotBatteryLifeSelector.Value * 60;
         }
 
+        private void VacuumEfficiencySlider_Scroll(object sender, EventArgs e)
+        {
+            VacuumEfficiencyValueLabel.Text = VacuumEfficiencySlider.Value + "%";
+        }
+
+        private void WhiskerEfficiencySlider_Scroll(object sender, EventArgs e)
+        {
+            WhiskerEfficiencyValueLabel.Text = WhiskersEfficiencySlider.Value + "%";
+        }
+
         private void FloorCanvas_Paint(object sender, PaintEventArgs e)
         {
             Graphics canvasEditor = e.Graphics;
@@ -325,6 +335,16 @@ namespace VacuumSim
             FloorCanvasCalculator.CalculateWhiskerCoordinates(VacDisplay);
 
             FloorCanvas.Invalidate(); // Re-trigger paint event
+        }
+
+        private void ShowInstructionsButton_Click(object sender, EventArgs e)
+        {
+            MessageBox.Show("to do");
+        }
+
+        private void FinishFloorplanButton_Click(object sender, EventArgs e)
+        {
+
         }
 
         private void SaveFloorplanButton_Click(object sender, EventArgs e)

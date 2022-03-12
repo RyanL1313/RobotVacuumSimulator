@@ -48,8 +48,6 @@ namespace VacuumSim
             this.ObstacleSelector = new System.Windows.Forms.ComboBox();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.LoadSavedFloorplanButton = new System.Windows.Forms.Button();
-            this.SaveSimulationButton = new System.Windows.Forms.Button();
-            this.LoadSimulationButton = new System.Windows.Forms.Button();
             this.SaveFloorplanButton = new System.Windows.Forms.Button();
             this.LoadDefaultFloorplanButton = new System.Windows.Forms.Button();
             this.HouseDimensionsGroupBox = new System.Windows.Forms.GroupBox();
@@ -62,21 +60,31 @@ namespace VacuumSim
             this.CutPileRadioButton = new System.Windows.Forms.RadioButton();
             this.LoopPileRadioButton = new System.Windows.Forms.RadioButton();
             this.HardWoodRadioButton = new System.Windows.Forms.RadioButton();
-            this.FloorplanSectionLabel = new System.Windows.Forms.Label();
+            this.FloorplanDesignLabel = new System.Windows.Forms.Label();
             this.ControlsPane = new System.Windows.Forms.SplitContainer();
-            this.SimulationSpeedLabel = new System.Windows.Forms.Label();
-            this.SimulationSpeedSelector = new System.Windows.Forms.ComboBox();
-            this.StopSimulationButton = new System.Windows.Forms.Button();
-            this.StartSimulationButton = new System.Windows.Forms.Button();
-            this.SimulationControlLabel = new System.Windows.Forms.Label();
+            this.VacuumEfficiencyValueLabel = new System.Windows.Forms.Label();
+            this.WhiskersEfficiencyTitleLabel = new System.Windows.Forms.Label();
+            this.VacuumEfficiencyTitleLabel = new System.Windows.Forms.Label();
+            this.WhiskersEfficiencySlider = new System.Windows.Forms.TrackBar();
+            this.VacuumEfficiencySlider = new System.Windows.Forms.TrackBar();
             this.RunAllAlgorithmsCheckbox = new System.Windows.Forms.CheckBox();
             this.RobotPathAlgorithmLabel = new System.Windows.Forms.Label();
             this.RobotPathAlgorithmSelector = new System.Windows.Forms.ComboBox();
             this.RobotSpeedLabel = new System.Windows.Forms.Label();
             this.RobotSpeedSelector = new System.Windows.Forms.NumericUpDown();
+            this.VacuumAttributesLabel = new System.Windows.Forms.Label();
             this.RobotBatteryLifeLabel = new System.Windows.Forms.Label();
             this.RobotBatteryLifeSelector = new System.Windows.Forms.NumericUpDown();
-            this.RobotSectionLabel = new System.Windows.Forms.Label();
+            this.WhiskerEfficiencyValueLabel = new System.Windows.Forms.Label();
+            this.LoadSaveSimSettingsGroupBox = new System.Windows.Forms.GroupBox();
+            this.LoadSimulationButton = new System.Windows.Forms.Button();
+            this.SaveSimulationButton = new System.Windows.Forms.Button();
+            this.SimulationControlLabel = new System.Windows.Forms.Label();
+            this.SimulationSpeedLabel = new System.Windows.Forms.Label();
+            this.StartSimulationButton = new System.Windows.Forms.Button();
+            this.SimulationSpeedSelector = new System.Windows.Forms.ComboBox();
+            this.StopSimulationButton = new System.Windows.Forms.Button();
+            this.ShowInstructionsButton = new System.Windows.Forms.Button();
             this.CenterSplitPane = new System.Windows.Forms.SplitContainer();
             this.SimTimeElapsedLabel = new System.Windows.Forms.Label();
             this.SimTimeElapsedTitleLabel = new System.Windows.Forms.Label();
@@ -85,6 +93,7 @@ namespace VacuumSim
             this.FloorCanvas = new System.Windows.Forms.PictureBox();
             this.VacuumBodyTimer = new System.Windows.Forms.Timer(this.components);
             this.VacuumWhiskersTimer = new System.Windows.Forms.Timer(this.components);
+            this.FinishFloorplanButton = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.LeftPane)).BeginInit();
             this.LeftPane.Panel1.SuspendLayout();
             this.LeftPane.Panel2.SuspendLayout();
@@ -104,8 +113,11 @@ namespace VacuumSim
             this.ControlsPane.Panel1.SuspendLayout();
             this.ControlsPane.Panel2.SuspendLayout();
             this.ControlsPane.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.WhiskersEfficiencySlider)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.VacuumEfficiencySlider)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.RobotSpeedSelector)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.RobotBatteryLifeSelector)).BeginInit();
+            this.LoadSaveSimSettingsGroupBox.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.CenterSplitPane)).BeginInit();
             this.CenterSplitPane.Panel1.SuspendLayout();
             this.CenterSplitPane.Panel2.SuspendLayout();
@@ -124,6 +136,8 @@ namespace VacuumSim
             // 
             // LeftPane.Panel1
             // 
+            this.LeftPane.Panel1.BackColor = System.Drawing.SystemColors.Control;
+            this.LeftPane.Panel1.Controls.Add(this.FinishFloorplanButton);
             this.LeftPane.Panel1.Controls.Add(this.EraserModeButton);
             this.LeftPane.Panel1.Controls.Add(this.ChairTableDimensionsGroupBox);
             this.LeftPane.Panel1.Controls.Add(this.ObstacleSelectorLabel);
@@ -132,7 +146,7 @@ namespace VacuumSim
             this.LeftPane.Panel1.Controls.Add(this.groupBox1);
             this.LeftPane.Panel1.Controls.Add(this.HouseDimensionsGroupBox);
             this.LeftPane.Panel1.Controls.Add(this.FloorTypeGroupBox);
-            this.LeftPane.Panel1.Controls.Add(this.FloorplanSectionLabel);
+            this.LeftPane.Panel1.Controls.Add(this.FloorplanDesignLabel);
             this.LeftPane.Panel1.Cursor = System.Windows.Forms.Cursors.Arrow;
             this.LeftPane.Panel1.RightToLeft = System.Windows.Forms.RightToLeft.No;
             // 
@@ -148,7 +162,7 @@ namespace VacuumSim
             // 
             // EraserModeButton
             // 
-            this.EraserModeButton.Location = new System.Drawing.Point(3, 449);
+            this.EraserModeButton.Location = new System.Drawing.Point(6, 392);
             this.EraserModeButton.Name = "EraserModeButton";
             this.EraserModeButton.Size = new System.Drawing.Size(127, 25);
             this.EraserModeButton.TabIndex = 15;
@@ -162,7 +176,7 @@ namespace VacuumSim
             this.ChairTableDimensionsGroupBox.Controls.Add(this.ChairTableWidthLabel);
             this.ChairTableDimensionsGroupBox.Controls.Add(this.ChairTableHeightSelector);
             this.ChairTableDimensionsGroupBox.Controls.Add(this.ChairTableWidthSelector);
-            this.ChairTableDimensionsGroupBox.Location = new System.Drawing.Point(206, 402);
+            this.ChairTableDimensionsGroupBox.Location = new System.Drawing.Point(205, 326);
             this.ChairTableDimensionsGroupBox.Name = "ChairTableDimensionsGroupBox";
             this.ChairTableDimensionsGroupBox.Size = new System.Drawing.Size(178, 100);
             this.ChairTableDimensionsGroupBox.TabIndex = 15;
@@ -242,7 +256,7 @@ namespace VacuumSim
             // 
             // ObstacleSelectorLabel
             // 
-            this.ObstacleSelectorLabel.Location = new System.Drawing.Point(7, 398);
+            this.ObstacleSelectorLabel.Location = new System.Drawing.Point(10, 341);
             this.ObstacleSelectorLabel.Name = "ObstacleSelectorLabel";
             this.ObstacleSelectorLabel.Size = new System.Drawing.Size(73, 15);
             this.ObstacleSelectorLabel.TabIndex = 14;
@@ -256,7 +270,7 @@ namespace VacuumSim
             this.RoomDimensionsGroupBox.Controls.Add(this.RoomHeightLabel);
             this.RoomDimensionsGroupBox.Controls.Add(this.RoomWidthSelector);
             this.RoomDimensionsGroupBox.Controls.Add(this.RoomHeightSelector);
-            this.RoomDimensionsGroupBox.Location = new System.Drawing.Point(206, 254);
+            this.RoomDimensionsGroupBox.Location = new System.Drawing.Point(205, 178);
             this.RoomDimensionsGroupBox.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.RoomDimensionsGroupBox.Name = "RoomDimensionsGroupBox";
             this.RoomDimensionsGroupBox.Padding = new System.Windows.Forms.Padding(3, 2, 3, 2);
@@ -356,7 +370,7 @@ namespace VacuumSim
             "Table",
             "Chest",
             "Wall"});
-            this.ObstacleSelector.Location = new System.Drawing.Point(4, 415);
+            this.ObstacleSelector.Location = new System.Drawing.Point(7, 358);
             this.ObstacleSelector.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.ObstacleSelector.Name = "ObstacleSelector";
             this.ObstacleSelector.Size = new System.Drawing.Size(112, 23);
@@ -367,16 +381,14 @@ namespace VacuumSim
             // 
             this.groupBox1.AutoSize = true;
             this.groupBox1.Controls.Add(this.LoadSavedFloorplanButton);
-            this.groupBox1.Controls.Add(this.SaveSimulationButton);
-            this.groupBox1.Controls.Add(this.LoadSimulationButton);
             this.groupBox1.Controls.Add(this.SaveFloorplanButton);
             this.groupBox1.Controls.Add(this.LoadDefaultFloorplanButton);
             this.groupBox1.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.groupBox1.Location = new System.Drawing.Point(0, 501);
+            this.groupBox1.Location = new System.Drawing.Point(0, 576);
             this.groupBox1.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.groupBox1.Name = "groupBox1";
             this.groupBox1.Padding = new System.Windows.Forms.Padding(3, 2, 3, 2);
-            this.groupBox1.Size = new System.Drawing.Size(384, 163);
+            this.groupBox1.Size = new System.Drawing.Size(384, 88);
             this.groupBox1.TabIndex = 13;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Load/Save";
@@ -391,26 +403,6 @@ namespace VacuumSim
             this.LoadSavedFloorplanButton.Text = "Load Saved Floorplan";
             this.LoadSavedFloorplanButton.UseVisualStyleBackColor = true;
             this.LoadSavedFloorplanButton.Click += new System.EventHandler(this.LoadSavedFloorplanButton_Click);
-            // 
-            // SaveSimulationButton
-            // 
-            this.SaveSimulationButton.Location = new System.Drawing.Point(4, 121);
-            this.SaveSimulationButton.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
-            this.SaveSimulationButton.Name = "SaveSimulationButton";
-            this.SaveSimulationButton.Size = new System.Drawing.Size(161, 22);
-            this.SaveSimulationButton.TabIndex = 15;
-            this.SaveSimulationButton.Text = "Save Simulation Settings";
-            this.SaveSimulationButton.UseVisualStyleBackColor = true;
-            // 
-            // LoadSimulationButton
-            // 
-            this.LoadSimulationButton.Location = new System.Drawing.Point(4, 94);
-            this.LoadSimulationButton.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
-            this.LoadSimulationButton.Name = "LoadSimulationButton";
-            this.LoadSimulationButton.Size = new System.Drawing.Size(161, 22);
-            this.LoadSimulationButton.TabIndex = 14;
-            this.LoadSimulationButton.Text = "Load Simulation Settings";
-            this.LoadSimulationButton.UseVisualStyleBackColor = true;
             // 
             // SaveFloorplanButton
             // 
@@ -441,7 +433,7 @@ namespace VacuumSim
             this.HouseDimensionsGroupBox.Controls.Add(this.HouseHeightLabel);
             this.HouseDimensionsGroupBox.Controls.Add(this.HouseWidthSelector);
             this.HouseDimensionsGroupBox.Controls.Add(this.HouseHeightSelector);
-            this.HouseDimensionsGroupBox.Location = new System.Drawing.Point(0, 254);
+            this.HouseDimensionsGroupBox.Location = new System.Drawing.Point(-1, 178);
             this.HouseDimensionsGroupBox.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.HouseDimensionsGroupBox.Name = "HouseDimensionsGroupBox";
             this.HouseDimensionsGroupBox.Padding = new System.Windows.Forms.Padding(3, 2, 3, 2);
@@ -528,11 +520,11 @@ namespace VacuumSim
             this.FloorTypeGroupBox.Controls.Add(this.CutPileRadioButton);
             this.FloorTypeGroupBox.Controls.Add(this.LoopPileRadioButton);
             this.FloorTypeGroupBox.Controls.Add(this.HardWoodRadioButton);
-            this.FloorTypeGroupBox.Location = new System.Drawing.Point(0, 23);
+            this.FloorTypeGroupBox.Location = new System.Drawing.Point(3, 44);
             this.FloorTypeGroupBox.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.FloorTypeGroupBox.Name = "FloorTypeGroupBox";
             this.FloorTypeGroupBox.Padding = new System.Windows.Forms.Padding(3, 2, 3, 2);
-            this.FloorTypeGroupBox.Size = new System.Drawing.Size(273, 226);
+            this.FloorTypeGroupBox.Size = new System.Drawing.Size(252, 127);
             this.FloorTypeGroupBox.TabIndex = 6;
             this.FloorTypeGroupBox.TabStop = false;
             this.FloorTypeGroupBox.Text = "Floor Types";
@@ -585,23 +577,23 @@ namespace VacuumSim
             this.HardWoodRadioButton.Text = "Hard Wood";
             this.HardWoodRadioButton.UseVisualStyleBackColor = true;
             // 
-            // FloorplanSectionLabel
+            // FloorplanDesignLabel
             // 
-            this.FloorplanSectionLabel.BackColor = System.Drawing.Color.Transparent;
-            this.FloorplanSectionLabel.Dock = System.Windows.Forms.DockStyle.Top;
-            this.FloorplanSectionLabel.Font = new System.Drawing.Font("Segoe UI", 12F, ((System.Drawing.FontStyle)((System.Drawing.FontStyle.Bold | System.Drawing.FontStyle.Underline))), System.Drawing.GraphicsUnit.Point);
-            this.FloorplanSectionLabel.Location = new System.Drawing.Point(0, 0);
-            this.FloorplanSectionLabel.Margin = new System.Windows.Forms.Padding(9, 8, 9, 8);
-            this.FloorplanSectionLabel.Name = "FloorplanSectionLabel";
-            this.FloorplanSectionLabel.Size = new System.Drawing.Size(384, 23);
-            this.FloorplanSectionLabel.TabIndex = 5;
-            this.FloorplanSectionLabel.Text = "Floorplan Control";
-            this.FloorplanSectionLabel.TextAlign = System.Drawing.ContentAlignment.TopCenter;
+            this.FloorplanDesignLabel.BackColor = System.Drawing.Color.Transparent;
+            this.FloorplanDesignLabel.Dock = System.Windows.Forms.DockStyle.Top;
+            this.FloorplanDesignLabel.Font = new System.Drawing.Font("Segoe UI", 12F, ((System.Drawing.FontStyle)((System.Drawing.FontStyle.Bold | System.Drawing.FontStyle.Underline))), System.Drawing.GraphicsUnit.Point);
+            this.FloorplanDesignLabel.Location = new System.Drawing.Point(0, 0);
+            this.FloorplanDesignLabel.Margin = new System.Windows.Forms.Padding(9, 8, 9, 8);
+            this.FloorplanDesignLabel.Name = "FloorplanDesignLabel";
+            this.FloorplanDesignLabel.Size = new System.Drawing.Size(384, 24);
+            this.FloorplanDesignLabel.TabIndex = 5;
+            this.FloorplanDesignLabel.Text = "Floorplan Design";
+            this.FloorplanDesignLabel.TextAlign = System.Drawing.ContentAlignment.TopCenter;
             // 
             // ControlsPane
             // 
             this.ControlsPane.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.ControlsPane.Cursor = System.Windows.Forms.Cursors.Arrow;
+            this.ControlsPane.Cursor = System.Windows.Forms.Cursors.HSplit;
             this.ControlsPane.Dock = System.Windows.Forms.DockStyle.Fill;
             this.ControlsPane.IsSplitterFixed = true;
             this.ControlsPane.Location = new System.Drawing.Point(0, 0);
@@ -611,24 +603,31 @@ namespace VacuumSim
             // 
             // ControlsPane.Panel1
             // 
-            this.ControlsPane.Panel1.Controls.Add(this.SimulationSpeedLabel);
-            this.ControlsPane.Panel1.Controls.Add(this.SimulationSpeedSelector);
-            this.ControlsPane.Panel1.Controls.Add(this.StopSimulationButton);
-            this.ControlsPane.Panel1.Controls.Add(this.StartSimulationButton);
-            this.ControlsPane.Panel1.Controls.Add(this.SimulationControlLabel);
+            this.ControlsPane.Panel1.Controls.Add(this.VacuumEfficiencyValueLabel);
+            this.ControlsPane.Panel1.Controls.Add(this.WhiskersEfficiencyTitleLabel);
+            this.ControlsPane.Panel1.Controls.Add(this.VacuumEfficiencyTitleLabel);
+            this.ControlsPane.Panel1.Controls.Add(this.WhiskersEfficiencySlider);
+            this.ControlsPane.Panel1.Controls.Add(this.VacuumEfficiencySlider);
+            this.ControlsPane.Panel1.Controls.Add(this.RunAllAlgorithmsCheckbox);
+            this.ControlsPane.Panel1.Controls.Add(this.RobotPathAlgorithmLabel);
+            this.ControlsPane.Panel1.Controls.Add(this.RobotPathAlgorithmSelector);
+            this.ControlsPane.Panel1.Controls.Add(this.RobotSpeedLabel);
+            this.ControlsPane.Panel1.Controls.Add(this.RobotSpeedSelector);
+            this.ControlsPane.Panel1.Controls.Add(this.VacuumAttributesLabel);
+            this.ControlsPane.Panel1.Controls.Add(this.RobotBatteryLifeLabel);
+            this.ControlsPane.Panel1.Controls.Add(this.RobotBatteryLifeSelector);
+            this.ControlsPane.Panel1.Controls.Add(this.WhiskerEfficiencyValueLabel);
             this.ControlsPane.Panel1.Cursor = System.Windows.Forms.Cursors.Arrow;
             this.ControlsPane.Panel1.RightToLeft = System.Windows.Forms.RightToLeft.No;
             // 
             // ControlsPane.Panel2
             // 
-            this.ControlsPane.Panel2.Controls.Add(this.RunAllAlgorithmsCheckbox);
-            this.ControlsPane.Panel2.Controls.Add(this.RobotPathAlgorithmLabel);
-            this.ControlsPane.Panel2.Controls.Add(this.RobotPathAlgorithmSelector);
-            this.ControlsPane.Panel2.Controls.Add(this.RobotSpeedLabel);
-            this.ControlsPane.Panel2.Controls.Add(this.RobotSpeedSelector);
-            this.ControlsPane.Panel2.Controls.Add(this.RobotBatteryLifeLabel);
-            this.ControlsPane.Panel2.Controls.Add(this.RobotBatteryLifeSelector);
-            this.ControlsPane.Panel2.Controls.Add(this.RobotSectionLabel);
+            this.ControlsPane.Panel2.Controls.Add(this.LoadSaveSimSettingsGroupBox);
+            this.ControlsPane.Panel2.Controls.Add(this.SimulationControlLabel);
+            this.ControlsPane.Panel2.Controls.Add(this.SimulationSpeedLabel);
+            this.ControlsPane.Panel2.Controls.Add(this.StartSimulationButton);
+            this.ControlsPane.Panel2.Controls.Add(this.SimulationSpeedSelector);
+            this.ControlsPane.Panel2.Controls.Add(this.StopSimulationButton);
             this.ControlsPane.Panel2.Cursor = System.Windows.Forms.Cursors.Arrow;
             this.ControlsPane.Panel2.RightToLeft = System.Windows.Forms.RightToLeft.No;
             this.ControlsPane.Size = new System.Drawing.Size(383, 664);
@@ -636,66 +635,61 @@ namespace VacuumSim
             this.ControlsPane.SplitterWidth = 3;
             this.ControlsPane.TabIndex = 0;
             // 
-            // SimulationSpeedLabel
+            // VacuumEfficiencyValueLabel
             // 
-            this.SimulationSpeedLabel.AutoSize = true;
-            this.SimulationSpeedLabel.Location = new System.Drawing.Point(7, 289);
-            this.SimulationSpeedLabel.Name = "SimulationSpeedLabel";
-            this.SimulationSpeedLabel.Size = new System.Drawing.Size(99, 15);
-            this.SimulationSpeedLabel.TabIndex = 10;
-            this.SimulationSpeedLabel.Text = "Simulation Speed";
+            this.VacuumEfficiencyValueLabel.AutoSize = true;
+            this.VacuumEfficiencyValueLabel.Location = new System.Drawing.Point(102, 72);
+            this.VacuumEfficiencyValueLabel.Name = "VacuumEfficiencyValueLabel";
+            this.VacuumEfficiencyValueLabel.Size = new System.Drawing.Size(29, 15);
+            this.VacuumEfficiencyValueLabel.TabIndex = 17;
+            this.VacuumEfficiencyValueLabel.Text = "90%";
             // 
-            // SimulationSpeedSelector
+            // WhiskersEfficiencyTitleLabel
             // 
-            this.SimulationSpeedSelector.FormattingEnabled = true;
-            this.SimulationSpeedSelector.Location = new System.Drawing.Point(7, 307);
-            this.SimulationSpeedSelector.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
-            this.SimulationSpeedSelector.Name = "SimulationSpeedSelector";
-            this.SimulationSpeedSelector.Size = new System.Drawing.Size(133, 23);
-            this.SimulationSpeedSelector.TabIndex = 9;
-            this.SimulationSpeedSelector.SelectedIndexChanged += new System.EventHandler(this.SimulationSpeedSelector_SelectedIndexChanged);
+            this.WhiskersEfficiencyTitleLabel.AutoSize = true;
+            this.WhiskersEfficiencyTitleLabel.Location = new System.Drawing.Point(7, 105);
+            this.WhiskersEfficiencyTitleLabel.Name = "WhiskersEfficiencyTitleLabel";
+            this.WhiskersEfficiencyTitleLabel.Size = new System.Drawing.Size(108, 15);
+            this.WhiskersEfficiencyTitleLabel.TabIndex = 16;
+            this.WhiskersEfficiencyTitleLabel.Text = "Whiskers Efficiency";
             // 
-            // StopSimulationButton
+            // VacuumEfficiencyTitleLabel
             // 
-            this.StopSimulationButton.Location = new System.Drawing.Point(120, 348);
-            this.StopSimulationButton.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
-            this.StopSimulationButton.Name = "StopSimulationButton";
-            this.StopSimulationButton.Size = new System.Drawing.Size(110, 22);
-            this.StopSimulationButton.TabIndex = 8;
-            this.StopSimulationButton.Text = "Stop Simulation";
-            this.StopSimulationButton.UseVisualStyleBackColor = true;
-            this.StopSimulationButton.Click += new System.EventHandler(this.StopSimulationButton_Click);
+            this.VacuumEfficiencyTitleLabel.AutoSize = true;
+            this.VacuumEfficiencyTitleLabel.Location = new System.Drawing.Point(7, 43);
+            this.VacuumEfficiencyTitleLabel.Name = "VacuumEfficiencyTitleLabel";
+            this.VacuumEfficiencyTitleLabel.Size = new System.Drawing.Size(104, 15);
+            this.VacuumEfficiencyTitleLabel.TabIndex = 15;
+            this.VacuumEfficiencyTitleLabel.Text = "Vacuum Efficiency";
             // 
-            // StartSimulationButton
+            // WhiskersEfficiencySlider
             // 
-            this.StartSimulationButton.Location = new System.Drawing.Point(5, 348);
-            this.StartSimulationButton.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
-            this.StartSimulationButton.Name = "StartSimulationButton";
-            this.StartSimulationButton.Size = new System.Drawing.Size(110, 22);
-            this.StartSimulationButton.TabIndex = 7;
-            this.StartSimulationButton.Text = "Start Simulation";
-            this.StartSimulationButton.UseVisualStyleBackColor = true;
-            this.StartSimulationButton.Click += new System.EventHandler(this.StartSimulationButton_Click);
+            this.WhiskersEfficiencySlider.Location = new System.Drawing.Point(2, 123);
+            this.WhiskersEfficiencySlider.Maximum = 50;
+            this.WhiskersEfficiencySlider.Minimum = 10;
+            this.WhiskersEfficiencySlider.Name = "WhiskersEfficiencySlider";
+            this.WhiskersEfficiencySlider.Size = new System.Drawing.Size(104, 45);
+            this.WhiskersEfficiencySlider.TabIndex = 14;
+            this.WhiskersEfficiencySlider.Value = 50;
+            this.WhiskersEfficiencySlider.Scroll += new System.EventHandler(this.WhiskerEfficiencySlider_Scroll);
             // 
-            // SimulationControlLabel
+            // VacuumEfficiencySlider
             // 
-            this.SimulationControlLabel.BackColor = System.Drawing.Color.Transparent;
-            this.SimulationControlLabel.Dock = System.Windows.Forms.DockStyle.Top;
-            this.SimulationControlLabel.Font = new System.Drawing.Font("Segoe UI", 12F, ((System.Drawing.FontStyle)((System.Drawing.FontStyle.Bold | System.Drawing.FontStyle.Underline))), System.Drawing.GraphicsUnit.Point);
-            this.SimulationControlLabel.Location = new System.Drawing.Point(0, 0);
-            this.SimulationControlLabel.Margin = new System.Windows.Forms.Padding(4);
-            this.SimulationControlLabel.Name = "SimulationControlLabel";
-            this.SimulationControlLabel.Size = new System.Drawing.Size(381, 23);
-            this.SimulationControlLabel.TabIndex = 6;
-            this.SimulationControlLabel.Text = "Simulation Control";
-            this.SimulationControlLabel.TextAlign = System.Drawing.ContentAlignment.TopCenter;
+            this.VacuumEfficiencySlider.Location = new System.Drawing.Point(1, 61);
+            this.VacuumEfficiencySlider.Maximum = 90;
+            this.VacuumEfficiencySlider.Minimum = 10;
+            this.VacuumEfficiencySlider.Name = "VacuumEfficiencySlider";
+            this.VacuumEfficiencySlider.Size = new System.Drawing.Size(104, 45);
+            this.VacuumEfficiencySlider.TabIndex = 13;
+            this.VacuumEfficiencySlider.Value = 90;
+            this.VacuumEfficiencySlider.Scroll += new System.EventHandler(this.VacuumEfficiencySlider_Scroll);
             // 
             // RunAllAlgorithmsCheckbox
             // 
             this.RunAllAlgorithmsCheckbox.AutoSize = true;
             this.RunAllAlgorithmsCheckbox.Checked = true;
             this.RunAllAlgorithmsCheckbox.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.RunAllAlgorithmsCheckbox.Location = new System.Drawing.Point(7, 171);
+            this.RunAllAlgorithmsCheckbox.Location = new System.Drawing.Point(4, 311);
             this.RunAllAlgorithmsCheckbox.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.RunAllAlgorithmsCheckbox.Name = "RunAllAlgorithmsCheckbox";
             this.RunAllAlgorithmsCheckbox.Size = new System.Drawing.Size(122, 19);
@@ -707,7 +701,7 @@ namespace VacuumSim
             // RobotPathAlgorithmLabel
             // 
             this.RobotPathAlgorithmLabel.AutoSize = true;
-            this.RobotPathAlgorithmLabel.Location = new System.Drawing.Point(9, 128);
+            this.RobotPathAlgorithmLabel.Location = new System.Drawing.Point(6, 268);
             this.RobotPathAlgorithmLabel.Name = "RobotPathAlgorithmLabel";
             this.RobotPathAlgorithmLabel.Size = new System.Drawing.Size(105, 15);
             this.RobotPathAlgorithmLabel.TabIndex = 11;
@@ -717,7 +711,7 @@ namespace VacuumSim
             // 
             this.RobotPathAlgorithmSelector.Enabled = false;
             this.RobotPathAlgorithmSelector.FormattingEnabled = true;
-            this.RobotPathAlgorithmSelector.Location = new System.Drawing.Point(7, 145);
+            this.RobotPathAlgorithmSelector.Location = new System.Drawing.Point(4, 285);
             this.RobotPathAlgorithmSelector.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.RobotPathAlgorithmSelector.Name = "RobotPathAlgorithmSelector";
             this.RobotPathAlgorithmSelector.Size = new System.Drawing.Size(133, 23);
@@ -726,7 +720,7 @@ namespace VacuumSim
             // RobotSpeedLabel
             // 
             this.RobotSpeedLabel.AutoSize = true;
-            this.RobotSpeedLabel.Location = new System.Drawing.Point(7, 77);
+            this.RobotSpeedLabel.Location = new System.Drawing.Point(4, 217);
             this.RobotSpeedLabel.Name = "RobotSpeedLabel";
             this.RobotSpeedLabel.Size = new System.Drawing.Size(143, 15);
             this.RobotSpeedLabel.TabIndex = 9;
@@ -734,7 +728,7 @@ namespace VacuumSim
             // 
             // RobotSpeedSelector
             // 
-            this.RobotSpeedSelector.Location = new System.Drawing.Point(9, 100);
+            this.RobotSpeedSelector.Location = new System.Drawing.Point(6, 240);
             this.RobotSpeedSelector.Margin = new System.Windows.Forms.Padding(9, 8, 9, 8);
             this.RobotSpeedSelector.Maximum = new decimal(new int[] {
             18,
@@ -756,10 +750,23 @@ namespace VacuumSim
             0});
             this.RobotSpeedSelector.ValueChanged += new System.EventHandler(this.RobotSpeedSelector_ValueChanged);
             // 
+            // VacuumAttributesLabel
+            // 
+            this.VacuumAttributesLabel.BackColor = System.Drawing.Color.Transparent;
+            this.VacuumAttributesLabel.Dock = System.Windows.Forms.DockStyle.Top;
+            this.VacuumAttributesLabel.Font = new System.Drawing.Font("Segoe UI", 12F, ((System.Drawing.FontStyle)((System.Drawing.FontStyle.Bold | System.Drawing.FontStyle.Underline))), System.Drawing.GraphicsUnit.Point);
+            this.VacuumAttributesLabel.Location = new System.Drawing.Point(0, 0);
+            this.VacuumAttributesLabel.Margin = new System.Windows.Forms.Padding(4);
+            this.VacuumAttributesLabel.Name = "VacuumAttributesLabel";
+            this.VacuumAttributesLabel.Size = new System.Drawing.Size(381, 23);
+            this.VacuumAttributesLabel.TabIndex = 6;
+            this.VacuumAttributesLabel.Text = "Vacuum Attributes";
+            this.VacuumAttributesLabel.TextAlign = System.Drawing.ContentAlignment.TopCenter;
+            // 
             // RobotBatteryLifeLabel
             // 
             this.RobotBatteryLifeLabel.AutoSize = true;
-            this.RobotBatteryLifeLabel.Location = new System.Drawing.Point(7, 27);
+            this.RobotBatteryLifeLabel.Location = new System.Drawing.Point(4, 167);
             this.RobotBatteryLifeLabel.Name = "RobotBatteryLifeLabel";
             this.RobotBatteryLifeLabel.Size = new System.Drawing.Size(98, 15);
             this.RobotBatteryLifeLabel.TabIndex = 7;
@@ -767,7 +774,7 @@ namespace VacuumSim
             // 
             // RobotBatteryLifeSelector
             // 
-            this.RobotBatteryLifeSelector.Location = new System.Drawing.Point(9, 50);
+            this.RobotBatteryLifeSelector.Location = new System.Drawing.Point(6, 190);
             this.RobotBatteryLifeSelector.Margin = new System.Windows.Forms.Padding(9, 8, 9, 8);
             this.RobotBatteryLifeSelector.Maximum = new decimal(new int[] {
             200,
@@ -789,18 +796,110 @@ namespace VacuumSim
             0});
             this.RobotBatteryLifeSelector.ValueChanged += new System.EventHandler(this.RobotBatteryLifeSelector_ValueChanged);
             // 
-            // RobotSectionLabel
+            // WhiskerEfficiencyValueLabel
             // 
-            this.RobotSectionLabel.BackColor = System.Drawing.Color.Transparent;
-            this.RobotSectionLabel.Dock = System.Windows.Forms.DockStyle.Top;
-            this.RobotSectionLabel.Font = new System.Drawing.Font("Segoe UI", 12F, ((System.Drawing.FontStyle)((System.Drawing.FontStyle.Bold | System.Drawing.FontStyle.Underline))), System.Drawing.GraphicsUnit.Point);
-            this.RobotSectionLabel.Location = new System.Drawing.Point(0, 0);
-            this.RobotSectionLabel.Margin = new System.Windows.Forms.Padding(4);
-            this.RobotSectionLabel.Name = "RobotSectionLabel";
-            this.RobotSectionLabel.Size = new System.Drawing.Size(381, 23);
-            this.RobotSectionLabel.TabIndex = 5;
-            this.RobotSectionLabel.Text = "Robot Control";
-            this.RobotSectionLabel.TextAlign = System.Drawing.ContentAlignment.TopCenter;
+            this.WhiskerEfficiencyValueLabel.AutoSize = true;
+            this.WhiskerEfficiencyValueLabel.Location = new System.Drawing.Point(102, 133);
+            this.WhiskerEfficiencyValueLabel.Name = "WhiskerEfficiencyValueLabel";
+            this.WhiskerEfficiencyValueLabel.Size = new System.Drawing.Size(29, 15);
+            this.WhiskerEfficiencyValueLabel.TabIndex = 18;
+            this.WhiskerEfficiencyValueLabel.Text = "50%";
+            // 
+            // LoadSaveSimSettingsGroupBox
+            // 
+            this.LoadSaveSimSettingsGroupBox.Controls.Add(this.LoadSimulationButton);
+            this.LoadSaveSimSettingsGroupBox.Controls.Add(this.SaveSimulationButton);
+            this.LoadSaveSimSettingsGroupBox.Location = new System.Drawing.Point(0, 163);
+            this.LoadSaveSimSettingsGroupBox.Name = "LoadSaveSimSettingsGroupBox";
+            this.LoadSaveSimSettingsGroupBox.Size = new System.Drawing.Size(380, 87);
+            this.LoadSaveSimSettingsGroupBox.TabIndex = 16;
+            this.LoadSaveSimSettingsGroupBox.TabStop = false;
+            this.LoadSaveSimSettingsGroupBox.Text = "Load/Save";
+            // 
+            // LoadSimulationButton
+            // 
+            this.LoadSimulationButton.Location = new System.Drawing.Point(7, 32);
+            this.LoadSimulationButton.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.LoadSimulationButton.Name = "LoadSimulationButton";
+            this.LoadSimulationButton.Size = new System.Drawing.Size(161, 22);
+            this.LoadSimulationButton.TabIndex = 14;
+            this.LoadSimulationButton.Text = "Load Simulation Settings";
+            this.LoadSimulationButton.UseVisualStyleBackColor = true;
+            // 
+            // SaveSimulationButton
+            // 
+            this.SaveSimulationButton.Location = new System.Drawing.Point(7, 59);
+            this.SaveSimulationButton.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.SaveSimulationButton.Name = "SaveSimulationButton";
+            this.SaveSimulationButton.Size = new System.Drawing.Size(161, 22);
+            this.SaveSimulationButton.TabIndex = 15;
+            this.SaveSimulationButton.Text = "Save Simulation Settings";
+            this.SaveSimulationButton.UseVisualStyleBackColor = true;
+            // 
+            // SimulationControlLabel
+            // 
+            this.SimulationControlLabel.BackColor = System.Drawing.Color.Transparent;
+            this.SimulationControlLabel.Dock = System.Windows.Forms.DockStyle.Top;
+            this.SimulationControlLabel.Font = new System.Drawing.Font("Segoe UI", 12F, ((System.Drawing.FontStyle)((System.Drawing.FontStyle.Bold | System.Drawing.FontStyle.Underline))), System.Drawing.GraphicsUnit.Point);
+            this.SimulationControlLabel.Location = new System.Drawing.Point(0, 0);
+            this.SimulationControlLabel.Margin = new System.Windows.Forms.Padding(4);
+            this.SimulationControlLabel.Name = "SimulationControlLabel";
+            this.SimulationControlLabel.Size = new System.Drawing.Size(381, 23);
+            this.SimulationControlLabel.TabIndex = 5;
+            this.SimulationControlLabel.Text = "Simulation Control";
+            this.SimulationControlLabel.TextAlign = System.Drawing.ContentAlignment.TopCenter;
+            // 
+            // SimulationSpeedLabel
+            // 
+            this.SimulationSpeedLabel.AutoSize = true;
+            this.SimulationSpeedLabel.Location = new System.Drawing.Point(12, 37);
+            this.SimulationSpeedLabel.Name = "SimulationSpeedLabel";
+            this.SimulationSpeedLabel.Size = new System.Drawing.Size(99, 15);
+            this.SimulationSpeedLabel.TabIndex = 10;
+            this.SimulationSpeedLabel.Text = "Simulation Speed";
+            // 
+            // StartSimulationButton
+            // 
+            this.StartSimulationButton.Location = new System.Drawing.Point(10, 96);
+            this.StartSimulationButton.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.StartSimulationButton.Name = "StartSimulationButton";
+            this.StartSimulationButton.Size = new System.Drawing.Size(110, 22);
+            this.StartSimulationButton.TabIndex = 7;
+            this.StartSimulationButton.Text = "Start Simulation";
+            this.StartSimulationButton.UseVisualStyleBackColor = true;
+            this.StartSimulationButton.Click += new System.EventHandler(this.StartSimulationButton_Click);
+            // 
+            // SimulationSpeedSelector
+            // 
+            this.SimulationSpeedSelector.FormattingEnabled = true;
+            this.SimulationSpeedSelector.Location = new System.Drawing.Point(12, 55);
+            this.SimulationSpeedSelector.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.SimulationSpeedSelector.Name = "SimulationSpeedSelector";
+            this.SimulationSpeedSelector.Size = new System.Drawing.Size(133, 23);
+            this.SimulationSpeedSelector.TabIndex = 9;
+            this.SimulationSpeedSelector.SelectedIndexChanged += new System.EventHandler(this.SimulationSpeedSelector_SelectedIndexChanged);
+            // 
+            // StopSimulationButton
+            // 
+            this.StopSimulationButton.Location = new System.Drawing.Point(125, 96);
+            this.StopSimulationButton.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.StopSimulationButton.Name = "StopSimulationButton";
+            this.StopSimulationButton.Size = new System.Drawing.Size(110, 22);
+            this.StopSimulationButton.TabIndex = 8;
+            this.StopSimulationButton.Text = "Stop Simulation";
+            this.StopSimulationButton.UseVisualStyleBackColor = true;
+            this.StopSimulationButton.Click += new System.EventHandler(this.StopSimulationButton_Click);
+            // 
+            // ShowInstructionsButton
+            // 
+            this.ShowInstructionsButton.Location = new System.Drawing.Point(654, 640);
+            this.ShowInstructionsButton.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.ShowInstructionsButton.Name = "ShowInstructionsButton";
+            this.ShowInstructionsButton.Size = new System.Drawing.Size(113, 22);
+            this.ShowInstructionsButton.TabIndex = 17;
+            this.ShowInstructionsButton.Text = "Show Instructions";
+            this.ShowInstructionsButton.UseVisualStyleBackColor = true;
+            this.ShowInstructionsButton.Click += new System.EventHandler(this.ShowInstructionsButton_Click);
             // 
             // CenterSplitPane
             // 
@@ -818,6 +917,7 @@ namespace VacuumSim
             // 
             // CenterSplitPane.Panel2
             // 
+            this.CenterSplitPane.Panel2.Controls.Add(this.ShowInstructionsButton);
             this.CenterSplitPane.Panel2.Controls.Add(this.SimTimeElapsedLabel);
             this.CenterSplitPane.Panel2.Controls.Add(this.SimTimeElapsedTitleLabel);
             this.CenterSplitPane.Panel2.Controls.Add(this.BatteryLeftLabel);
@@ -833,18 +933,18 @@ namespace VacuumSim
             this.SimTimeElapsedLabel.AutoSize = true;
             this.SimTimeElapsedLabel.BackColor = System.Drawing.SystemColors.Window;
             this.SimTimeElapsedLabel.Font = new System.Drawing.Font("Georgia", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.SimTimeElapsedLabel.Location = new System.Drawing.Point(663, 648);
+            this.SimTimeElapsedLabel.Location = new System.Drawing.Point(163, 647);
             this.SimTimeElapsedLabel.Name = "SimTimeElapsedLabel";
-            this.SimTimeElapsedLabel.Size = new System.Drawing.Size(70, 16);
+            this.SimTimeElapsedLabel.Size = new System.Drawing.Size(69, 16);
             this.SimTimeElapsedLabel.TabIndex = 4;
-            this.SimTimeElapsedLabel.Text = "0 Seconds";
+            this.SimTimeElapsedLabel.Text = "0 seconds";
             // 
             // SimTimeElapsedTitleLabel
             // 
             this.SimTimeElapsedTitleLabel.AutoSize = true;
             this.SimTimeElapsedTitleLabel.BackColor = System.Drawing.SystemColors.Window;
             this.SimTimeElapsedTitleLabel.Font = new System.Drawing.Font("Georgia", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.SimTimeElapsedTitleLabel.Location = new System.Drawing.Point(505, 648);
+            this.SimTimeElapsedTitleLabel.Location = new System.Drawing.Point(5, 647);
             this.SimTimeElapsedTitleLabel.Name = "SimTimeElapsedTitleLabel";
             this.SimTimeElapsedTitleLabel.Size = new System.Drawing.Size(163, 16);
             this.SimTimeElapsedTitleLabel.TabIndex = 3;
@@ -855,18 +955,18 @@ namespace VacuumSim
             this.BatteryLeftLabel.AutoSize = true;
             this.BatteryLeftLabel.BackColor = System.Drawing.SystemColors.Window;
             this.BatteryLeftLabel.Font = new System.Drawing.Font("Georgia", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.BatteryLeftLabel.Location = new System.Drawing.Point(98, 648);
+            this.BatteryLeftLabel.Location = new System.Drawing.Point(86, 628);
             this.BatteryLeftLabel.Name = "BatteryLeftLabel";
             this.BatteryLeftLabel.Size = new System.Drawing.Size(84, 16);
             this.BatteryLeftLabel.TabIndex = 2;
-            this.BatteryLeftLabel.Text = "150 Minutes";
+            this.BatteryLeftLabel.Text = "150 minutes";
             // 
             // BatteryLeftTitleLabel
             // 
             this.BatteryLeftTitleLabel.AutoSize = true;
             this.BatteryLeftTitleLabel.BackColor = System.Drawing.SystemColors.Window;
             this.BatteryLeftTitleLabel.Font = new System.Drawing.Font("Georgia", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.BatteryLeftTitleLabel.Location = new System.Drawing.Point(17, 648);
+            this.BatteryLeftTitleLabel.Location = new System.Drawing.Point(5, 628);
             this.BatteryLeftTitleLabel.Name = "BatteryLeftTitleLabel";
             this.BatteryLeftTitleLabel.Size = new System.Drawing.Size(84, 16);
             this.BatteryLeftTitleLabel.TabIndex = 1;
@@ -895,6 +995,17 @@ namespace VacuumSim
             // 
             this.VacuumWhiskersTimer.Interval = 10;
             this.VacuumWhiskersTimer.Tick += new System.EventHandler(this.VacuumWhiskersTimer_Tick);
+            // 
+            // FinishFloorplanButton
+            // 
+            this.FinishFloorplanButton.Location = new System.Drawing.Point(270, 443);
+            this.FinishFloorplanButton.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.FinishFloorplanButton.Name = "FinishFloorplanButton";
+            this.FinishFloorplanButton.Size = new System.Drawing.Size(108, 22);
+            this.FinishFloorplanButton.TabIndex = 17;
+            this.FinishFloorplanButton.Text = "Finish Floorplan";
+            this.FinishFloorplanButton.UseVisualStyleBackColor = true;
+            this.FinishFloorplanButton.Click += new System.EventHandler(this.FinishFloorplanButton_Click);
             // 
             // Form1
             // 
@@ -933,8 +1044,11 @@ namespace VacuumSim
             this.ControlsPane.Panel2.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.ControlsPane)).EndInit();
             this.ControlsPane.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.WhiskersEfficiencySlider)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.VacuumEfficiencySlider)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.RobotSpeedSelector)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.RobotBatteryLifeSelector)).EndInit();
+            this.LoadSaveSimSettingsGroupBox.ResumeLayout(false);
             this.CenterSplitPane.Panel1.ResumeLayout(false);
             this.CenterSplitPane.Panel2.ResumeLayout(false);
             this.CenterSplitPane.Panel2.PerformLayout();
@@ -948,7 +1062,7 @@ namespace VacuumSim
         #endregion
         private System.Windows.Forms.SplitContainer LeftPane;
         private System.Windows.Forms.SplitContainer ControlsPane;
-        private System.Windows.Forms.Label RobotSectionLabel;
+        private System.Windows.Forms.Label SimulationControlLabel;
         private System.Windows.Forms.Label RobotBatteryLifeLabel;
         private System.Windows.Forms.NumericUpDown RobotBatteryLifeSelector;
         private System.Windows.Forms.Label RobotSpeedLabel;
@@ -966,12 +1080,12 @@ namespace VacuumSim
         private System.Windows.Forms.RadioButton CutPileRadioButton;
         private System.Windows.Forms.RadioButton LoopPileRadioButton;
         private System.Windows.Forms.RadioButton HardWoodRadioButton;
-        private System.Windows.Forms.Label FloorplanSectionLabel;
+        private System.Windows.Forms.Label FloorplanDesignLabel;
         private System.Windows.Forms.Label SimulationSpeedLabel;
         private System.Windows.Forms.ComboBox SimulationSpeedSelector;
         private System.Windows.Forms.Button StopSimulationButton;
         private System.Windows.Forms.Button StartSimulationButton;
-        private System.Windows.Forms.Label SimulationControlLabel;
+        private System.Windows.Forms.Label VacuumAttributesLabel;
         private System.Windows.Forms.SplitContainer CenterSplitPane;
         private System.Windows.Forms.GroupBox groupBox1;
         private System.Windows.Forms.Button SaveSimulationButton;
@@ -1000,6 +1114,15 @@ namespace VacuumSim
         private System.Windows.Forms.NumericUpDown ChairTableHeightSelector;
         private System.Windows.Forms.NumericUpDown ChairTableWidthSelector;
         private System.Windows.Forms.Button EraserModeButton;
+        private System.Windows.Forms.Label WhiskersEfficiencyTitleLabel;
+        private System.Windows.Forms.Label VacuumEfficiencyTitleLabel;
+        private System.Windows.Forms.TrackBar WhiskersEfficiencySlider;
+        private System.Windows.Forms.TrackBar VacuumEfficiencySlider;
+        private System.Windows.Forms.Label WhiskerEfficiencyValueLabel;
+        private System.Windows.Forms.Label VacuumEfficiencyValueLabel;
+        private System.Windows.Forms.Button ShowInstructionsButton;
+        private System.Windows.Forms.GroupBox LoadSaveSimSettingsGroupBox;
+        private System.Windows.Forms.Button FinishFloorplanButton;
     }
 }
 
