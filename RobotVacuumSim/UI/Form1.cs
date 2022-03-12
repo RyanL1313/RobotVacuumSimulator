@@ -210,6 +210,7 @@ namespace VacuumSim
                 FloorCanvasDesigner.editingFloorplan = false;
 
                 // Floorplan widget attributes
+                FloorplanDesignLabel.Enabled = false;
                 FloorTypeGroupBox.Enabled = false;
                 HouseDimensionsGroupBox.Enabled = false;
                 RoomDimensionsGroupBox.Enabled = false;
@@ -225,6 +226,7 @@ namespace VacuumSim
                 LoadSaveFloorplanGroupBox.Enabled = false;
 
                 // Vacuum widget attributes
+                VacuumAttributesLabel.Enabled = true;
                 VacuumEfficiencyTitleLabel.Enabled = true;
                 VacuumEfficiencyValueLabel.Enabled = true;
                 VacuumEfficiencySlider.Enabled = true;
@@ -251,6 +253,7 @@ namespace VacuumSim
                 FloorCanvasDesigner.currentlyPlacingVacuum = false;
 
                 // Floorplan widget attributes
+                FloorplanDesignLabel.Enabled = true;
                 FloorTypeGroupBox.Enabled = true;
                 HouseDimensionsGroupBox.Enabled = true;
                 RoomDimensionsGroupBox.Enabled = true;
@@ -262,6 +265,7 @@ namespace VacuumSim
                 FinishOrEditFloorplanButton.Text = "Finish Floorplan";
 
                 // Vacuum widget attributes
+                VacuumAttributesLabel.Enabled = false;
                 VacuumEfficiencyTitleLabel.Enabled = false;
                 VacuumEfficiencyValueLabel.Enabled = false;
                 VacuumEfficiencySlider.Enabled = false;
@@ -280,6 +284,7 @@ namespace VacuumSim
                 PlaceVacuumInstructionsLabel.Visible = false;
 
                 // Simulation widget attributes
+                SimulationControlLabel.Enabled = false;
                 SimulationSpeedLabel.Enabled = false;
                 SimulationSpeedSelector.Enabled = false;
                 StartSimulationButton.Enabled = false;
@@ -312,6 +317,8 @@ namespace VacuumSim
             // Set the house width and height selector values to the size of the newly-loaded floorplan
             HouseWidthSelector.Value = HouseLayout.numTilesPerRow * 2;
             HouseHeightSelector.Value = HouseLayout.numTilesPerCol * 2;
+
+            FloorCanvas.Invalidate();
         }
 
         private void StartSimulationButton_Click(object sender, EventArgs e)
@@ -465,8 +472,6 @@ namespace VacuumSim
                 HouseLayout.DeepCopyFloorplan(FloorCanvasDesigner.FloorplanHouseDesigner); // Copy the designer mode house layout to now be the actual house layout
             }
 
-
-
             FloorCanvasDesigner.currentlyPlacingVacuum = false;
             FloorCanvasDesigner.currentlyAddingObstacle = false;
 
@@ -508,6 +513,7 @@ namespace VacuumSim
         /// <param name="value"> A value of true means enable, false means disable </param>
         private void EnableSimulationWidgets(bool value)
         {
+            SimulationControlLabel.Enabled = value;
             SimulationSpeedLabel.Enabled = value;
             SimulationSpeedSelector.Enabled = value;
             StartSimulationButton.Enabled = value;

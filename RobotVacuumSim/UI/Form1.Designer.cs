@@ -819,6 +819,7 @@ namespace VacuumSim
             // 
             this.VacuumAttributesLabel.BackColor = System.Drawing.Color.Transparent;
             this.VacuumAttributesLabel.Dock = System.Windows.Forms.DockStyle.Top;
+            this.VacuumAttributesLabel.Enabled = false;
             this.VacuumAttributesLabel.Font = new System.Drawing.Font("Segoe UI", 12F, ((System.Drawing.FontStyle)((System.Drawing.FontStyle.Bold | System.Drawing.FontStyle.Underline))), System.Drawing.GraphicsUnit.Point);
             this.VacuumAttributesLabel.Location = new System.Drawing.Point(0, 0);
             this.VacuumAttributesLabel.Margin = new System.Windows.Forms.Padding(4);
@@ -911,6 +912,7 @@ namespace VacuumSim
             // 
             this.SimulationControlLabel.BackColor = System.Drawing.Color.Transparent;
             this.SimulationControlLabel.Dock = System.Windows.Forms.DockStyle.Top;
+            this.SimulationControlLabel.Enabled = false;
             this.SimulationControlLabel.Font = new System.Drawing.Font("Segoe UI", 12F, ((System.Drawing.FontStyle)((System.Drawing.FontStyle.Bold | System.Drawing.FontStyle.Underline))), System.Drawing.GraphicsUnit.Point);
             this.SimulationControlLabel.Location = new System.Drawing.Point(0, 0);
             this.SimulationControlLabel.Margin = new System.Windows.Forms.Padding(4);
