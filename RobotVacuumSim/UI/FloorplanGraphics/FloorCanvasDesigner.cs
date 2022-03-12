@@ -251,6 +251,13 @@ namespace VacuumSim.UI.FloorplanGraphics
             CanvasEditor.FillEllipse(brush, centerX - radius, centerY - radius, radius + radius, radius + radius);
         }
 
+        /// <summary>
+        /// This gets called as user is clicking and dragging the vacuum around.
+        /// It sets the "vacuumPlacingLocationIsValid" flag to true or false depending on if the vacuum was placed in a valid location or not.
+        /// Then, in "FloorCanvas_MouseUp" in Form1.cs, it is decided if the vacuum can be placed or not, depending on if it was successfully placed or not
+        /// </summary>
+        /// <param name="HouseLayout"> The floorplan layout for the actual house </param>
+        /// <param name="VacDisplay"> The display of the vacuum onto the canvas </param>
         public static void AttemptPlaceVacuum(FloorplanLayout HouseLayout, VacuumDisplay VacDisplay)
         {
             vacuumPlacingLocationIsValid = true; // Initially set to true, could get changed if vacuum is in invalid position
@@ -291,20 +298,20 @@ namespace VacuumSim.UI.FloorplanGraphics
                 float chairAndTableLegRadius = FloorplanLayout.chairAndTableLegRadius;
                 int lenTile = FloorplanLayout.tileSideLength;
 
-                // If vacRadius > abs(center - xVert) and vacuum is between upper and lower bounds of the tile ==> COLLISION
-                // If vacRadius > abs(center - yHoriz) and vacuum is between left and right bounds of the tile ==> COLLISION
+                // If vacRadius > abs(center - xVert) and part of the vacuum is between upper and lower bounds of the tile ==> COLLISION
+                // If vacRadius > abs(center - yHoriz) and part of the vacuum is between left and right bounds of the tile ==> COLLISION
                 if (tile.obstacle == ObstacleType.Wall || tile.obstacle == ObstacleType.Chest) // Check for circle intersection with line
                 {
-                    if (vacRadius > Math.Abs(VacDisplay.vacuumCoords[0] - tile.x) && (VacDisplay.vacuumCoords[1] + vacRadius > tile.y || VacDisplay.vacuumCoords[1] - vacRadius < tile.y + lenTile))
+                    if (vacRadius > Math.Abs(VacDisplay.vacuumCoords[0] - tile.x) && ((VacDisplay.vacuumCoords[1] - vacRadius < tile.y + lenTile && VacDisplay.vacuumCoords[1] - vacRadius > tile.y) || (VacDisplay.vacuumCoords[1] + vacRadius > tile.y && VacDisplay.vacuumCoords[1] + vacRadius < tile.y + lenTile)))
                         vacuumPlacingLocationIsValid = false; // Vacuum intersected with left vertical tile line
-                    else if (vacRadius > Math.Abs(VacDisplay.vacuumCoords[0] - (tile.x + lenTile)) && (VacDisplay.vacuumCoords[1] + vacRadius > tile.y || VacDisplay.vacuumCoords[1] - vacRadius < tile.y + lenTile))
+                    else if (vacRadius > Math.Abs(VacDisplay.vacuumCoords[0] - (tile.x + lenTile)) && ((VacDisplay.vacuumCoords[1] - vacRadius < tile.y + lenTile && VacDisplay.vacuumCoords[1] - vacRadius > tile.y) || (VacDisplay.vacuumCoords[1] + vacRadius > tile.y && VacDisplay.vacuumCoords[1] + vacRadius < tile.y + lenTile)))
                         vacuumPlacingLocationIsValid = false; // Vacuum intersected with right vertical tile line
-                    else if (vacRadius > Math.Abs(VacDisplay.vacuumCoords[1] - tile.y) && (VacDisplay.vacuumCoords[0] + vacRadius > tile.x || VacDisplay.vacuumCoords[0] - vacRadius < tile.x + lenTile))
-                        vacuumPlacingLocationIsValid = false; // Vacuum intersected with top vertical tile line
-                    else if (vacRadius > Math.Abs(VacDisplay.vacuumCoords[1] - (tile.y + lenTile)) && (VacDisplay.vacuumCoords[0] + vacRadius > tile.x || VacDisplay.vacuumCoords[0] - vacRadius < tile.x + lenTile))
-                        vacuumPlacingLocationIsValid = false; // Vacuum intersected with bottom vertical tile line
+                    else if (vacRadius > Math.Abs(VacDisplay.vacuumCoords[1] - tile.y) && ((VacDisplay.vacuumCoords[0] - vacRadius < tile.x + lenTile && VacDisplay.vacuumCoords[0] - vacRadius > tile.x) || (VacDisplay.vacuumCoords[0] + vacRadius > tile.x && VacDisplay.vacuumCoords[0] + vacRadius < tile.x + lenTile)))
+                        vacuumPlacingLocationIsValid = false; // Vacuum intersected with top horizontal tile line
+                    else if (vacRadius > Math.Abs(VacDisplay.vacuumCoords[1] - (tile.y + lenTile)) && ((VacDisplay.vacuumCoords[0] - vacRadius < tile.x + lenTile && VacDisplay.vacuumCoords[0] - vacRadius > tile.x) || (VacDisplay.vacuumCoords[0] + vacRadius > tile.x && VacDisplay.vacuumCoords[0] + vacRadius < tile.x + lenTile)))
+                        vacuumPlacingLocationIsValid = false; // Vacuum intersected with bottom horizontal tile line
                 }
-                else if (tile.obstacle == ObstacleType.Chair || tile.obstacle == ObstacleType.Table) // Check for circle intersection with circle
+                else if (tile.obstacle == ObstacleType.Chair || tile.obstacle == ObstacleType.Table) // Check for circle intersection with circle or circle enveloping circle
                 {
                     float[,] chairOrTableLegCoords = HouseLayout.GetChairOrTableLegCoordinates(tile);
 
