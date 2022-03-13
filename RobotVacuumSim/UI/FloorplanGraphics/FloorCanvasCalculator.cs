@@ -72,15 +72,15 @@ namespace VacuumSim.UI.FloorplanGraphics
 
         /// <summary>
         /// Updates simulation data after a frame update
-        /// After 4 frame updates, simulation time can be incremented, and battery left decremented
-        /// This is because 4 frame updates = 1 "simulation second"
+        /// After "framesPerSimSecond" frame updates, simulation time can be incremented, and battery left decremented
+        /// This is because "framesPerSimSecond" frame updates = 1 simulation second
         /// </summary>
         /// <param name="VacDisplay"> The display of the vacuum onto FloorCanvas </param>
         public static void UpdateSimulationData(VacuumDisplay VacDisplay)
         {
             frameCount++;
 
-            if (frameCount % 4 == 0)
+            if (frameCount % framesPerSimSecond == 0)
             {
                 Simulation.simTimeElapsed++;
                 VacDisplay.batterySecondsRemaining--;
