@@ -25,41 +25,33 @@ namespace VacuumSim.Components
             Tile tile = HouseLayout.GetTileFromCoordinates((int)VacDisplay.vacuumCoords[0], (int)VacDisplay.vacuumCoords[1]);
             if (tile.obstacle == ObstacleType.Wall || tile.obstacle == ObstacleType.Chest)
             {
-                
-                if (vacRad > Math.Abs(VacDisplay.vacuumCoords[0] - tile.x) && ((VacDisplay.vacuumCoords[1] - vacRad < tile.y + tileLen && VacDisplay.vacuumCoords[1] - vacRad > tile.y) ||
-                   (VacDisplay.vacuumCoords[1] + vacRad > tile.y && VacDisplay.vacuumCoords[1] + vacRad <tile.y + tileLen)) ||
-                   vacRad > Math.Abs(VacDisplay.vacuumCoords[0] - (tile.x + tileLen)) && ((VacDisplay.vacuumCoords[1] - vacRad < tile.y + tileLen && VacDisplay.vacuumCoords[1] - vacRad > tile.y) ||
-                   (VacDisplay.vacuumCoords[1] + vacRad > tile.y && VacDisplay.vacuumCoords[1] + vacRad < tile.y + tileLen)) ||
-                   vacRad > Math.Abs(VacDisplay.vacuumCoords[1] - tile.y) && ((VacDisplay.vacuumCoords[0] - vacRad < tile.x + tileLen && VacDisplay.vacuumCoords[0] - vacRad > tile.x) ||
-                   (VacDisplay.vacuumCoords[0] + vacRad > tile.x && VacDisplay.vacuumCoords[0] + vacRad < tile.x + tileLen)) ||
-                   vacRad > Math.Abs(VacDisplay.vacuumCoords[1] - (tile.y + tileLen)) && ((VacDisplay.vacuumCoords[0] - vacRad < tile.x + tileLen && VacDisplay.vacuumCoords[0] - vacRad > tile.x) ||
-                   (VacDisplay.vacuumCoords[0] + vacRad > tile.x && VacDisplay.vacuumCoords[0] + vacRad < tile.x + tileLen)))
+
+
+                //if vacuum is hitting the obstacle from the bottom (heading between 181 and 359)
+                if ((VacDisplay.vacuumHeading % 360) > 0 && (VacDisplay.vacuumHeading % 360) > 180)
                 {
-                    //if vacuum is hitting the obstacle from the bottom (heading between 181 and 359)
-                    if ((VacDisplay.vacuumHeading % 360) > 0 && (VacDisplay.vacuumHeading % 360) > 180)
-                    {
-                        VacDisplay.vacuumHeading += rnd.Next(1, 180);
-                        Debug.WriteLine(VacDisplay.vacuumHeading % 360, "\n");
-                    }
-                    //if vacuum is hitting the obstacle from the top (heading between 1 and 179)
-                    else if ((VacDisplay.vacuumHeading % 360) < 180 && (VacDisplay.vacuumHeading % 360) > 0)
-                    {
-                        VacDisplay.vacuumHeading += rnd.Next(181, 360);
-                        Debug.WriteLine(VacDisplay.vacuumHeading % 360, "\n");
-                    }
-                    //if vacuum is hitting the obstacle from the left (heading between 91 and 269)
-                    else if ((VacDisplay.vacuumHeading % 360) < 270 && (VacDisplay.vacuumHeading % 360) > 90)
-                    {
-                        VacDisplay.vacuumHeading = rnd.Next(1, 3) == 1 ? rnd.Next(0, 90) : rnd.Next(271, 361);
-                        Debug.WriteLine(VacDisplay.vacuumHeading % 360, "\n");
-                    }
-                    //if vacuum is hitting the obstacle from the right (heading between 271 and 89)
-                    else if (((VacDisplay.vacuumHeading % 360) < 90 && (VacDisplay.vacuumHeading % 360) > 270) || (VacDisplay.vacuumHeading % 360) == 0)
-                    {
-                        VacDisplay.vacuumHeading = rnd.Next(91, 270);
-                        Debug.WriteLine(VacDisplay.vacuumHeading % 360, "\n");
-                    }
+                    VacDisplay.vacuumHeading += rnd.Next(1, 180);
+                    Debug.WriteLine(VacDisplay.vacuumHeading % 360, "\n");
                 }
+                //if vacuum is hitting the obstacle from the top (heading between 1 and 179)
+                else if ((VacDisplay.vacuumHeading % 360) < 180 && (VacDisplay.vacuumHeading % 360) > 0)
+                {
+                    VacDisplay.vacuumHeading += rnd.Next(181, 360);
+                    Debug.WriteLine(VacDisplay.vacuumHeading % 360, "\n");
+                }
+                //if vacuum is hitting the obstacle from the left (heading between 91 and 269)
+                else if ((VacDisplay.vacuumHeading % 360) < 270 && (VacDisplay.vacuumHeading % 360) > 90)
+                {
+                    VacDisplay.vacuumHeading = rnd.Next(1, 3) == 1 ? rnd.Next(0, 90) : rnd.Next(271, 361);
+                    Debug.WriteLine(VacDisplay.vacuumHeading % 360, "\n");
+                }
+                //if vacuum is hitting the obstacle from the right (heading between 271 and 89)
+                else if (((VacDisplay.vacuumHeading % 360) < 90 && (VacDisplay.vacuumHeading % 360) > 270) || (VacDisplay.vacuumHeading % 360) == 0)
+                {
+                    VacDisplay.vacuumHeading = rnd.Next(91, 270);
+                    Debug.WriteLine(VacDisplay.vacuumHeading % 360, "\n");
+                }
+
             }
 
             //behavior around table and chair legs
