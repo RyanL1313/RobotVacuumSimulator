@@ -449,8 +449,8 @@ namespace VacuumSim
 
         private void FloorCanvas_MouseUp(object sender, MouseEventArgs e)
         {
-            // Prevent event when simulation is running
-            if (Simulation.simStarted)
+            // Prevent event when simulation is running or if left mouse button was not pressed
+            if (Simulation.simStarted || e.Button != MouseButtons.Left)
                 return;
 
             if (FloorCanvasDesigner.currentlyPlacingVacuum) // Process mouse up event when placing vacuum
