@@ -22,7 +22,7 @@ namespace VacuumSim.UI.FloorplanGraphics
         public static int[] currentIndicesOfSelectedTile = { -1, -1 }; // col, row indices of tile currently selected
         public static FloorplanLayout FloorplanHouseDesigner; // Floorplan that gets used when adding obstacle
 
-        private const int TransparentTileOpacity = 127;
+        private const int TransparentTileOpacity = 255;
 
         /// <summary>
         /// Turn on anti-aliasing when simulation is running
