@@ -94,21 +94,21 @@ namespace VacuumSim
             FloorCanvasDesigner.eraserModeOn = false;
             EraserModeButton.Text = FloorCanvasDesigner.eraserModeOn ? "Eraser Mode: ON" : "Eraser Mode: OFF";
 
-            RoomWidthSelector.Enabled = false;
-            RoomHeightSelector.Enabled = false;
-            RoomWidthLabel.Enabled = false;
-            RoomHeightLabel.Enabled = false;
-            FloorCanvasDesigner.roomCreatorModeOn = false;
-            RoomCreatorModeButton.Text = "Room Creator Mode: OFF";
-
-            if (ObstacleSelector.SelectedItem.ToString() == "Chair" || ObstacleSelector.SelectedItem.ToString() == "Table")
+            if (ObstacleSelector.SelectedItem.ToString() == "Room")
+            {
+                RoomDimensionsGroupBox.Enabled = true;
+                ChairTableDimensionsGroupBox.Enabled = false;
+            }
+            else if (ObstacleSelector.SelectedItem.ToString() == "Chair" || ObstacleSelector.SelectedItem.ToString() == "Table")
             {
                 ChairTableDimensionsGroupBox.Enabled = true;
+                RoomDimensionsGroupBox.Enabled = false;
                 FloorCanvasDesigner.chairTableDrawingModeOn = true;
             }
             else // Chest is selected
             {
                 ChairTableDimensionsGroupBox.Enabled = false;
+                RoomDimensionsGroupBox.Enabled = false;
                 FloorCanvasDesigner.chairTableDrawingModeOn = false;
             }
         }
@@ -117,8 +117,10 @@ namespace VacuumSim
         {
             if ((int)HouseWidthSelector.Value % 2 == 1) // Prevent non-even entries
                 HouseWidthSelector.Value += 1; // Round up
-
-            HouseLayout.numTilesPerRow = (int)HouseWidthSelector.Value / 2; // Get number of tiles per row based on house width chosen by user
+            
+            int prevNumTilesPerRow = HouseLayout.numTilesPerRow; // Number of tiles in a row before the width was changed
+            HouseLayout.numTilesPerRow = ((int)HouseWidthSelector.Value + 4) / 2; // Get number of tiles per row based on house width chosen by user
+            FloorCanvasDesigner.UpdateFloorplanAfterHouseWidthChanged(HouseLayout, prevNumTilesPerRow);
 
             FloorCanvas.Invalidate(); // Re-draw canvas to reflect change in house width
         }
@@ -128,7 +130,9 @@ namespace VacuumSim
             if ((int)HouseHeightSelector.Value % 2 == 1) // Prevent non-even entries
                 HouseHeightSelector.Value += 1;
 
-            HouseLayout.numTilesPerCol = (int)HouseHeightSelector.Value / 2; // Get number of tiles per column based on house height chosen by user
+            int prevNumTilesPerCol = HouseLayout.numTilesPerCol; // Number of tiles in a column before the height was changed
+            HouseLayout.numTilesPerCol = ((int)HouseHeightSelector.Value + 4) / 2; // Get number of tiles per column based on house height chosen by user
+            FloorCanvasDesigner.UpdateFloorplanAfterHouseHeightChanged(HouseLayout, prevNumTilesPerCol);
 
             FloorCanvas.Invalidate(); // Re-draw canvas to reflect change in house height
         }
@@ -214,12 +218,8 @@ namespace VacuumSim
                 FloorTypeGroupBox.Enabled = false;
                 HouseDimensionsGroupBox.Enabled = false;
                 RoomDimensionsGroupBox.Enabled = false;
-                FloorCanvasDesigner.roomCreatorModeOn = false;
-                RoomCreatorModeButton.Text = "Room Creator Mode: OFF";
                 ChairTableDimensionsGroupBox.Enabled = false;
-                ObstacleSelectorLabel.Enabled = false;
-                ObstacleSelector.Enabled = false;
-                EraserModeButton.Enabled = false;
+                ObstaclesGroupBox.Enabled = false;
                 FloorCanvasDesigner.eraserModeOn = false;
                 EraserModeButton.Text = "Eraser Mode: OFF";
                 FinishOrEditFloorplanButton.Text = "Edit Floorplan";
@@ -256,11 +256,9 @@ namespace VacuumSim
                 FloorplanDesignLabel.Enabled = true;
                 FloorTypeGroupBox.Enabled = true;
                 HouseDimensionsGroupBox.Enabled = true;
-                RoomDimensionsGroupBox.Enabled = true;
-                ObstacleSelectorLabel.Enabled = true;
-                ObstacleSelector.Enabled = true;
-                ChairTableDimensionsGroupBox.Enabled = true;
-                EraserModeButton.Enabled = true;
+                ObstaclesGroupBox.Enabled = true;
+                RoomDimensionsGroupBox.Enabled = ObstacleSelector.SelectedIndex == 0;
+                ChairTableDimensionsGroupBox.Enabled = ObstacleSelector.SelectedIndex == 1 || ObstacleSelector.SelectedIndex == 2;
                 LoadSaveFloorplanGroupBox.Enabled = true;
                 FinishOrEditFloorplanButton.Text = "Finish Floorplan";
 
@@ -302,8 +300,8 @@ namespace VacuumSim
 
         private void LoadDefaultFloorplanButton_Click(object sender, EventArgs e)
         {
-            HouseWidthSelector.Value = 50; // 25 tiles wide
-            HouseHeightSelector.Value = 40; // 20 tiles high
+            HouseWidthSelector.Value = 50; // 25 tiles wide (excluding boundary walls)
+            HouseHeightSelector.Value = 40; // 20 tiles high (excluding boundary walls)
 
             FloorplanFileReader.LoadTileGridData("../../../UI/Floorplan/DefaultFloorplan.txt", HouseLayout);
 
@@ -331,12 +329,6 @@ namespace VacuumSim
             ResetSimulationValues();
         }
 
-        private void RoomCreatorModeButton_Click(object sender, EventArgs e)
-        {
-            FloorCanvasDesigner.roomCreatorModeOn = !FloorCanvasDesigner.roomCreatorModeOn;
-            RoomCreatorModeButton.Text = FloorCanvasDesigner.roomCreatorModeOn ? "Room Creator Mode: ON" : "Room Creator Mode: OFF";
-        }
-
         private void EraserModeButton_Click(object sender, EventArgs e)
         {
             // Alternate between drawing and eraser modes
@@ -354,7 +346,6 @@ namespace VacuumSim
             FloorCanvasDesigner.PaintChairAndTableBackgrounds(canvasEditor, HouseLayout);
             FloorCanvasDesigner.DrawVacuum(canvasEditor, VacDisplay);
             FloorCanvasDesigner.DrawFloorplan(canvasEditor, HouseLayout, VacDisplay);
-            FloorCanvasDesigner.DrawHouseBoundaryLines(canvasEditor, HouseLayout); // Will remove after room design functionality is complete
         }
 
         /// <summary>
@@ -408,8 +399,7 @@ namespace VacuumSim
                 // Process attempt to remove room from floorplan
                 if (curObstacleAtTile == ObstacleType.Wall)
                 {
-                    FloorCanvasDesigner.RemoveChestFromFloorplan(HouseLayout, selectedTileIndices[0], selectedTileIndices[1]); // temporary
-                    //FloorCanvasDesigner.RemoveRoomFromFloorplan(HouseLayout, selectedTileIndices[0], selectedTileIndices[1]);
+                    FloorCanvasDesigner.RemoveRoomFromFloorplan(HouseLayout, selectedTileIndices[0], selectedTileIndices[1]);
                 }
                 else if (curObstacleAtTile == ObstacleType.Chair || curObstacleAtTile == ObstacleType.Table) // Process attempt to add chair/table to floorplan
                 {
@@ -426,9 +416,9 @@ namespace VacuumSim
                 FloorCanvasDesigner.FloorplanHouseDesigner.DeepCopyFloorplan(HouseLayout); // Copy the actual house layout into the designer house layout
 
                 // Process attempt to add room to floorplan
-                if (FloorCanvasDesigner.roomCreatorModeOn)
+                if (selectedObstacle == ObstacleType.Room)
                 {
-                    //FloorCanvasDesigner.AttemptAddRoomToFloorplan(selectedTileIndices[0], selectedTileIndices[1], (int)RoomWidthSelector.Value, (int)RoomHeightSelector.Value);
+                    FloorCanvasDesigner.AttemptAddRoomToFloorplan(selectedTileIndices[0], selectedTileIndices[1], (int)RoomWidthSelector.Value, (int)RoomHeightSelector.Value);
                 }
                 else if (selectedObstacle == ObstacleType.Chair || selectedObstacle == ObstacleType.Table) // Process attempt to add chair/table to floorplan
                 {
@@ -534,7 +524,6 @@ namespace VacuumSim
             Simulation.simStarted = true;
             Simulation.simTimeElapsed = 0;
             FloorCanvasCalculator.frameCount = 0;
-            
             VacDisplay.batterySecondsRemaining = (int)RobotBatteryLifeSelector.Value * 60;
         }
 
@@ -554,7 +543,6 @@ namespace VacuumSim
             Simulation.simTimeElapsed = 0;
             FloorCanvasCalculator.frameCount = 0;
             VacDisplay.batterySecondsRemaining = (int)RobotBatteryLifeSelector.Value * 60;
-
             FloorCanvas.Invalidate(); // Re-trigger paint event
         }
 

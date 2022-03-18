@@ -16,10 +16,10 @@ namespace VacuumSim.UI.FloorplanGraphics
         public static bool editingFloorplan = true; // Is the user currently editing the floorplan?
         public static bool settingVacuumAttributes = false; // Is the user in the vacuum attribute editing stage?
         public static bool currentlyPlacingVacuum = false; // Is the user currently placing the vacuum?
+        public static bool currentlyAddingDoorway = false; // Is the user currently being forced to add a doorway?
         public static bool vacuumPlacingLocationIsValid = true; // Is the vacuum currently being placed in a valid location?
         public static bool successPlacingVacuum = false; // Was the previous attempt at placing the vacuum onto the floorplan successful?
         public static bool eraserModeOn = false; // Is the user currently drawing in eraser mode?
-        public static bool roomCreatorModeOn = false; // Is the user currently in room creator mode?
         public static bool chairTableDrawingModeOn = false; // Is the user currently in chair/table drawing mode?
         public static bool currentlyAddingObstacle = false; // Is the user currently adding an obstacle?
         public static bool successAddingObstacle = true; // Was the previous attempt at adding an obstacle successful?
@@ -50,7 +50,7 @@ namespace VacuumSim.UI.FloorplanGraphics
             {
                 for (int j = 0; j < CurrentLayout.numTilesPerCol; j++)
                 {
-                    if ((CurrentLayout.floorLayout[i, j].obstacle == ObstacleType.Floor || CurrentLayout.floorLayout[i, j].obstacle == ObstacleType.Doorway) && CurrentLayout.gridLinesOn) // Blank tile
+                    if ((CurrentLayout.floorLayout[i, j].obstacle == ObstacleType.Floor) && CurrentLayout.gridLinesOn) // Blank tile
                     {
                         DrawTileOutline(i, j, new Pen(Color.Black), CanvasEditor);
                     }
@@ -141,28 +141,131 @@ namespace VacuumSim.UI.FloorplanGraphics
         }
 
         /// <summary>
-        /// Draw the boundary lines around the floorplan (if the simulation is running)
+        /// Updates floorplan after the user changes the house width.
+        /// 
+        /// If the width was increased, the only change that happens is
+        /// more house boundary walls get drawn and rooms connected to
+        /// the boundary wall get their own boundary wall.
+        /// 
+        /// If the width was decreased, the affected boundary walls will get set to floor tiles
+        /// and any affected obstacle will be removed, with the exception of rooms. Rooms will just be
+        /// decreased in size. However, if a room is reduced to a single column of wall tiles or is
+        /// completely obfuscated, the room gets removed.
         /// </summary>
-        /// <param name="CanvasEditor"> Graphics object to edit FloorCanvas </param>
         /// <param name="HouseLayout"> The floorplan layout </param>
-        public static void DrawHouseBoundaryLines(Graphics CanvasEditor, FloorplanLayout HouseLayout)
+        /// <param name="prevNumTilesPerRow"> Number of tiles per row before the user changed the house width </param>
+        public static void UpdateFloorplanAfterHouseWidthChanged(FloorplanLayout HouseLayout, int prevNumTilesPerRow)
         {
-            if (!Simulation.simStarted) // No need to draw the boundary lines if the grid is still being displayed
+            if (prevNumTilesPerRow < HouseLayout.numTilesPerRow) // House width was increased
+            {
+                // Remove previous boundary wall on right side of house
+                for (int y = 1; y < HouseLayout.numTilesPerCol - 1; y++)
+                {
+                    HouseLayout.ModifyTileBasedOnIndices(prevNumTilesPerRow - 1, y, ObstacleType.Floor);
+                }
+
+                // Add new boundary wall tiles on bottom and top sides of house
+                for (int x = prevNumTilesPerRow; x < HouseLayout.numTilesPerRow; x++)
+                {
+                    HouseLayout.ModifyTileBasedOnIndices(x, 0, ObstacleType.Wall); // Add top boundary wall tile
+                    HouseLayout.ModifyTileBasedOnIndices(x, HouseLayout.numTilesPerCol - 1, ObstacleType.Wall); // Add bottom boundary wall tile
+                }
+
+                // Add new boundary wall on right side of house
+                for (int y = 0; y < HouseLayout.numTilesPerCol; y++)
+                {
+                    HouseLayout.ModifyTileBasedOnIndices(HouseLayout.numTilesPerRow - 1, y, ObstacleType.Wall);
+                }
+            }
+            else if (prevNumTilesPerRow > HouseLayout.numTilesPerRow) // House width was decreased
+            {
+                // Iterate through all of the affected columns
+                for (int x = HouseLayout.numTilesPerRow - 1; x < prevNumTilesPerRow; x++)
+                {
+                    // Iterate through each tile in this column and destroy/alter the affected obstacles
+                    for (int y = 0; y < HouseLayout.numTilesPerCol; y++)
+                    {
+                        Tile affectedTile = HouseLayout.floorLayout[x, y];
+
+                        if (affectedTile.obstacle == ObstacleType.Wall || affectedTile.obstacle == ObstacleType.Chest)
+                            HouseLayout.ModifyTileBasedOnIndices(x, y, ObstacleType.Floor, -1);
+                        else if (affectedTile.obstacle == ObstacleType.Chair || affectedTile.obstacle == ObstacleType.Table)
+                            RemoveChairOrTableFromFloorplan(HouseLayout, x, y);
+                    }
+                }
+
+                // Add new boundary wall on right side of house
+                for (int y = 0; y < HouseLayout.numTilesPerCol; y++)
+                {
+                    HouseLayout.ModifyTileBasedOnIndices(HouseLayout.numTilesPerRow - 1, y, ObstacleType.Wall);
+                }
+            }
+            else // House width stayed the same - no actions necessary
                 return;
+        }
 
-            Pen BlackPen = new Pen(Color.Black);
+        /// <summary>
+        /// Updates floorplan after the user changes the house height.
+        /// 
+        /// If the height was increased, the only change that happens is
+        /// more house boundary walls get drawn and rooms previously connected to
+        /// the boundary wall will now get their own boundary wall.
+        /// 
+        /// If the height was decreased, the affected boundary walls will get set to floor tiles
+        /// and any affected obstacle will be removed, with the exception of rooms. Rooms will just be
+        /// decreased in size. However, if a room is reduced to a single row of wall tiles or is
+        /// completely obfuscated, the room gets removed.
+        /// </summary>
+        /// <param name="HouseLayout"> The floorplan layout </param>
+        /// <param name="prevNumTilesPerRow"> Number of tiles per row before the user changed the house height </param>
+        public static void UpdateFloorplanAfterHouseHeightChanged(FloorplanLayout HouseLayout, int prevNumTilesPerCol)
+        {
+            if (prevNumTilesPerCol < HouseLayout.numTilesPerCol) // House height was increased
+            {
+                // Remove previous boundary wall on bottom side of house
+                for (int x = 1; x < HouseLayout.numTilesPerRow - 1; x++)
+                {
+                    HouseLayout.ModifyTileBasedOnIndices(x, prevNumTilesPerCol - 1, ObstacleType.Floor);
+                }
 
-            // Get the vertices of the boundary
-            Point p1 = new Point(0, 0);
-            Point p2 = new Point(0, HouseLayout.numTilesPerCol * FloorplanLayout.tileSideLength);
-            Point p3 = new Point(HouseLayout.numTilesPerRow * FloorplanLayout.tileSideLength, HouseLayout.numTilesPerCol * FloorplanLayout.tileSideLength);
-            Point p4 = new Point(HouseLayout.numTilesPerRow * FloorplanLayout.tileSideLength, 0);
+                // Add new boundary wall tiles on left and right sides of house
+                for (int y = prevNumTilesPerCol; y < HouseLayout.numTilesPerCol; y++)
+                {
+                    HouseLayout.ModifyTileBasedOnIndices(0, y, ObstacleType.Wall); // Add left boundary wall tile
+                    HouseLayout.ModifyTileBasedOnIndices(HouseLayout.numTilesPerRow - 1, y, ObstacleType.Wall); // Add right boundary wall tile
+                }
 
-            // Draw the house boundary
-            CanvasEditor.DrawLine(BlackPen, p1, p2);
-            CanvasEditor.DrawLine(BlackPen, p2, p3);
-            CanvasEditor.DrawLine(BlackPen, p3, p4);
-            CanvasEditor.DrawLine(BlackPen, p4, p1);
+                // Add new boundary wall on bottom side of house
+                for (int x = 0; x < HouseLayout.numTilesPerRow; x++)
+                {
+                    HouseLayout.ModifyTileBasedOnIndices(x, HouseLayout.numTilesPerCol - 1, ObstacleType.Wall);
+                }
+            }
+            else if (prevNumTilesPerCol > HouseLayout.numTilesPerCol) // House height was decreased
+            {
+                // Iterate through all of the affected rows
+                for (int y = HouseLayout.numTilesPerCol - 1; y < prevNumTilesPerCol; y++)
+                {
+                    // Iterate through each non-boundary tile in this row and destroy/alter the affected obstacles
+                    for (int x = 0; x < HouseLayout.numTilesPerRow; x++)
+                    {
+                        Tile affectedTile = HouseLayout.floorLayout[x, y];
+
+                        if (affectedTile.obstacle == ObstacleType.Wall || affectedTile.obstacle == ObstacleType.Chest)
+                            HouseLayout.ModifyTileBasedOnIndices(x, y, ObstacleType.Floor, -1);
+                        else if (affectedTile.obstacle == ObstacleType.Chair || affectedTile.obstacle == ObstacleType.Table)
+                            RemoveChairOrTableFromFloorplan(HouseLayout, x, y);
+                    }
+                }
+
+                // Add the new boundary wall on bottom side of house
+                for (int x = 0; x < HouseLayout.numTilesPerRow; x++)
+                {
+                    HouseLayout.floorLayout[x, HouseLayout.numTilesPerCol - 1].obstacle = ObstacleType.Wall;
+                }
+            }
+            else // House height stayed the same - no actions necessary
+                return;
         }
 
         /// <summary>
@@ -291,7 +394,7 @@ namespace VacuumSim.UI.FloorplanGraphics
             // Iterate through each possible tile and detect if the vacuum is touching any obstacles
             foreach (Tile tile in tilesVacuumCouldBeIn)
             {
-                if (tile.obstacle == ObstacleType.Floor || tile.obstacle == ObstacleType.Doorway)
+                if (tile.obstacle == ObstacleType.Floor)
                     continue; // Vacuum can touch any part of this tile with no issues
 
                 float vacRadius = VacuumDisplay.vacuumDiameter / 2.0f;
@@ -341,6 +444,11 @@ namespace VacuumSim.UI.FloorplanGraphics
                     }
                 }
             }
+        }
+
+        public static void AttemptAddRoomToFloorplan(int xTileIndex, int yTileIndex, int roomWidth, int roomHeight)
+        {
+
         }
 
         /// <summary>
@@ -411,6 +519,28 @@ namespace VacuumSim.UI.FloorplanGraphics
                 FloorplanHouseDesigner.ModifyTileBasedOnIndices(xTileIndex, yTileIndex, ObstacleType.Error);
             else // Chest can be placed here. Mark the associated tile as a success tile
                 FloorplanHouseDesigner.ModifyTileBasedOnIndices(xTileIndex, yTileIndex, ObstacleType.Success);
+        }
+
+        public static void RemoveRoomFromFloorplan(FloorplanLayout HouseLayout, int xTileIndex, int yTileIndex)
+        {
+            // Prevent removing house boundary walls
+            if (xTileIndex == 0 || yTileIndex == 0 || xTileIndex == HouseLayout.numTilesPerRow - 1 || yTileIndex == HouseLayout.numTilesPerCol - 1)
+                return;
+
+            int roomGID = HouseLayout.floorLayout[xTileIndex, yTileIndex].groupID; // Get group ID of this room
+
+            // Remove every tile with the same group ID as this room
+            for (int i = 0; i < HouseLayout.numTilesPerRow; i++)
+            {
+                for (int j = 0; j < HouseLayout.numTilesPerCol; j++)
+                {
+                    if (HouseLayout.floorLayout[i, j].groupID == roomGID)
+                    {
+                        HouseLayout.ModifyTileBasedOnIndices(i, j, ObstacleType.Floor);
+                        HouseLayout.floorLayout[i, j].groupID = -1;
+                    }
+                }
+            }
         }
 
         /// <summary>
