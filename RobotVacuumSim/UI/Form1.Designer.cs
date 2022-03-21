@@ -32,6 +32,7 @@ namespace VacuumSim
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
             this.LeftPane = new System.Windows.Forms.SplitContainer();
+            this.CreateDoorwayInstructionsLabel = new System.Windows.Forms.Label();
             this.ObstaclesGroupBox = new System.Windows.Forms.GroupBox();
             this.ObstacleSelectorLabel = new System.Windows.Forms.Label();
             this.ObstacleSelector = new System.Windows.Forms.ComboBox();
@@ -142,6 +143,7 @@ namespace VacuumSim
             // LeftPane.Panel1
             // 
             this.LeftPane.Panel1.BackColor = System.Drawing.SystemColors.Control;
+            this.LeftPane.Panel1.Controls.Add(this.CreateDoorwayInstructionsLabel);
             this.LeftPane.Panel1.Controls.Add(this.ObstaclesGroupBox);
             this.LeftPane.Panel1.Controls.Add(this.FinishOrEditFloorplanButton);
             this.LeftPane.Panel1.Controls.Add(this.ChairTableDimensionsGroupBox);
@@ -162,6 +164,20 @@ namespace VacuumSim
             this.LeftPane.Size = new System.Drawing.Size(808, 692);
             this.LeftPane.SplitterDistance = 400;
             this.LeftPane.TabIndex = 1;
+            // 
+            // CreateDoorwayInstructionsLabel
+            // 
+            this.CreateDoorwayInstructionsLabel.AutoSize = true;
+            this.CreateDoorwayInstructionsLabel.Font = new System.Drawing.Font("Elephant", 8.999999F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            this.CreateDoorwayInstructionsLabel.ForeColor = System.Drawing.Color.Navy;
+            this.CreateDoorwayInstructionsLabel.Location = new System.Drawing.Point(7, 561);
+            this.CreateDoorwayInstructionsLabel.MaximumSize = new System.Drawing.Size(400, 0);
+            this.CreateDoorwayInstructionsLabel.Name = "CreateDoorwayInstructionsLabel";
+            this.CreateDoorwayInstructionsLabel.Size = new System.Drawing.Size(383, 32);
+            this.CreateDoorwayInstructionsLabel.TabIndex = 22;
+            this.CreateDoorwayInstructionsLabel.Text = "Click on one of the green tiles to create the doorway to the room you just placed" +
+    ".";
+            this.CreateDoorwayInstructionsLabel.Visible = false;
             // 
             // ObstaclesGroupBox
             // 
@@ -655,7 +671,7 @@ namespace VacuumSim
             this.PlaceVacuumInstructionsLabel.AutoSize = true;
             this.PlaceVacuumInstructionsLabel.Font = new System.Drawing.Font("Elephant", 8.999999F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
             this.PlaceVacuumInstructionsLabel.ForeColor = System.Drawing.Color.Navy;
-            this.PlaceVacuumInstructionsLabel.Location = new System.Drawing.Point(3, 383);
+            this.PlaceVacuumInstructionsLabel.Location = new System.Drawing.Point(12, 383);
             this.PlaceVacuumInstructionsLabel.MaximumSize = new System.Drawing.Size(400, 0);
             this.PlaceVacuumInstructionsLabel.Name = "PlaceVacuumInstructionsLabel";
             this.PlaceVacuumInstructionsLabel.Size = new System.Drawing.Size(371, 32);
@@ -1193,6 +1209,7 @@ namespace VacuumSim
         private System.Windows.Forms.NumericUpDown InitialVacuumHeadingSelector;
         private System.Windows.Forms.Label PlaceVacuumInstructionsLabel;
         private System.Windows.Forms.GroupBox ObstaclesGroupBox;
+        private System.Windows.Forms.Label CreateDoorwayInstructionsLabel;
     }
 }
 

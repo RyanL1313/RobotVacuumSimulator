@@ -122,6 +122,9 @@ namespace VacuumSim
             HouseLayout.numTilesPerRow = ((int)HouseWidthSelector.Value + 4) / 2; // Get number of tiles per row based on house width chosen by user
             FloorCanvasDesigner.UpdateFloorplanAfterHouseWidthChanged(HouseLayout, prevNumTilesPerRow);
 
+            // Update RoomWidthSelector value if necessary
+            RoomWidthSelector.Value = Math.Min(RoomWidthSelector.Value, HouseWidthSelector.Value);
+
             FloorCanvas.Invalidate(); // Re-draw canvas to reflect change in house width
         }
 
@@ -134,6 +137,9 @@ namespace VacuumSim
             HouseLayout.numTilesPerCol = ((int)HouseHeightSelector.Value + 4) / 2; // Get number of tiles per column based on house height chosen by user
             FloorCanvasDesigner.UpdateFloorplanAfterHouseHeightChanged(HouseLayout, prevNumTilesPerCol);
 
+            // Update RoomHeightSelector value if necessary
+            RoomHeightSelector.Value = Math.Min(RoomHeightSelector.Value, HouseHeightSelector.Value);
+
             FloorCanvas.Invalidate(); // Re-draw canvas to reflect change in house height
         }
 
@@ -141,12 +147,16 @@ namespace VacuumSim
         {
             if ((int)RoomWidthSelector.Value % 2 == 1) // Prevent non-even entries
                 RoomWidthSelector.Value += 1;
+
+            RoomWidthSelector.Value = Math.Min(RoomWidthSelector.Value, HouseWidthSelector.Value);
         }
 
         private void RoomHeightSelector_ValueChanged(object sender, EventArgs e)
         {
             if ((int)RoomHeightSelector.Value % 2 == 1) // Prevent non-even entries
                 RoomHeightSelector.Value += 1;
+
+            RoomHeightSelector.Value = Math.Min(RoomHeightSelector.Value, HouseHeightSelector.Value);
         }
 
         private void ChairTableWidthSelector_ValueChanged(object sender, EventArgs e)
@@ -364,7 +374,7 @@ namespace VacuumSim
             int[] selectedTileIndices = FloorplanLayout.GetTileIndices((int)canvasCoords.X, (int)canvasCoords.Y);
 
             // Make sure we don't re-draw the canvas if the user is still selecting the same tile while in floorplan drawing mode (efficiency concerns)
-            if (!FloorCanvasDesigner.eraserModeOn && !FloorCanvasDesigner.settingVacuumAttributes && selectedTileIndices[0] == FloorCanvasDesigner.currentIndicesOfSelectedTile[0] && selectedTileIndices[1] == FloorCanvasDesigner.currentIndicesOfSelectedTile[1])
+            if (!FloorCanvasDesigner.eraserModeOn && !FloorCanvasDesigner.currentlyAddingDoorway && !FloorCanvasDesigner.settingVacuumAttributes && selectedTileIndices[0] == FloorCanvasDesigner.currentIndicesOfSelectedTile[0] && selectedTileIndices[1] == FloorCanvasDesigner.currentIndicesOfSelectedTile[1])
                 return;
             else
             {
@@ -393,6 +403,14 @@ namespace VacuumSim
                 VacDisplay.vacuumCoords[1] = canvasCoords.Y;
 
                 FloorCanvasDesigner.AttemptPlaceVacuum(HouseLayout, VacDisplay);
+            }
+            else if (FloorCanvasDesigner.currentlyAddingDoorway) // User currently needs to add a doorway to the room they just placed
+            {
+                // Process attempt to add doorway to the room
+                bool success = FloorCanvasDesigner.AttemptAddDoorwayToRoom(selectedTileIndices[0], selectedTileIndices[1]);
+
+                if (success) // Doorway was just successfully placed
+                    EnableFloorplanWidgets(true);
             }
             else if (FloorCanvasDesigner.eraserModeOn) // If eraser mode is on, remove item that is at this tile
             {
@@ -428,10 +446,6 @@ namespace VacuumSim
                 {
                     FloorCanvasDesigner.AttemptAddChestToFloorplan(selectedTileIndices[0], selectedTileIndices[1]);
                 }
-                else // Wall tile. Will remove this in future after room designer functionality is implemented because user shouldn't be able to add individual wall tiles
-                {
-                    HouseLayout.floorLayout[selectedTileIndices[0], selectedTileIndices[1]].obstacle = ObstacleType.Wall;
-                }
             }
 
             FloorCanvas.Invalidate(); // Re-trigger paint event
@@ -460,6 +474,29 @@ namespace VacuumSim
             {
                 FloorCanvasDesigner.ChangeSuccessTilesToCurrentObstacle(); // Change success tiles in FloorplanHouseDesigner to be the same obstacle type that was just added         
                 HouseLayout.DeepCopyFloorplan(FloorCanvasDesigner.FloorplanHouseDesigner); // Copy the designer mode house layout to now be the actual house layout
+
+                if (FloorCanvasDesigner.currentObstacleBeingAdded == ObstacleType.Room || FloorCanvasDesigner.currentObstacleBeingAdded == ObstacleType.Wall) // Just placed room, now need to add doorway
+                {
+                    FloorCanvasDesigner.FloorplanHouseDesigner.DeepCopyFloorplan(HouseLayout); // Back to showing the designer mode house layout
+                    FloorCanvasDesigner.currentlyAddingDoorway = FloorCanvasDesigner.ShowPossibleDoorwayTiles();
+
+                    if (FloorCanvasDesigner.currentlyAddingDoorway) // Disable all floorplan widgets until user adds the doorway
+                    {
+                        if (FloorCanvasDesigner.successPlacingDoorway)
+                        {
+                            FloorCanvasDesigner.currentlyAddingDoorway = false;
+                            FloorCanvasDesigner.successPlacingDoorway = false;
+                            EnableFloorplanWidgets(true);
+                        }
+                        else
+                            EnableFloorplanWidgets(false);
+                    }
+                }
+                else
+                {
+                    FloorCanvasDesigner.ChangeSuccessTilesToCurrentObstacle(); // Change success tiles in FloorplanHouseDesigner to be the same obstacle type that was just added         
+                    HouseLayout.DeepCopyFloorplan(FloorCanvasDesigner.FloorplanHouseDesigner); // Copy the designer mode house layout to now be the actual house layout
+                }
             }
 
             FloorCanvasDesigner.currentlyPlacingVacuum = false;
@@ -495,6 +532,22 @@ namespace VacuumSim
             FloorCanvasCalculator.CalculateWhiskerCoordinates(VacDisplay);
 
             FloorCanvas.Invalidate(); // Re-trigger paint event
+        }
+
+        /// <summary>
+        /// Enables floorplan widgets if value is true, disables them if value is false
+        /// </summary>
+        /// <param name="value"> A value of true means enable, false means disable </param>
+        private void EnableFloorplanWidgets(bool value)
+        {
+            CreateDoorwayInstructionsLabel.Visible = !value;
+            FloorTypeGroupBox.Enabled = value;
+            HouseDimensionsGroupBox.Enabled = value;
+            ObstaclesGroupBox.Enabled = value;
+            RoomDimensionsGroupBox.Enabled = ObstacleSelector.Text.ToString() == "Room" && !FloorCanvasDesigner.currentlyAddingDoorway;
+            ChairTableDimensionsGroupBox.Enabled = ObstacleSelector.Text.ToString() == "Chair" || ObstacleSelector.Text.ToString() == "Table";
+            LoadSaveFloorplanGroupBox.Enabled = value;
+            FinishOrEditFloorplanButton.Enabled = value;
         }
 
         /// <summary>

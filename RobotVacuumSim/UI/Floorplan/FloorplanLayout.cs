@@ -163,8 +163,10 @@ namespace VacuumSim
             string lowercase = strObstacle.ToLower();
             ObstacleType ret = ObstacleType.Floor;
 
-            if (lowercase.Equals("blank") || lowercase.Equals("none"))
+            if (lowercase.Equals("blank") || lowercase.Equals("none") || lowercase.Equals("floor"))
                 ret = ObstacleType.Floor;
+            else if (lowercase.Equals("room"))
+                ret = ObstacleType.Room;
             else if (lowercase.Equals("wall"))
                 ret = ObstacleType.Wall;
             else if (lowercase.Equals("chest"))

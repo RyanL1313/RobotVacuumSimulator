@@ -17,6 +17,7 @@ namespace VacuumSim.UI.FloorplanGraphics
         public static bool settingVacuumAttributes = false; // Is the user in the vacuum attribute editing stage?
         public static bool currentlyPlacingVacuum = false; // Is the user currently placing the vacuum?
         public static bool currentlyAddingDoorway = false; // Is the user currently being forced to add a doorway?
+        public static bool successPlacingDoorway = false; // Did the user just successfully place a doorway?
         public static bool vacuumPlacingLocationIsValid = true; // Is the vacuum currently being placed in a valid location?
         public static bool successPlacingVacuum = false; // Was the previous attempt at placing the vacuum onto the floorplan successful?
         public static bool eraserModeOn = false; // Is the user currently drawing in eraser mode?
@@ -44,7 +45,7 @@ namespace VacuumSim.UI.FloorplanGraphics
         public static void DrawFloorplan(Graphics CanvasEditor, FloorplanLayout HouseLayout, VacuumDisplay VacDisplay)
         {
             // Get the current layout, depending on if we're in design mode or just displaying the floorplan
-            FloorplanLayout CurrentLayout = currentlyAddingObstacle ? FloorplanHouseDesigner : HouseLayout;
+            FloorplanLayout CurrentLayout = currentlyAddingObstacle || currentlyAddingDoorway ? FloorplanHouseDesigner : HouseLayout;
 
             for (int i = 0; i < CurrentLayout.numTilesPerRow; i++)
             {
@@ -56,7 +57,10 @@ namespace VacuumSim.UI.FloorplanGraphics
                     }
                     else if (CurrentLayout.floorLayout[i, j].obstacle == ObstacleType.Wall) // Wall tile
                     {
-                        PaintTile(i, j, new SolidBrush(Color.Black), CanvasEditor);
+                        if (IsBoundaryWallTile(HouseLayout, HouseLayout.floorLayout[i, j]))
+                            PaintTile(i, j, new SolidBrush(Color.Black), CanvasEditor);
+                        else
+                            PaintTile(i, j, new SolidBrush(Color.FromArgb(54, 69, 79)), CanvasEditor); // Room walls are charcoal gray
                     }
                     else if (CurrentLayout.floorLayout[i, j].obstacle == ObstacleType.Chest) // Chest tile
                     {
@@ -187,8 +191,10 @@ namespace VacuumSim.UI.FloorplanGraphics
                     {
                         Tile affectedTile = HouseLayout.floorLayout[x, y];
 
-                        if (affectedTile.obstacle == ObstacleType.Wall || affectedTile.obstacle == ObstacleType.Chest)
+                        if (affectedTile.obstacle == ObstacleType.Chest || (affectedTile.obstacle == ObstacleType.Wall && affectedTile.groupID == -1))
                             HouseLayout.ModifyTileBasedOnIndices(x, y, ObstacleType.Floor, -1);
+                        else if (affectedTile.obstacle == ObstacleType.Wall && affectedTile.groupID != -1) // Room wall
+                            RemoveRoomFromFloorplan(HouseLayout, x, y);
                         else if (affectedTile.obstacle == ObstacleType.Chair || affectedTile.obstacle == ObstacleType.Table)
                             RemoveChairOrTableFromFloorplan(HouseLayout, x, y);
                     }
@@ -197,7 +203,7 @@ namespace VacuumSim.UI.FloorplanGraphics
                 // Add new boundary wall on right side of house
                 for (int y = 0; y < HouseLayout.numTilesPerCol; y++)
                 {
-                    HouseLayout.ModifyTileBasedOnIndices(HouseLayout.numTilesPerRow - 1, y, ObstacleType.Wall);
+                    HouseLayout.ModifyTileBasedOnIndices(HouseLayout.numTilesPerRow - 1, y, ObstacleType.Wall, -1);
                 }
             }
             else // House width stayed the same - no actions necessary
@@ -251,8 +257,10 @@ namespace VacuumSim.UI.FloorplanGraphics
                     {
                         Tile affectedTile = HouseLayout.floorLayout[x, y];
 
-                        if (affectedTile.obstacle == ObstacleType.Wall || affectedTile.obstacle == ObstacleType.Chest)
+                        if (affectedTile.obstacle == ObstacleType.Chest || (affectedTile.obstacle == ObstacleType.Wall && affectedTile.groupID == -1))
                             HouseLayout.ModifyTileBasedOnIndices(x, y, ObstacleType.Floor, -1);
+                        else if (affectedTile.obstacle == ObstacleType.Wall && affectedTile.groupID != -1) // Room wall
+                            RemoveRoomFromFloorplan(HouseLayout, x, y);
                         else if (affectedTile.obstacle == ObstacleType.Chair || affectedTile.obstacle == ObstacleType.Table)
                             RemoveChairOrTableFromFloorplan(HouseLayout, x, y);
                     }
@@ -261,7 +269,7 @@ namespace VacuumSim.UI.FloorplanGraphics
                 // Add the new boundary wall on bottom side of house
                 for (int x = 0; x < HouseLayout.numTilesPerRow; x++)
                 {
-                    HouseLayout.floorLayout[x, HouseLayout.numTilesPerCol - 1].obstacle = ObstacleType.Wall;
+                    HouseLayout.ModifyTileBasedOnIndices(x, HouseLayout.numTilesPerCol - 1, ObstacleType.Wall, -1);
                 }
             }
             else // House height stayed the same - no actions necessary
@@ -446,13 +454,133 @@ namespace VacuumSim.UI.FloorplanGraphics
             }
         }
 
+        /// <summary>
+        /// Edits the "designer mode" floorplan to mark room (aka wall) tiles as "Success" or "Error" if they can/cannot be placed here
+        /// </summary>
+        /// <param name="xTileIndex"> The selected column </param>
+        /// <param name="yTileIndex"> The selected row </param>
+        /// <param name="roomWidth"> Width of room in feet </param>
+        /// <param name="roomHeight"> Width of room in feet </param>
         public static void AttemptAddRoomToFloorplan(int xTileIndex, int yTileIndex, int roomWidth, int roomHeight)
         {
+            currentObstacleBeingAdded = ObstacleType.Room;
+            int roomWidthInTiles = Math.Min(roomWidth / 2, FloorplanHouseDesigner.numTilesPerRow - 2);
+            int roomHeightInTiles = Math.Min(roomHeight / 2, FloorplanHouseDesigner.numTilesPerCol - 2);
+            successAddingObstacle = true; // Initially set to true, could get changed if obstacle is in invalid position
 
+            // Check for out of bounds on or past the room's boundary walls. If there are some, can't place room here
+            if (xTileIndex <= 0 || xTileIndex + roomWidthInTiles + 1 >= FloorplanHouseDesigner.numTilesPerRow - 1 ||
+                yTileIndex <= 0 || yTileIndex + roomHeightInTiles + 1 >= FloorplanHouseDesigner.numTilesPerCol - 1)
+                successAddingObstacle = false;
+            else // All tiles are within the house boundaries. Now make sure they're not obstructing any obstacles
+            {
+                // Check if room's upper and lower boundary walls can be placed here
+                for (int i = xTileIndex; i <= xTileIndex + roomWidthInTiles + 1; i++)
+                {
+                    Tile upperTile = FloorplanHouseDesigner.floorLayout[i, yTileIndex];
+                    Tile lowerTile = FloorplanHouseDesigner.floorLayout[i, yTileIndex + roomHeightInTiles + 1];
+
+                    if (upperTile.obstacle != ObstacleType.Floor || lowerTile.obstacle != ObstacleType.Floor)
+                        successAddingObstacle = false;
+                }
+
+                // Check if room's left and right boundary walls can be placed here
+                for (int j = yTileIndex; j < yTileIndex + roomHeightInTiles + 1; j++)
+                {
+                    Tile leftTile = FloorplanHouseDesigner.floorLayout[xTileIndex, j];
+                    Tile rightTile = FloorplanHouseDesigner.floorLayout[xTileIndex + roomWidthInTiles + 1, j];
+
+                    if (leftTile.obstacle != ObstacleType.Floor || rightTile.obstacle != ObstacleType.Floor)
+                        successAddingObstacle = false;
+                }
+            }
+
+            ObstacleType ob = successAddingObstacle ? ObstacleType.Success : ObstacleType.Error;
+
+            // Mark the tiles that the room's upper and lower boundary walls are covering as success/error tiles
+            for (int i = xTileIndex; i <= xTileIndex + roomWidthInTiles + 1 && i < FloorplanHouseDesigner.numTilesPerRow; i++)
+            {
+                Tile upperTile = FloorplanHouseDesigner.floorLayout[i, yTileIndex];
+                Tile lowerTile;
+
+                if (i < FloorplanHouseDesigner.numTilesPerRow)
+                    upperTile.obstacle = ob;
+                if (yTileIndex + roomHeightInTiles + 1 < FloorplanHouseDesigner.numTilesPerCol)
+                {
+                    lowerTile = FloorplanHouseDesigner.floorLayout[i, yTileIndex + roomHeightInTiles + 1];
+
+                    lowerTile.obstacle = ob;
+                }
+            }
+
+            // Mark the tiles that the room's left and right boundary walls are covering as success/error tiles
+            for (int j = yTileIndex; j <= yTileIndex + roomHeightInTiles + 1 && j < FloorplanHouseDesigner.numTilesPerCol; j++)
+            {
+                Tile leftTile = FloorplanHouseDesigner.floorLayout[xTileIndex, j];
+                Tile rightTile;
+
+                if (j < FloorplanHouseDesigner.numTilesPerCol)
+                    leftTile.obstacle = ob;
+
+                if (xTileIndex + roomWidthInTiles + 1 < FloorplanHouseDesigner.numTilesPerRow)
+                {
+                    rightTile = FloorplanHouseDesigner.floorLayout[xTileIndex + roomWidthInTiles + 1, j];
+                    rightTile.obstacle = ob;
+                }
+            }
+        }
+
+        public static bool AttemptAddDoorwayToRoom(int xTileIndex, int yTileIndex)
+        {
+            if (FloorplanHouseDesigner.floorLayout[xTileIndex, yTileIndex].obstacle == ObstacleType.Success) // User can add doorway here
+            {
+                FloorplanHouseDesigner.ModifyTileBasedOnIndices(xTileIndex, yTileIndex, ObstacleType.Floor); // Add the doorway
+                ChangeSuccessTilesToCurrentObstacle(); // Change the other success tiles to wall tiles
+                ChangeErrorTilesToCurrentObstacle(); // Change the error tiles to wall tiles
+
+                successPlacingDoorway = true;
+
+                return true;
+            }
+            else
+                return false;
         }
 
         /// <summary>
-        /// Edits the "designer mode" floorplan to mark tiles as "Success" or "Error" if they can/cannot be placed here
+        /// Marks every tile where the user can place the doorway for the previously added room as a green "Success" tile.
+        /// Marks every invalid doorway tile for the previously added room as a red "Error" tile
+        /// </summary>
+        /// <returns> A boolean for if a doorway is needed for the room just added </returns>
+        public static bool ShowPossibleDoorwayTiles()
+        {
+            bool doorwayNeeded = false;
+            int roomGroupID = FloorplanFileWriter.currentObstacleGroupNumber - 1; // Get the group ID of the room just added
+
+            for (int i = 0; i < FloorplanHouseDesigner.numTilesPerRow; i++)
+            {
+                for (int j = 0; j < FloorplanHouseDesigner.numTilesPerCol; j++)
+                {
+                    if (FloorplanHouseDesigner.floorLayout[i, j].groupID == roomGroupID) // This tile is part of the room we just added
+                    {
+                        // If doorway can be placed here, mark the tile as a Success tile
+                        if (!IsRoomCornerTile(FloorplanHouseDesigner, FloorplanHouseDesigner.floorLayout[i, j]) &&
+                            !IsAgainstHouseBoundaryWall(FloorplanHouseDesigner, FloorplanHouseDesigner.floorLayout[i, j]) &&
+                            !IsAdjacentToThreeOrMoreWallTiles(FloorplanHouseDesigner, FloorplanHouseDesigner.floorLayout[i, j]))
+                        {
+                            FloorplanHouseDesigner.floorLayout[i, j].obstacle = ObstacleType.Success;
+                            doorwayNeeded = true; // This room needs a doorway
+                        }
+                        else // Doorway can't be placed here - mark it as an Error tile
+                            FloorplanHouseDesigner.floorLayout[i, j].obstacle = ObstacleType.Error;
+                    }
+                }
+            }
+
+            return doorwayNeeded;
+        }
+
+        /// <summary>
+        /// Edits the "designer mode" floorplan to mark chair/table tiles as "Success" or "Error" if they can/cannot be placed here
         /// </summary>
         /// <param name="selectedObstacle"> Chair or Table being added </param>
         /// <param name="xTileIndex"> The selected column </param>
@@ -523,8 +651,7 @@ namespace VacuumSim.UI.FloorplanGraphics
 
         public static void RemoveRoomFromFloorplan(FloorplanLayout HouseLayout, int xTileIndex, int yTileIndex)
         {
-            // Prevent removing house boundary walls
-            if (xTileIndex == 0 || yTileIndex == 0 || xTileIndex == HouseLayout.numTilesPerRow - 1 || yTileIndex == HouseLayout.numTilesPerCol - 1)
+            if (IsBoundaryWallTile(HouseLayout, HouseLayout.floorLayout[xTileIndex, yTileIndex]))
                 return;
 
             int roomGID = HouseLayout.floorLayout[xTileIndex, yTileIndex].groupID; // Get group ID of this room
@@ -582,6 +709,10 @@ namespace VacuumSim.UI.FloorplanGraphics
         /// </summary>
         public static void ChangeSuccessTilesToCurrentObstacle()
         {
+            if (currentObstacleBeingAdded == ObstacleType.Room)
+                currentObstacleBeingAdded = ObstacleType.Wall; // So we know to create wall tiles
+
+
             for (int i = 0; i < FloorplanHouseDesigner.numTilesPerRow; i++)
             {
                 for (int j = 0; j < FloorplanHouseDesigner.numTilesPerCol; j++)
@@ -589,12 +720,84 @@ namespace VacuumSim.UI.FloorplanGraphics
                     if (FloorplanHouseDesigner.floorLayout[i, j].obstacle == ObstacleType.Success)
                     {
                         FloorplanHouseDesigner.ModifyTileBasedOnIndices(i, j, currentObstacleBeingAdded);
-                        FloorplanHouseDesigner.floorLayout[i, j].groupID = FloorplanFileWriter.currentObstacleGroupNumber; // Assign group ID
+
+                        if (!currentlyAddingDoorway)
+                            FloorplanHouseDesigner.floorLayout[i, j].groupID = FloorplanFileWriter.currentObstacleGroupNumber; // Assign group ID
                     }
                 }
             }
 
-            FloorplanFileWriter.currentObstacleGroupNumber++; // Obstacle was successfully placed, assign its corresponding tiles a group ID
+            if (!currentlyAddingDoorway)
+                FloorplanFileWriter.currentObstacleGroupNumber++; // Obstacle was successfully placed, assign its corresponding tiles a group ID
         }
+
+        /// <summary>
+        /// /// Changes every tile in the "design mode" house layout with a Error obstacle to contain the obstacle currently selected
+        /// </summary>
+        public static void ChangeErrorTilesToCurrentObstacle()
+        {
+            if (currentObstacleBeingAdded == ObstacleType.Room)
+                currentObstacleBeingAdded = ObstacleType.Wall; // So we know to create wall tiles
+
+            for (int i = 0; i < FloorplanHouseDesigner.numTilesPerRow; i++)
+            {
+                for (int j = 0; j < FloorplanHouseDesigner.numTilesPerCol; j++)
+                {
+                    if (FloorplanHouseDesigner.floorLayout[i, j].obstacle == ObstacleType.Error)
+                    {
+                        FloorplanHouseDesigner.ModifyTileBasedOnIndices(i, j, currentObstacleBeingAdded);
+                    }
+                }
+            }
+        }
+
+        private static bool IsBoundaryWallTile(FloorplanLayout CurrentLayout, Tile tile)
+        {
+            int x = tile.x / FloorplanLayout.tileSideLength;
+            int y = tile.y / FloorplanLayout.tileSideLength;
+
+            return x == 0 || x == CurrentLayout.numTilesPerRow - 1 || y == 0 || y == CurrentLayout.numTilesPerCol - 1;
+        }
+
+        private static bool IsAgainstHouseBoundaryWall(FloorplanLayout CurrentLayout, Tile tile)
+        {
+            int x = tile.x / FloorplanLayout.tileSideLength;
+            int y = tile.y / FloorplanLayout.tileSideLength;
+
+            return IsBoundaryWallTile(CurrentLayout, CurrentLayout.floorLayout[x - 1, y]) || IsBoundaryWallTile(CurrentLayout, CurrentLayout.floorLayout[x + 1, y]) || // Left and right
+                   IsBoundaryWallTile(CurrentLayout, CurrentLayout.floorLayout[x, y - 1]) || IsBoundaryWallTile(CurrentLayout, CurrentLayout.floorLayout[x, y + 1]); // Above and below
+        }
+
+        private static bool IsAdjacentToThreeOrMoreWallTiles(FloorplanLayout CurrentLayout, Tile tile)
+        {
+            int x = tile.x / FloorplanLayout.tileSideLength;
+            int y = tile.y / FloorplanLayout.tileSideLength;
+
+            int adjCount = 0;
+
+            if (CurrentLayout.floorLayout[x - 1, y].obstacle == ObstacleType.Wall || CurrentLayout.floorLayout[x - 1, y].obstacle == ObstacleType.Error || CurrentLayout.floorLayout[x - 1, y].obstacle == ObstacleType.Success)
+                adjCount++;
+            if (CurrentLayout.floorLayout[x + 1, y].obstacle == ObstacleType.Wall || CurrentLayout.floorLayout[x + 1, y].obstacle == ObstacleType.Error || CurrentLayout.floorLayout[x + 1, y].obstacle == ObstacleType.Success)
+                adjCount++;
+            if (CurrentLayout.floorLayout[x, y - 1].obstacle == ObstacleType.Wall || CurrentLayout.floorLayout[x, y - 1].obstacle == ObstacleType.Error || CurrentLayout.floorLayout[x, y - 1].obstacle == ObstacleType.Success)
+                adjCount++;
+            if (CurrentLayout.floorLayout[x, y + 1].obstacle == ObstacleType.Wall || CurrentLayout.floorLayout[x, y + 1].obstacle == ObstacleType.Error || CurrentLayout.floorLayout[x, y + 1].obstacle == ObstacleType.Success)
+                adjCount++;
+
+            return adjCount >= 3;
+        }
+
+        private static bool IsRoomCornerTile(FloorplanLayout CurrentLayout, Tile tile)
+        {
+            int x = tile.x / FloorplanLayout.tileSideLength;
+            int y = tile.y / FloorplanLayout.tileSideLength;
+            int wallGroupID = tile.groupID;
+
+            return (CurrentLayout.floorLayout[x - 1, y].groupID == wallGroupID && CurrentLayout.floorLayout[x, y - 1].groupID == wallGroupID) || // Left and above
+                   (CurrentLayout.floorLayout[x - 1, y].groupID == wallGroupID && CurrentLayout.floorLayout[x, y + 1].groupID == wallGroupID) || // Left and below
+                   (CurrentLayout.floorLayout[x + 1, y].groupID == wallGroupID && CurrentLayout.floorLayout[x, y - 1].groupID == wallGroupID) || // Right and above
+                   (CurrentLayout.floorLayout[x + 1, y].groupID == wallGroupID && CurrentLayout.floorLayout[x, y + 1].groupID == wallGroupID); // Right and below
+        }
+
     }
 }
