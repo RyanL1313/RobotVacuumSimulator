@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -94,34 +94,22 @@ namespace VacuumSim
             FloorCanvasDesigner.eraserModeOn = false;
             EraserModeButton.Text = FloorCanvasDesigner.eraserModeOn ? "Eraser Mode: ON" : "Eraser Mode: OFF";
 
-            if (ObstacleSelector.SelectedItem.ToString() == "Room")
+            RoomWidthSelector.Enabled = false;
+            RoomHeightSelector.Enabled = false;
+            RoomWidthLabel.Enabled = false;
+            RoomHeightLabel.Enabled = false;
+            FloorCanvasDesigner.roomCreatorModeOn = false;
+            RoomCreatorModeButton.Text = "Room Creator Mode: OFF";
+
+            if (ObstacleSelector.SelectedItem.ToString() == "Chair" || ObstacleSelector.SelectedItem.ToString() == "Table")
             {
-                RoomWidthSelector.Enabled = true;
-                RoomHeightSelector.Enabled = true;
-                ChairTableWidthSelector.Enabled = false;
-                ChairTableHeightSelector.Enabled = false;
-                FloorCanvasDesigner.chairTableDrawingModeOn = false;
-            }
-            else if (ObstacleSelector.SelectedItem.ToString() == "Chair" || ObstacleSelector.SelectedItem.ToString() == "Table")
-            {
-                ChairTableWidthSelector.Enabled = true;
-                ChairTableHeightSelector.Enabled = true;
-                RoomWidthSelector.Enabled = false;
-                RoomHeightSelector.Enabled = false;
+                ChairTableDimensionsGroupBox.Enabled = true;
                 FloorCanvasDesigner.chairTableDrawingModeOn = true;
-                FloorCanvasDesigner.roomCreatorModeOn = false;
-                RoomCreatorModeButton.Text = "Room Creator Mode: OFF";
             }
             else // Chest is selected
             {
-                RoomWidthSelector.Enabled = false;
-                RoomHeightSelector.Enabled = false;
-                RoomCreatorModeButton.Enabled = false;
-                ChairTableWidthSelector.Enabled = false;
-                ChairTableHeightSelector.Enabled = false;
+                ChairTableDimensionsGroupBox.Enabled = false;
                 FloorCanvasDesigner.chairTableDrawingModeOn = false;
-                FloorCanvasDesigner.roomCreatorModeOn = false;
-                RoomCreatorModeButton.Text = "Room Creator Mode: OFF";
             }
         }
 
@@ -189,6 +177,175 @@ namespace VacuumSim
             VacDisplay.batterySecondsRemaining = (int)RobotBatteryLifeSelector.Value * 60;
         }
 
+        private void InitialVacuumHeadingSelector_ValueChanged(object sender, EventArgs e)
+        {
+            VacDisplay.vacuumHeading = (int)InitialVacuumHeadingSelector.Value;
+
+            FloorCanvas.Invalidate(); // Re-draw canvas to show new whiskers display
+        }
+
+        private void VacuumEfficiencySlider_Scroll(object sender, EventArgs e)
+        {
+            VacuumEfficiencyValueLabel.Text = VacuumEfficiencySlider.Value + "%";
+        }
+
+        private void WhiskerEfficiencySlider_Scroll(object sender, EventArgs e)
+        {
+            WhiskersEfficiencyValueLabel.Text = WhiskersEfficiencySlider.Value + "%";
+        }
+
+        private void ShowInstructionsButton_Click(object sender, EventArgs e)
+        {
+            MessageBox.Show("To-do.\n\nsomething something vacuum go vroom vroom.");
+        }
+
+        private void FinishOrEditFloorplanButton_Click(object sender, EventArgs e)
+        {
+            FloorCanvasDesigner.editingFloorplan = !FloorCanvasDesigner.editingFloorplan;
+
+            if (!FloorCanvasDesigner.editingFloorplan) // User just finished editing the floorplan
+            {
+                // Move to vacuum attribute setting stage
+                FloorCanvasDesigner.settingVacuumAttributes = true;
+                FloorCanvasDesigner.editingFloorplan = false;
+
+                // Floorplan widget attributes
+                FloorplanDesignLabel.Enabled = false;
+                FloorTypeGroupBox.Enabled = false;
+                HouseDimensionsGroupBox.Enabled = false;
+                RoomDimensionsGroupBox.Enabled = false;
+                FloorCanvasDesigner.roomCreatorModeOn = false;
+                RoomCreatorModeButton.Text = "Room Creator Mode: OFF";
+                ChairTableDimensionsGroupBox.Enabled = false;
+                ObstacleSelectorLabel.Enabled = false;
+                ObstacleSelector.Enabled = false;
+                EraserModeButton.Enabled = false;
+                FloorCanvasDesigner.eraserModeOn = false;
+                EraserModeButton.Text = "Eraser Mode: OFF";
+                FinishOrEditFloorplanButton.Text = "Edit Floorplan";
+                LoadSaveFloorplanGroupBox.Enabled = false;
+
+                // Vacuum widget attributes
+                VacuumAttributesLabel.Enabled = true;
+                VacuumEfficiencyTitleLabel.Enabled = true;
+                VacuumEfficiencyValueLabel.Enabled = true;
+                VacuumEfficiencySlider.Enabled = true;
+                WhiskersEfficiencyTitleLabel.Enabled = true;
+                WhiskersEfficiencyValueLabel.Enabled = true;
+                WhiskersEfficiencySlider.Enabled = true;
+                RobotBatteryLifeLabel.Enabled = true;
+                RobotBatteryLifeSelector.Enabled = true;
+                RobotSpeedLabel.Enabled = true;
+                RobotSpeedSelector.Enabled = true;
+                RobotPathAlgorithmLabel.Enabled = true;
+                RobotPathAlgorithmSelector.Enabled = true;
+                RunAllAlgorithmsCheckbox.Enabled = true;
+                InitialVacuumHeadingLabel.Enabled = true;
+                InitialVacuumHeadingSelector.Enabled = true;
+                PlaceVacuumInstructionsLabel.Visible = true;
+            }
+            else // User just returned to editing the floorplan
+            {
+                // Move back to floorplan editing stage
+                FloorCanvasDesigner.settingVacuumAttributes = false;
+                FloorCanvasDesigner.editingFloorplan = true;
+                FloorCanvasDesigner.successPlacingVacuum = false;
+                FloorCanvasDesigner.currentlyPlacingVacuum = false;
+
+                // Floorplan widget attributes
+                FloorplanDesignLabel.Enabled = true;
+                FloorTypeGroupBox.Enabled = true;
+                HouseDimensionsGroupBox.Enabled = true;
+                RoomDimensionsGroupBox.Enabled = true;
+                ObstacleSelectorLabel.Enabled = true;
+                ObstacleSelector.Enabled = true;
+                ChairTableDimensionsGroupBox.Enabled = true;
+                EraserModeButton.Enabled = true;
+                LoadSaveFloorplanGroupBox.Enabled = true;
+                FinishOrEditFloorplanButton.Text = "Finish Floorplan";
+
+                // Vacuum widget attributes
+                VacuumAttributesLabel.Enabled = false;
+                VacuumEfficiencyTitleLabel.Enabled = false;
+                VacuumEfficiencyValueLabel.Enabled = false;
+                VacuumEfficiencySlider.Enabled = false;
+                WhiskersEfficiencyTitleLabel.Enabled = false;
+                WhiskersEfficiencyValueLabel.Enabled = false;
+                WhiskersEfficiencySlider.Enabled = false;
+                RobotBatteryLifeLabel.Enabled = false;
+                RobotBatteryLifeSelector.Enabled = false;
+                RobotSpeedLabel.Enabled = false;
+                RobotSpeedSelector.Enabled = false;
+                RobotPathAlgorithmLabel.Enabled = false;
+                RobotPathAlgorithmSelector.Enabled = false;
+                RunAllAlgorithmsCheckbox.Enabled = false;
+                InitialVacuumHeadingLabel.Enabled = false;
+                InitialVacuumHeadingSelector.Enabled = false;
+                PlaceVacuumInstructionsLabel.Visible = false;
+
+                // Simulation widget attributes
+                SimulationControlLabel.Enabled = false;
+                SimulationSpeedLabel.Enabled = false;
+                SimulationSpeedSelector.Enabled = false;
+                StartSimulationButton.Enabled = false;
+                StopSimulationButton.Enabled = false;
+            }
+
+            FloorCanvas.Invalidate();
+        }
+
+        private void SaveFloorplanButton_Click(object sender, EventArgs e)
+        {
+            // Modify this in the future
+            FloorplanFileWriter.SaveTileGridData("../../../UI/Floorplan/SavedFloorplan.txt", HouseLayout);
+        }
+
+        private void LoadDefaultFloorplanButton_Click(object sender, EventArgs e)
+        {
+            HouseWidthSelector.Value = 50; // 25 tiles wide
+            HouseHeightSelector.Value = 40; // 20 tiles high
+
+            FloorplanFileReader.LoadTileGridData("../../../UI/Floorplan/DefaultFloorplan.txt", HouseLayout);
+
+            FloorCanvas.Invalidate(); // Re-trigger paint event
+        }
+
+        private void LoadSavedFloorplanButton_Click(object sender, EventArgs e)
+        {
+            FloorplanFileReader.LoadTileGridData("../../../UI/Floorplan/SavedFloorplan.txt", HouseLayout);
+
+            // Set the house width and height selector values to the size of the newly-loaded floorplan
+            HouseWidthSelector.Value = HouseLayout.numTilesPerRow * 2;
+            HouseHeightSelector.Value = HouseLayout.numTilesPerCol * 2;
+
+            FloorCanvas.Invalidate();
+        }
+
+        private void StartSimulationButton_Click(object sender, EventArgs e)
+        {
+            SetInitialSimulationValues();
+        }
+
+        private void StopSimulationButton_Click(object sender, EventArgs e)
+        {
+            ResetSimulationValues();
+        }
+
+        private void RoomCreatorModeButton_Click(object sender, EventArgs e)
+        {
+            FloorCanvasDesigner.roomCreatorModeOn = !FloorCanvasDesigner.roomCreatorModeOn;
+            RoomCreatorModeButton.Text = FloorCanvasDesigner.roomCreatorModeOn ? "Room Creator Mode: ON" : "Room Creator Mode: OFF";
+        }
+
+        private void EraserModeButton_Click(object sender, EventArgs e)
+        {
+            // Alternate between drawing and eraser modes
+            FloorCanvasDesigner.eraserModeOn = !FloorCanvasDesigner.eraserModeOn;
+
+            // Update eraser mode button text
+            EraserModeButton.Text = FloorCanvasDesigner.eraserModeOn ? "Eraser Mode: ON" : "Eraser Mode: OFF";
+        }
+
         private void FloorCanvas_Paint(object sender, PaintEventArgs e)
         {
             Graphics canvasEditor = e.Graphics;
@@ -201,7 +358,7 @@ namespace VacuumSim
             FloorCanvasDesigner.PaintChairAndTableBackgrounds(canvasEditor, HouseLayout);
             FloorCanvasDesigner.DrawVacuum(canvasEditor, VacDisplay);
             FloorCanvasDesigner.DrawFloorplan(canvasEditor, HouseLayout, VacDisplay);
-            FloorCanvasDesigner.DrawHouseBoundaryLines(canvasEditor, HouseLayout);
+            FloorCanvasDesigner.DrawHouseBoundaryLines(canvasEditor, HouseLayout); // Will remove after room design functionality is complete
         }
 
         /// <summary>
@@ -216,11 +373,11 @@ namespace VacuumSim
                 return;
 
             // Get coordinates and indices of selected tile
-            Point canvasCoords = FloorCanvas.PointToClient(Cursor.Position);
-            int[] selectedTileIndices = FloorplanLayout.GetTileIndices(canvasCoords.X, canvasCoords.Y);
+            PointF canvasCoords = FloorCanvas.PointToClient(Cursor.Position);
+            int[] selectedTileIndices = FloorplanLayout.GetTileIndices((int)canvasCoords.X, (int)canvasCoords.Y);
 
-            // Make sure we don't re-draw the canvas if the user is still selecting the same tile (efficiency concerns)
-            if (!FloorCanvasDesigner.eraserModeOn && selectedTileIndices[0] == FloorCanvasDesigner.currentIndicesOfSelectedTile[0] && selectedTileIndices[1] == FloorCanvasDesigner.currentIndicesOfSelectedTile[1])
+            // Make sure we don't re-draw the canvas if the user is still selecting the same tile while in floorplan drawing mode (efficiency concerns)
+            if (!FloorCanvasDesigner.eraserModeOn && !FloorCanvasDesigner.settingVacuumAttributes && selectedTileIndices[0] == FloorCanvasDesigner.currentIndicesOfSelectedTile[0] && selectedTileIndices[1] == FloorCanvasDesigner.currentIndicesOfSelectedTile[1])
                 return;
             else
             {
@@ -240,8 +397,17 @@ namespace VacuumSim
             ObstacleType selectedObstacle = FloorplanLayout.GetObstacleTypeFromString(ObstacleSelector.SelectedItem.ToString());
             ObstacleType curObstacleAtTile = HouseLayout.floorLayout[selectedTileIndices[0], selectedTileIndices[1]].obstacle;
 
-            // If eraser mode is on, remove item that is at this tile
-            if (FloorCanvasDesigner.eraserModeOn)
+            if (FloorCanvasDesigner.settingVacuumAttributes) // User is in vacuum placing stage
+            {
+                FloorCanvasDesigner.currentlyPlacingVacuum = true;
+
+                // Set the current vacuum coordinates to the coordinates clicked by the user
+                VacDisplay.vacuumCoords[0] = canvasCoords.X;
+                VacDisplay.vacuumCoords[1] = canvasCoords.Y;
+
+                FloorCanvasDesigner.AttemptPlaceVacuum(HouseLayout, VacDisplay);
+            }
+            else if (FloorCanvasDesigner.eraserModeOn) // If eraser mode is on, remove item that is at this tile
             {
                 // Process attempt to remove room from floorplan
                 if (curObstacleAtTile == ObstacleType.Wall)
@@ -287,16 +453,30 @@ namespace VacuumSim
 
         private void FloorCanvas_MouseUp(object sender, MouseEventArgs e)
         {
-            // Prevent event when simulation is running
-            if (Simulation.simStarted)
+            // Prevent event when simulation is running or if left mouse button was not pressed
+            if (Simulation.simStarted || e.Button != MouseButtons.Left)
                 return;
 
-            if (FloorCanvasDesigner.successAddingObstacle && !FloorCanvasDesigner.eraserModeOn)
+            if (FloorCanvasDesigner.currentlyPlacingVacuum) // Process mouse up event when placing vacuum
+            {
+                if (FloorCanvasDesigner.vacuumPlacingLocationIsValid) // Vacuum was dropped in valid location
+                {
+                    FloorCanvasDesigner.successPlacingVacuum = true;
+                    EnableSimulationWidgets(true);
+                }
+                else // Vacuum was dropped in invalid location
+                {
+                    FloorCanvasDesigner.successPlacingVacuum = false;
+                    EnableSimulationWidgets(false);
+                }
+            }
+            else if (FloorCanvasDesigner.successAddingObstacle && !FloorCanvasDesigner.eraserModeOn && !FloorCanvasDesigner.settingVacuumAttributes)
             {
                 FloorCanvasDesigner.ChangeSuccessTilesToCurrentObstacle(); // Change success tiles in FloorplanHouseDesigner to be the same obstacle type that was just added
                 HouseLayout.DeepCopyFloorplan(FloorCanvasDesigner.FloorplanHouseDesigner); // Copy the designer mode house layout to now be the actual house layout
             }
 
+            FloorCanvasDesigner.currentlyPlacingVacuum = false;
             FloorCanvasDesigner.currentlyAddingObstacle = false;
 
             FloorCanvas.Invalidate();
@@ -331,6 +511,16 @@ namespace VacuumSim
             FloorCanvas.Invalidate(); // Re-trigger paint event
         }
 
+        /// <summary>
+        /// Enables simulation widgets if value is true, disables them if value is false
+        /// </summary>
+        /// <param name="value"> A value of true means enable, false means disable </param>
+        private void EnableSimulationWidgets(bool value)
+        {
+            SimulationControlLabel.Enabled = value;
+            SimulationSpeedLabel.Enabled = value;
+            SimulationSpeedSelector.Enabled = value;
+            StartSimulationButton.Enabled = value;
         private void SaveFloorplanButton_Click(object sender, EventArgs e)
         {
             // Modify this in the future
@@ -376,6 +566,7 @@ namespace VacuumSim
 
             // Update eraser mode button text
             EraserModeButton.Text = FloorCanvasDesigner.eraserModeOn ? "Eraser Mode: ON" : "Eraser Mode: OFF";
+>>>>>>> RobotVacuumSim/UI/Form1.cs
         }
 
         /// <summary>
@@ -386,12 +577,10 @@ namespace VacuumSim
             VacuumBodyTimer.Enabled = true;
             VacuumWhiskersTimer.Enabled = true;
             HouseLayout.gridLinesOn = false;
-            HouseWidthSelector.Enabled = false;
-            HouseHeightSelector.Enabled = false;
-            RobotSpeedSelector.Enabled = false;
-            RobotBatteryLifeSelector.Enabled = false;
             StartSimulationButton.Enabled = false;
             StopSimulationButton.Enabled = true;
+            FinishOrEditFloorplanButton.Enabled = false;
+            ControlsPane.Panel1.Enabled = false;
             LoadDefaultFloorplanButton.Enabled = false;
             LoadSavedFloorplanButton.Enabled = false;
             SaveFloorplanButton.Enabled = false;
@@ -416,12 +605,10 @@ namespace VacuumSim
             VacuumBodyTimer.Enabled = false;
             VacuumWhiskersTimer.Enabled = false;
             HouseLayout.gridLinesOn = true;
-            HouseWidthSelector.Enabled = true;
-            HouseHeightSelector.Enabled = true;
-            RobotSpeedSelector.Enabled = true;
-            RobotBatteryLifeSelector.Enabled = true;
             StartSimulationButton.Enabled = true;
             StopSimulationButton.Enabled = false;
+            FinishOrEditFloorplanButton.Enabled = true;
+            ControlsPane.Panel1.Enabled = true;
             LoadDefaultFloorplanButton.Enabled = true;
             LoadSavedFloorplanButton.Enabled = true;
             SaveFloorplanButton.Enabled = true;
