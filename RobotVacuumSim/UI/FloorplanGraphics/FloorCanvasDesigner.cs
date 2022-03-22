@@ -17,7 +17,7 @@ namespace VacuumSim.UI.FloorplanGraphics
         public static bool settingVacuumAttributes = false; // Is the user in the vacuum attribute editing stage?
         public static bool currentlyPlacingVacuum = false; // Is the user currently placing the vacuum?
         public static bool currentlyAddingDoorway = false; // Is the user currently being forced to add a doorway?
-        public static bool successPlacingDoorway = false; // Did the user just successfully place a doorway?
+        public static bool justPlacedDoorway = false; // Did the user just successfully place a doorway during the current mouse click?
         public static bool vacuumPlacingLocationIsValid = true; // Is the vacuum currently being placed in a valid location?
         public static bool successPlacingVacuum = false; // Was the previous attempt at placing the vacuum onto the floorplan successful?
         public static bool eraserModeOn = false; // Is the user currently drawing in eraser mode?
@@ -538,7 +538,8 @@ namespace VacuumSim.UI.FloorplanGraphics
                 ChangeSuccessTilesToCurrentObstacle(); // Change the other success tiles to wall tiles
                 ChangeErrorTilesToCurrentObstacle(); // Change the error tiles to wall tiles
 
-                successPlacingDoorway = true;
+                justPlacedDoorway = true;
+                currentlyAddingDoorway = false;
 
                 return true;
             }
@@ -556,11 +557,27 @@ namespace VacuumSim.UI.FloorplanGraphics
             bool doorwayNeeded = false;
             int roomGroupID = FloorplanFileWriter.currentObstacleGroupNumber - 1; // Get the group ID of the room just added
 
+            // First, add segwaying doorway if necessary
             for (int i = 0; i < FloorplanHouseDesigner.numTilesPerRow; i++)
             {
                 for (int j = 0; j < FloorplanHouseDesigner.numTilesPerCol; j++)
                 {
                     if (FloorplanHouseDesigner.floorLayout[i, j].groupID == roomGroupID) // This tile is part of the room we just added
+                    {
+                        if (IsAdjacentToDoorwayTile(FloorplanHouseDesigner, FloorplanHouseDesigner.floorLayout[i, j]) && !IsRoomCornerTile(FloorplanHouseDesigner, FloorplanHouseDesigner.floorLayout[i, j]))
+                        {
+                            FloorplanHouseDesigner.ModifyTileBasedOnIndices(i, j, ObstacleType.Floor);
+                        }
+                    }     
+                }
+            }
+
+            // Now, mark the possible doorway tiles as success (door can be placed here) or error (door can't be placed here)
+            for (int i = 0; i < FloorplanHouseDesigner.numTilesPerRow; i++)
+            {
+                for (int j = 0; j < FloorplanHouseDesigner.numTilesPerCol; j++)
+                {
+                    if (FloorplanHouseDesigner.floorLayout[i, j].groupID == roomGroupID && FloorplanHouseDesigner.floorLayout[i, j].obstacle != ObstacleType.Floor) // This tile is part of the room we just added
                     {
                         // If doorway can be placed here, mark the tile as a Success tile
                         if (!IsRoomCornerTile(FloorplanHouseDesigner, FloorplanHouseDesigner.floorLayout[i, j]) &&
@@ -600,7 +617,8 @@ namespace VacuumSim.UI.FloorplanGraphics
                 for (int j = yTileIndex; j < yTileIndex + chairTableHeightInTiles; j++)
                 {
                     // Check if tile is out of bounds or non-floor obstacle already present at this tile
-                    if ((i >= FloorplanHouseDesigner.numTilesPerRow || j >= FloorplanHouseDesigner.numTilesPerCol) || FloorplanHouseDesigner.floorLayout[i, j].obstacle != ObstacleType.Floor)
+                    if ((i >= FloorplanHouseDesigner.numTilesPerRow || j >= FloorplanHouseDesigner.numTilesPerCol) || 
+                        FloorplanHouseDesigner.floorLayout[i, j].obstacle != ObstacleType.Floor || FloorplanHouseDesigner.floorLayout[i, j].groupID != -1)
                         successAddingObstacle = false;
                 }
             }
@@ -639,7 +657,8 @@ namespace VacuumSim.UI.FloorplanGraphics
             successAddingObstacle = true; // Initially set to true, could get changed if obstacle is in invalid position
 
             // Check if chest can be placed at this location
-            if ((xTileIndex >= FloorplanHouseDesigner.numTilesPerRow || yTileIndex >= FloorplanHouseDesigner.numTilesPerCol) || FloorplanHouseDesigner.floorLayout[xTileIndex, yTileIndex].obstacle != ObstacleType.Floor)
+            if ((xTileIndex >= FloorplanHouseDesigner.numTilesPerRow || yTileIndex >= FloorplanHouseDesigner.numTilesPerCol) || 
+                FloorplanHouseDesigner.floorLayout[xTileIndex, yTileIndex].obstacle != ObstacleType.Floor || FloorplanHouseDesigner.floorLayout[xTileIndex, yTileIndex].groupID != -1)
                 successAddingObstacle = false;
 
             // If chest can't be placed here, mark the tile that the chest is covering as an error tile
@@ -756,7 +775,9 @@ namespace VacuumSim.UI.FloorplanGraphics
             int x = tile.x / FloorplanLayout.tileSideLength;
             int y = tile.y / FloorplanLayout.tileSideLength;
 
-            return x == 0 || x == CurrentLayout.numTilesPerRow - 1 || y == 0 || y == CurrentLayout.numTilesPerCol - 1;
+            return tile.obstacle == ObstacleType.Wall && tile.groupID == -1;
+
+            //return x == 0 || x == CurrentLayout.numTilesPerRow - 1 || y == 0 || y == CurrentLayout.numTilesPerCol - 1;
         }
 
         private static bool IsAgainstHouseBoundaryWall(FloorplanLayout CurrentLayout, Tile tile)
@@ -793,11 +814,35 @@ namespace VacuumSim.UI.FloorplanGraphics
             int y = tile.y / FloorplanLayout.tileSideLength;
             int wallGroupID = tile.groupID;
 
-            return (CurrentLayout.floorLayout[x - 1, y].groupID == wallGroupID && CurrentLayout.floorLayout[x, y - 1].groupID == wallGroupID) || // Left and above
-                   (CurrentLayout.floorLayout[x - 1, y].groupID == wallGroupID && CurrentLayout.floorLayout[x, y + 1].groupID == wallGroupID) || // Left and below
-                   (CurrentLayout.floorLayout[x + 1, y].groupID == wallGroupID && CurrentLayout.floorLayout[x, y - 1].groupID == wallGroupID) || // Right and above
-                   (CurrentLayout.floorLayout[x + 1, y].groupID == wallGroupID && CurrentLayout.floorLayout[x, y + 1].groupID == wallGroupID); // Right and below
+            Tile leftTile = CurrentLayout.floorLayout[x - 1, y];
+            Tile rightTile = CurrentLayout.floorLayout[x + 1, y];
+            Tile belowTile = CurrentLayout.floorLayout[x, y + 1];
+            Tile aboveTile = CurrentLayout.floorLayout[x, y - 1];
+
+
+            return (leftTile.groupID != -1 && aboveTile.groupID != -1 && !IsDoorwayTile(leftTile) && !IsDoorwayTile(aboveTile)) || // Left and above
+            (leftTile.groupID != -1 && belowTile.groupID != -1 && !IsDoorwayTile(leftTile) && !IsDoorwayTile(belowTile)) || // Left and below
+            (rightTile.groupID != -1 && aboveTile.groupID != -1 && !IsDoorwayTile(rightTile) && !IsDoorwayTile(aboveTile)) || // Right and above
+            (rightTile.groupID != -1 && belowTile.groupID != -1 && !IsDoorwayTile(rightTile) && !IsDoorwayTile(belowTile)); // Right and below
+
+            //return (CurrentLayout.floorLayout[x - 1, y].groupID == wallGroupID && CurrentLayout.floorLayout[x, y - 1].groupID == wallGroupID) || // Left and above
+            //(CurrentLayout.floorLayout[x - 1, y].groupID == wallGroupID && CurrentLayout.floorLayout[x, y + 1].groupID == wallGroupID) || // Left and below
+            //(CurrentLayout.floorLayout[x + 1, y].groupID == wallGroupID && CurrentLayout.floorLayout[x, y - 1].groupID == wallGroupID) || // Right and above
+            //(CurrentLayout.floorLayout[x + 1, y].groupID == wallGroupID && CurrentLayout.floorLayout[x, y + 1].groupID == wallGroupID); // Right and below
         }
 
+        private static bool IsDoorwayTile(Tile tile)
+        {
+            return tile.obstacle == ObstacleType.Floor && tile.groupID != -1;
+        }
+
+        private static bool IsAdjacentToDoorwayTile(FloorplanLayout CurrentLayout, Tile tile)
+        {
+            int x = tile.x / FloorplanLayout.tileSideLength;
+            int y = tile.y / FloorplanLayout.tileSideLength;
+
+            return IsDoorwayTile(CurrentLayout.floorLayout[x - 1, y]) || IsDoorwayTile(CurrentLayout.floorLayout[x + 1, y]) ||
+                   IsDoorwayTile(CurrentLayout.floorLayout[x, y - 1]) || IsDoorwayTile(CurrentLayout.floorLayout[x, y + 1]);
+        }
     }
 }

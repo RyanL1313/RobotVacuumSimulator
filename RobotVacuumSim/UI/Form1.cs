@@ -374,7 +374,9 @@ namespace VacuumSim
             int[] selectedTileIndices = FloorplanLayout.GetTileIndices((int)canvasCoords.X, (int)canvasCoords.Y);
 
             // Make sure we don't re-draw the canvas if the user is still selecting the same tile while in floorplan drawing mode (efficiency concerns)
-            if (!FloorCanvasDesigner.eraserModeOn && !FloorCanvasDesigner.currentlyAddingDoorway && !FloorCanvasDesigner.settingVacuumAttributes && selectedTileIndices[0] == FloorCanvasDesigner.currentIndicesOfSelectedTile[0] && selectedTileIndices[1] == FloorCanvasDesigner.currentIndicesOfSelectedTile[1])
+            // Also, prevent drawing on the canvas based on various other conditions
+            if (FloorCanvasDesigner.justPlacedDoorway || !FloorCanvasDesigner.eraserModeOn && !FloorCanvasDesigner.currentlyAddingDoorway && !FloorCanvasDesigner.settingVacuumAttributes && 
+                selectedTileIndices[0] == FloorCanvasDesigner.currentIndicesOfSelectedTile[0] && selectedTileIndices[1] == FloorCanvasDesigner.currentIndicesOfSelectedTile[1])
                 return;
             else
             {
@@ -410,7 +412,10 @@ namespace VacuumSim
                 bool success = FloorCanvasDesigner.AttemptAddDoorwayToRoom(selectedTileIndices[0], selectedTileIndices[1]);
 
                 if (success) // Doorway was just successfully placed
+                {
+                    HouseLayout.DeepCopyFloorplan(FloorCanvasDesigner.FloorplanHouseDesigner);
                     EnableFloorplanWidgets(true);
+                }
             }
             else if (FloorCanvasDesigner.eraserModeOn) // If eraser mode is on, remove item that is at this tile
             {
@@ -477,19 +482,12 @@ namespace VacuumSim
 
                 if (FloorCanvasDesigner.currentObstacleBeingAdded == ObstacleType.Room || FloorCanvasDesigner.currentObstacleBeingAdded == ObstacleType.Wall) // Just placed room, now need to add doorway
                 {
-                    FloorCanvasDesigner.FloorplanHouseDesigner.DeepCopyFloorplan(HouseLayout); // Back to showing the designer mode house layout
+                    FloorCanvasDesigner.FloorplanHouseDesigner.DeepCopyFloorplan(HouseLayout); // Back to using the designer mode house layout
                     FloorCanvasDesigner.currentlyAddingDoorway = FloorCanvasDesigner.ShowPossibleDoorwayTiles();
 
                     if (FloorCanvasDesigner.currentlyAddingDoorway) // Disable all floorplan widgets until user adds the doorway
                     {
-                        if (FloorCanvasDesigner.successPlacingDoorway)
-                        {
-                            FloorCanvasDesigner.currentlyAddingDoorway = false;
-                            FloorCanvasDesigner.successPlacingDoorway = false;
-                            EnableFloorplanWidgets(true);
-                        }
-                        else
-                            EnableFloorplanWidgets(false);
+                        EnableFloorplanWidgets(false);
                     }
                 }
                 else
@@ -501,6 +499,7 @@ namespace VacuumSim
 
             FloorCanvasDesigner.currentlyPlacingVacuum = false;
             FloorCanvasDesigner.currentlyAddingObstacle = false;
+            FloorCanvasDesigner.justPlacedDoorway = false;
 
             FloorCanvas.Invalidate();
         }
