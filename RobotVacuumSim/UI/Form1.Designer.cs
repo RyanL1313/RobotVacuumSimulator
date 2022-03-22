@@ -554,6 +554,7 @@ namespace VacuumSim
             this.FriezeCutPileRadioButton.TabStop = true;
             this.FriezeCutPileRadioButton.Text = "Frieze-Cut Pile";
             this.FriezeCutPileRadioButton.UseVisualStyleBackColor = true;
+            this.FriezeCutPileRadioButton.CheckedChanged += new System.EventHandler(this.FloorTypeControlChanged);
             // 
             // CutPileRadioButton
             // 
@@ -566,6 +567,7 @@ namespace VacuumSim
             this.CutPileRadioButton.TabStop = true;
             this.CutPileRadioButton.Text = "Cut Pile";
             this.CutPileRadioButton.UseVisualStyleBackColor = true;
+            this.CutPileRadioButton.CheckedChanged += new System.EventHandler(this.FloorTypeControlChanged);
             // 
             // LoopPileRadioButton
             // 
@@ -578,6 +580,7 @@ namespace VacuumSim
             this.LoopPileRadioButton.TabStop = true;
             this.LoopPileRadioButton.Text = "Loop Pile";
             this.LoopPileRadioButton.UseVisualStyleBackColor = true;
+            this.LoopPileRadioButton.CheckedChanged += new System.EventHandler(this.FloorTypeControlChanged);
             // 
             // HardWoodRadioButton
             // 
@@ -590,6 +593,7 @@ namespace VacuumSim
             this.HardWoodRadioButton.TabStop = true;
             this.HardWoodRadioButton.Text = "Hard Wood";
             this.HardWoodRadioButton.UseVisualStyleBackColor = true;
+            this.HardWoodRadioButton.CheckedChanged += new System.EventHandler(this.FloorTypeControlChanged);
             // 
             // FloorplanDesignLabel
             // 
