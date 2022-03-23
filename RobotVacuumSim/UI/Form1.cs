@@ -521,52 +521,6 @@ namespace VacuumSim
             SimulationSpeedLabel.Enabled = value;
             SimulationSpeedSelector.Enabled = value;
             StartSimulationButton.Enabled = value;
-        private void SaveFloorplanButton_Click(object sender, EventArgs e)
-        {
-            // Modify this in the future
-            FloorplanFileWriter.SaveTileGridData("../../../UI/Floorplan/SavedFloorplan.txt", HouseLayout);
-        }
-
-        private void LoadDefaultFloorplanButton_Click(object sender, EventArgs e)
-        {
-            HouseWidthSelector.Value = 50; // 25 tiles wide
-            HouseHeightSelector.Value = 40; // 20 tiles high
-
-            // Read the floorplan data file and store it in HouseLayoutAccessor.floorLayout
-            // Modify this in the future
-            FloorplanFileReader.LoadTileGridData("../../../UI/Floorplan/DefaultFloorplan.txt", HouseLayout);
-
-            FloorCanvas.Invalidate(); // Re-trigger paint event
-        }
-
-        private void LoadSavedFloorplanButton_Click(object sender, EventArgs e)
-        {
-        }
-
-        private void StartSimulationButton_Click(object sender, EventArgs e)
-        {
-            SetInitialSimulationValues();
-        }
-
-        private void StopSimulationButton_Click(object sender, EventArgs e)
-        {
-            ResetSimulationValues();
-        }
-
-        private void RoomCreatorModeButton_Click(object sender, EventArgs e)
-        {
-            FloorCanvasDesigner.roomCreatorModeOn = !FloorCanvasDesigner.roomCreatorModeOn;
-            RoomCreatorModeButton.Text = FloorCanvasDesigner.roomCreatorModeOn ? "Room Creator Mode: ON" : "Room Creator Mode: OFF";
-        }
-
-        private void EraserModeButton_Click(object sender, EventArgs e)
-        {
-            // Alternate between drawing and eraser modes
-            FloorCanvasDesigner.eraserModeOn = !FloorCanvasDesigner.eraserModeOn;
-
-            // Update eraser mode button text
-            EraserModeButton.Text = FloorCanvasDesigner.eraserModeOn ? "Eraser Mode: ON" : "Eraser Mode: OFF";
->>>>>>> RobotVacuumSim/UI/Form1.cs
         }
 
         /// <summary>
