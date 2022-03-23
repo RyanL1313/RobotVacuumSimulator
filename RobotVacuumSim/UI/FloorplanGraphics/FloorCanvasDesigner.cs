@@ -68,7 +68,7 @@ namespace VacuumSim.UI.FloorplanGraphics
             {
                 for (int j = 0; j < CurrentLayout.numTilesPerCol; j++)
                 {
-                    if ((CurrentLayout.floorLayout[i, j].obstacle == ObstacleType.Floor || CurrentLayout.floorLayout[i, j].obstacle == ObstacleType.Doorway)) // Blank tile
+                    if ((CurrentLayout.floorLayout[i, j].obstacle == ObstacleType.Floor ))//CurrentLayout.floorLayout[i, j].obstacle == ObstacleType.Doorway)) // Blank tile
                     {
                         PaintTile(i, j, FloorTextureBrush, CanvasEditor);
                     }

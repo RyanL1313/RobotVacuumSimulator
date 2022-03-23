@@ -580,8 +580,7 @@ namespace VacuumSim
             LoadDefaultFloorplanButton.Enabled = false;
             LoadSavedFloorplanButton.Enabled = false;
             SaveFloorplanButton.Enabled = false;
-            EraserModeButton.Enabled = false;
-            RoomCreatorModeButton.Enabled = false;
+            EraserModeButton.Enabled = false;            
             ChairTableWidthSelector.Enabled = false;
             ChairTableHeightSelector.Enabled = false;
             ObstacleSelector.Enabled = false;
@@ -608,8 +607,7 @@ namespace VacuumSim
             LoadDefaultFloorplanButton.Enabled = true;
             LoadSavedFloorplanButton.Enabled = true;
             SaveFloorplanButton.Enabled = true;
-            EraserModeButton.Enabled = true;
-            RoomCreatorModeButton.Enabled = true;
+            EraserModeButton.Enabled = true;            
             ChairTableWidthSelector.Enabled = true;
             ChairTableHeightSelector.Enabled = true;
             ObstacleSelector.Enabled = true;
