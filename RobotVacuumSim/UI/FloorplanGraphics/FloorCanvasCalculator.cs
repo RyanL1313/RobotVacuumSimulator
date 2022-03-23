@@ -31,7 +31,10 @@ namespace VacuumSim.UI.FloorplanGraphics
             // 2 inch long whiskers = tile side length (2 ft = 24 inches) / 12
             // Also have to convert the 2 inches to screen coordinates
             float lenWhiskersExtendFromVacuum = FloorplanLayout.tileSideLength / 12.0f;
-            VacDisplay.whiskersHeadingWRTVacuum = (VacDisplay.whiskersHeadingWRTVacuum + 30) % 270;
+
+            if (Simulation.simStarted) // Only want to rotate whiskers during simulation timer ticks
+                VacDisplay.whiskersHeadingWRTVacuum = (VacDisplay.whiskersHeadingWRTVacuum + 30) % 270;
+
             VacDisplay.whiskersEndingCoords[0] = VacDisplay.vacuumCoords[0] + (VacuumDisplay.vacuumDiameter / 2.0f + lenWhiskersExtendFromVacuum) * (float)Math.Cos((Math.PI * VacDisplay.vacuumHeading - VacDisplay.whiskersHeadingWRTVacuum) / 180);
             VacDisplay.whiskersEndingCoords[1] = VacDisplay.vacuumCoords[1] + (VacuumDisplay.vacuumDiameter / 2.0f + lenWhiskersExtendFromVacuum) * (float)Math.Sin((Math.PI * VacDisplay.vacuumHeading - VacDisplay.whiskersHeadingWRTVacuum) / 180);
         }
@@ -69,15 +72,15 @@ namespace VacuumSim.UI.FloorplanGraphics
 
         /// <summary>
         /// Updates simulation data after a frame update
-        /// After 4 frame updates, simulation time can be incremented, and battery left decremented
-        /// This is because 4 frame updates = 1 "simulation second"
+        /// After "framesPerSimSecond" frame updates, simulation time can be incremented, and battery left decremented
+        /// This is because "framesPerSimSecond" frame updates = 1 simulation second
         /// </summary>
         /// <param name="VacDisplay"> The display of the vacuum onto FloorCanvas </param>
         public static void UpdateSimulationData(VacuumDisplay VacDisplay)
         {
             frameCount++;
 
-            if (frameCount % 4 == 0)
+            if (frameCount % framesPerSimSecond == 0)
             {
                 Simulation.simTimeElapsed++;
                 VacDisplay.batterySecondsRemaining--;
@@ -91,7 +94,9 @@ namespace VacuumSim.UI.FloorplanGraphics
         /// <returns> The text that goes in the battery life label on FloorCanvas </returns>
         public static string GetBatteryRemainingText(VacuumDisplay VacDisplay)
         {
-            return "" + (VacDisplay.batterySecondsRemaining >= 60 ? VacDisplay.batterySecondsRemaining / 60 + " minutes" : VacDisplay.batterySecondsRemaining + " seconds");
+            string s = VacDisplay.batterySecondsRemaining == 1 || VacDisplay.batterySecondsRemaining / 60 == 1 ? "" : "s"; // Get extra 's' if plural
+
+            return "" + (VacDisplay.batterySecondsRemaining >= 60 ? VacDisplay.batterySecondsRemaining / 60 + " minute" + s : VacDisplay.batterySecondsRemaining + " second" + s);
         }
 
         /// <summary>
@@ -100,7 +105,9 @@ namespace VacuumSim.UI.FloorplanGraphics
         /// <returns> The text that goes in the elapsed time label on FloorCanvas </returns>
         public static string GetTimeElapsedText()
         {
-            return "" + (Simulation.simTimeElapsed >= 60 ? Simulation.simTimeElapsed / 60 + " minutes" : Simulation.simTimeElapsed + " seconds");
+            string s = Simulation.simTimeElapsed == 1 || Simulation.simTimeElapsed / 60 == 1 ? "" : "s"; // Get extra 's' if plural
+
+            return "" + (Simulation.simTimeElapsed >= 60 ? Simulation.simTimeElapsed / 60 + " minute" + s : Simulation.simTimeElapsed + " second" + s);
         }
     }
 }
