@@ -596,9 +596,6 @@ namespace VacuumSim.UI.FloorplanGraphics
             bool doorwayNeeded = false;
             int roomGroupID = FloorplanFileWriter.currentObstacleGroupNumber - 1; // Get the group ID of the room just added
 
-            Dictionary<int, bool> doorSegways = new Dictionary<int, bool>(); // Holds what doorways have already gotten a segwaying doorway
-            bool outValue = true;
-
             // First, add segwaying doorway if necessary
             for (int i = 0; i < FloorplanHouseDesigner.numTilesPerRow; i++)
             {
@@ -606,12 +603,13 @@ namespace VacuumSim.UI.FloorplanGraphics
                 {
                     if (FloorplanHouseDesigner.floorLayout[i, j].groupID == roomGroupID) // This tile is part of the room we just added
                     {
-                        if (IsAdjacentToDoorwayTile(FloorplanHouseDesigner, FloorplanHouseDesigner.floorLayout[i, j]) && 
-                            !IsRoomCornerTile(FloorplanHouseDesigner, FloorplanHouseDesigner.floorLayout[i, j]) &&
-                            !doorSegways.TryGetValue(FloorplanHouseDesigner.floorLayout[i, j].groupID, out outValue))
+                        if (IsAdjacentToDoorwayTile(FloorplanHouseDesigner, FloorplanHouseDesigner.floorLayout[i, j]) &&
+                            GetGroupIDOfConnectedDoorway(FloorplanHouseDesigner, FloorplanHouseDesigner.floorLayout[i, j]) != FloorplanHouseDesigner.floorLayout[i, j].groupID &&
+                            !IsRoomCornerTile(FloorplanHouseDesigner, FloorplanHouseDesigner.floorLayout[i, j]))
                         {
+                            int doorwayGID = GetGroupIDOfConnectedDoorway(FloorplanHouseDesigner, FloorplanHouseDesigner.floorLayout[i, j]);
+
                             FloorplanHouseDesigner.ModifyTileBasedOnIndices(i, j, ObstacleType.Floor);
-                            doorSegways[FloorplanHouseDesigner.floorLayout[i, j].groupID] = true;
                         }
                     }     
                 }
@@ -888,6 +886,23 @@ namespace VacuumSim.UI.FloorplanGraphics
 
             return IsDoorwayTile(CurrentLayout.floorLayout[x - 1, y]) || IsDoorwayTile(CurrentLayout.floorLayout[x + 1, y]) ||
                    IsDoorwayTile(CurrentLayout.floorLayout[x, y - 1]) || IsDoorwayTile(CurrentLayout.floorLayout[x, y + 1]);
+        }
+
+        private static int GetGroupIDOfConnectedDoorway(FloorplanLayout CurrentLayout, Tile tile)
+        {
+            int x = tile.x / FloorplanLayout.tileSideLength;
+            int y = tile.y / FloorplanLayout.tileSideLength;
+
+            if (IsDoorwayTile(CurrentLayout.floorLayout[x - 1, y]))
+                return CurrentLayout.floorLayout[x - 1, y].groupID;
+            else if (IsDoorwayTile(CurrentLayout.floorLayout[x + 1, y]))
+                return CurrentLayout.floorLayout[x + 1, y].groupID;
+            else if (IsDoorwayTile(CurrentLayout.floorLayout[x, y - 1]))
+                return CurrentLayout.floorLayout[x, y - 1].groupID;
+            else if (IsDoorwayTile(CurrentLayout.floorLayout[x, y + 1]))
+                return CurrentLayout.floorLayout[x, y + 1].groupID;
+
+            return -1;
         }
     }
 }
