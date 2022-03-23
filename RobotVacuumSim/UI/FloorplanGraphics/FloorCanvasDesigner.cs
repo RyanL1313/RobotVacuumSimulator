@@ -39,7 +39,7 @@ namespace VacuumSim.UI.FloorplanGraphics
 
         public static void DisplayFloorCovering(Graphics CanvasEditor, FloorplanLayout HouseLayout, string SelectedFloorType)
         {
-            FloorplanLayout CurrentLayout = currentlyAddingObstacle ? FloorplanHouseDesigner : HouseLayout;
+            FloorplanLayout CurrentLayout = currentlyAddingObstacle || currentlyAddingDoorway ? FloorplanHouseDesigner : HouseLayout;
             TextureBrush FloorTextureBrush;
 
             switch (SelectedFloorType)
