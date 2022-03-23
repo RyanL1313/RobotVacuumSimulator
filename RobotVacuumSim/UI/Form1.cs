@@ -314,43 +314,6 @@ namespace VacuumSim
             FloorCanvas.Invalidate();
         }
 
-        private void SaveFloorplanButton_Click(object sender, EventArgs e)
-        {
-            // Modify this in the future
-            FloorplanFileWriter.SaveTileGridData("../../../UI/Floorplan/SavedFloorplan.txt", HouseLayout);
-        }
-
-        private void LoadDefaultFloorplanButton_Click(object sender, EventArgs e)
-        {
-            HouseWidthSelector.Value = 50; // 25 tiles wide (excluding boundary walls)
-            HouseHeightSelector.Value = 40; // 20 tiles high (excluding boundary walls)
-
-            FloorplanFileReader.LoadTileGridData("../../../UI/Floorplan/DefaultFloorplan.txt", HouseLayout);
-
-            FloorCanvas.Invalidate(); // Re-trigger paint event
-        }
-
-        private void LoadSavedFloorplanButton_Click(object sender, EventArgs e)
-        {
-            FloorplanFileReader.LoadTileGridData("../../../UI/Floorplan/SavedFloorplan.txt", HouseLayout);
-
-            // Set the house width and height selector values to the size of the newly-loaded floorplan
-            HouseWidthSelector.Value = HouseLayout.numTilesPerRow * 2;
-            HouseHeightSelector.Value = HouseLayout.numTilesPerCol * 2;
-
-            FloorCanvas.Invalidate();
-        }
-
-        private void StartSimulationButton_Click(object sender, EventArgs e)
-        {
-            SetInitialSimulationValues();
-        }
-
-        private void StopSimulationButton_Click(object sender, EventArgs e)
-        {
-            ResetSimulationValues();
-        }
-
         private void EraserModeButton_Click(object sender, EventArgs e)
         {
             // Alternate between drawing and eraser modes
@@ -599,8 +562,6 @@ namespace VacuumSim
             ResetSimulationValues();
 
         }
-
-        private void RoomCreatorModeButton_Click(object sender, EventArgs e)
         /// <summary>
         /// Enables floorplan widgets if value is true, disables them if value is false
         /// </summary>
