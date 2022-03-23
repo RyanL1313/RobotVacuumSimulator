@@ -819,8 +819,6 @@ namespace VacuumSim.UI.FloorplanGraphics
             int y = tile.y / FloorplanLayout.tileSideLength;
 
             return tile.obstacle == ObstacleType.Wall && tile.groupID == -1;
-
-            //return x == 0 || x == CurrentLayout.numTilesPerRow - 1 || y == 0 || y == CurrentLayout.numTilesPerCol - 1;
         }
 
         private static bool IsAgainstHouseBoundaryWall(FloorplanLayout CurrentLayout, Tile tile)
@@ -855,7 +853,6 @@ namespace VacuumSim.UI.FloorplanGraphics
         {
             int x = tile.x / FloorplanLayout.tileSideLength;
             int y = tile.y / FloorplanLayout.tileSideLength;
-            int wallGroupID = tile.groupID;
 
             Tile leftTile = CurrentLayout.floorLayout[x - 1, y];
             Tile rightTile = CurrentLayout.floorLayout[x + 1, y];
@@ -867,11 +864,6 @@ namespace VacuumSim.UI.FloorplanGraphics
             (leftTile.groupID != -1 && belowTile.groupID != -1 && !IsDoorwayTile(leftTile) && !IsDoorwayTile(belowTile)) || // Left and below
             (rightTile.groupID != -1 && aboveTile.groupID != -1 && !IsDoorwayTile(rightTile) && !IsDoorwayTile(aboveTile)) || // Right and above
             (rightTile.groupID != -1 && belowTile.groupID != -1 && !IsDoorwayTile(rightTile) && !IsDoorwayTile(belowTile)); // Right and below
-
-            //return (CurrentLayout.floorLayout[x - 1, y].groupID == wallGroupID && CurrentLayout.floorLayout[x, y - 1].groupID == wallGroupID) || // Left and above
-            //(CurrentLayout.floorLayout[x - 1, y].groupID == wallGroupID && CurrentLayout.floorLayout[x, y + 1].groupID == wallGroupID) || // Left and below
-            //(CurrentLayout.floorLayout[x + 1, y].groupID == wallGroupID && CurrentLayout.floorLayout[x, y - 1].groupID == wallGroupID) || // Right and above
-            //(CurrentLayout.floorLayout[x + 1, y].groupID == wallGroupID && CurrentLayout.floorLayout[x, y + 1].groupID == wallGroupID); // Right and below
         }
 
         private static bool IsDoorwayTile(Tile tile)
