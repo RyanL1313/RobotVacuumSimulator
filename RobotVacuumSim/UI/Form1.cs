@@ -10,6 +10,8 @@ using System.Windows.Forms;
 using System.Reflection;
 using VacuumSim.Sim;
 using VacuumSim.UI.FloorplanGraphics;
+using VacuumSim.Components;
+using System.Diagnostics;
 
 namespace VacuumSim
 {
@@ -30,7 +32,7 @@ namespace VacuumSim
         private List<string> SimulationSpeeds = new List<string> { "1x", "5x", "50x" };
         private FloorplanLayout HouseLayout;
         private VacuumDisplay VacDisplay;
-
+        private VacuumController vc;
         /// <summary>
         /// Initializes the algorithm selector to allow for choosing an algorithm type as specified by the PathAlgorithm enum.
         /// </summary>
@@ -42,17 +44,24 @@ namespace VacuumSim
             RobotPathAlgorithmSelector.SelectedItem = PathAlgorithm.Random;
         }
 
-        private void InitFloorTileSelector()
+        private void RobotPathAlgorithmSelector_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            Vacuum.VacuumAlgorithm.Clear();
+        }
+
+            private void InitFloorTileSelector()
         {
             // Set the data source of the dropdown box to be the values of our ObstacleType enum
             //ObstacleSelector.DataSource = Enum.GetValues(typeof(ObstacleType));
             // Set the default value to the ObstacleType.WALL;
             ObstacleSelector.SelectedIndex = 0;
+            Vacuum.VacuumAlgorithm.Clear();
         }
 
         private void InitSimulationSpeedSelector()
         {
             SimulationSpeedSelector.DataSource = SimulationSpeeds;
+            Vacuum.VacuumSpeed = (int)RobotSpeedSelector.Value;
         }
 
         public Form1()
@@ -178,17 +187,20 @@ namespace VacuumSim
             // Set the vacuum timer to update every 1000 / (simulation speed) / 4 seconds
             // The reason I divide by 4 is so 4 frames appear each "simulation second"
             VacuumBodyTimer.Interval = 1000 / Simulation.simSpeed / FloorCanvasCalculator.framesPerSimSecond;
+            VacAlgorithmTimer.Interval = 1000 / Simulation.simSpeed / FloorCanvasCalculator.framesPerSimSecond;
         }
 
         private void RobotSpeedSelector_ValueChanged(object sender, EventArgs e)
         {
             VacDisplay.vacuumSpeed = (int)RobotSpeedSelector.Value;
+            Vacuum.VacuumSpeed = (int)RobotSpeedSelector.Value;
         }
 
         private void RobotBatteryLifeSelector_ValueChanged(object sender, EventArgs e)
         {
             BatteryLeftLabel.Text = "" + RobotBatteryLifeSelector.Value + " minutes";
             VacDisplay.batterySecondsRemaining = (int)RobotBatteryLifeSelector.Value * 60;
+            Vacuum.VacuumBattery = (int)RobotBatteryLifeSelector.Value;
         }
 
         private void InitialVacuumHeadingSelector_ValueChanged(object sender, EventArgs e)
@@ -510,15 +522,6 @@ namespace VacuumSim
 
         private void VacuumBodyTimer_Tick(object sender, EventArgs e)
         {
-            // TO-DO: Calculate next (x, y) position of vacuum based on selected algorithm (backend)
-
-            // Animating the vacuum to go in a circle (change this to move the vacuum however you'd like)
-            VacDisplay.vacuumCoords[0] += FloorCanvasCalculator.GetDistanceTraveledPerFrame(VacDisplay.vacuumSpeed) * (float)Math.Cos((Math.PI * VacDisplay.vacuumHeading) / 180);
-            VacDisplay.vacuumCoords[1] += FloorCanvasCalculator.GetDistanceTraveledPerFrame(VacDisplay.vacuumSpeed) * (float)Math.Sin((Math.PI * VacDisplay.vacuumHeading) / 180);
-
-            VacDisplay.vacuumHeading = (VacDisplay.vacuumHeading + 45) % 360;
-
-            FloorCanvasCalculator.UpdateSimulationData(VacDisplay);
 
             BatteryLeftLabel.Text = FloorCanvasCalculator.GetBatteryRemainingText(VacDisplay);
             SimTimeElapsedLabel.Text = FloorCanvasCalculator.GetTimeElapsedText();
@@ -530,13 +533,74 @@ namespace VacuumSim
             FloorCanvas.Invalidate();
         }
 
+        private void VacAlgorithmTimer_Tick(object sender, EventArgs e)
+        {
+            vc.ExecVPath(VacDisplay, HouseLayout, sender, e);
+            FloorCanvas.Invalidate();
+        }
+
         private void VacuumWhiskersTimer_Tick(object sender, EventArgs e)
         {
             FloorCanvasCalculator.CalculateWhiskerCoordinates(VacDisplay);
 
             FloorCanvas.Invalidate(); // Re-trigger paint event
         }
+        private void SaveFloorplanButton_Click(object sender, EventArgs e)
+        {
+            // Modify this in the future
+            FloorplanFileWriter.SaveTileGridData("../../../UI/Floorplan/SavedFloorplan.txt", HouseLayout);
+        }
 
+        private void LoadDefaultFloorplanButton_Click(object sender, EventArgs e)
+        {
+            HouseWidthSelector.Value = 50; // 25 tiles wide
+            HouseHeightSelector.Value = 40; // 20 tiles high
+
+            // Read the floorplan data file and store it in HouseLayoutAccessor.floorLayout
+            // Modify this in the future
+            FloorplanFileReader.LoadTileGridData("../../../UI/Floorplan/DefaultFloorplan.txt", HouseLayout);
+
+            FloorCanvas.Invalidate(); // Re-trigger paint event
+        }
+
+        private void LoadSavedFloorplanButton_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void StartSimulationButton_Click(object sender, EventArgs e)
+        {
+            SetInitialSimulationValues();
+            // TODO: update to initialize vc again after one algorithm completes. this works for now.
+            if (Vacuum.VacuumAlgorithm[0] == 0)
+            {
+                vc = new VRandAlgorithm();
+                VacAlgorithmTimer.Enabled = true;
+            }
+            else if (Vacuum.VacuumAlgorithm[0] == 1)
+            {
+                vc = new VSpiralAlgorithm();
+                VacAlgorithmTimer.Enabled = true;
+            }
+            else if (Vacuum.VacuumAlgorithm[0] == 2)
+            {
+                vc  = new VSnakeAlgorithm();
+                VacAlgorithmTimer.Enabled = true;
+            }
+            else if (Vacuum.VacuumAlgorithm[0] == 3)
+            {
+                vc  = new VWallFollowAlgorithm();
+                VacAlgorithmTimer.Enabled = true;
+            }
+        }
+
+        private void StopSimulationButton_Click(object sender, EventArgs e)
+        {
+            ResetSimulationValues();
+
+        }
+
+        private void RoomCreatorModeButton_Click(object sender, EventArgs e)
         /// <summary>
         /// Enables floorplan widgets if value is true, disables them if value is false
         /// </summary>
@@ -590,6 +654,21 @@ namespace VacuumSim
             FloorCanvasCalculator.frameCount = 0;
 
             VacDisplay.batterySecondsRemaining = (int)RobotBatteryLifeSelector.Value * 60;
+
+            VacuumController.allAlgFinish = false;
+            if (RunAllAlgorithmsCheckbox.Checked == true)
+            {
+                Vacuum.VacuumAlgorithm.Clear();
+                for (int i = 0; i < 4; i++)
+                    Vacuum.VacuumAlgorithm.Add(i);
+            }
+            else
+            {
+                Vacuum.VacuumAlgorithm.Add(RobotPathAlgorithmSelector.SelectedIndex);
+            }
+            RunAllAlgorithmsCheckbox.Enabled = false;
+            ObstacleSelector.Enabled = false;
+
         }
 
         /// <summary>
@@ -599,6 +678,7 @@ namespace VacuumSim
         {
             VacuumBodyTimer.Enabled = false;
             VacuumWhiskersTimer.Enabled = false;
+            VacAlgorithmTimer.Enabled = false;
             HouseLayout.gridLinesOn = true;
             StartSimulationButton.Enabled = true;
             StopSimulationButton.Enabled = false;
@@ -616,6 +696,9 @@ namespace VacuumSim
             Simulation.simTimeElapsed = 0;
             FloorCanvasCalculator.frameCount = 0;
             VacDisplay.batterySecondsRemaining = (int)RobotBatteryLifeSelector.Value * 60;
+            RunAllAlgorithmsCheckbox.Enabled = true;
+
+
             FloorCanvas.Invalidate(); // Re-trigger paint event
         }
 
