@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -352,7 +352,11 @@ namespace VacuumSim
         {
             Graphics canvasEditor = e.Graphics;
 
+            var SelectedFloorType = FloorTypeGroupBox.Controls.OfType<RadioButton>()
+                           .FirstOrDefault(n => n.Checked).Name;
+
             FloorCanvasDesigner.SetAntiAliasing(canvasEditor);
+            FloorCanvasDesigner.DisplayFloorCovering(canvasEditor, HouseLayout, SelectedFloorType);
             FloorCanvasDesigner.PaintChairAndTableBackgrounds(canvasEditor, HouseLayout);
             FloorCanvasDesigner.DrawVacuum(canvasEditor, VacDisplay);
             FloorCanvasDesigner.DrawFloorplan(canvasEditor, HouseLayout, VacDisplay);
@@ -477,7 +481,7 @@ namespace VacuumSim
             }
             else if (FloorCanvasDesigner.successAddingObstacle && !FloorCanvasDesigner.eraserModeOn && !FloorCanvasDesigner.settingVacuumAttributes)
             {
-                FloorCanvasDesigner.ChangeSuccessTilesToCurrentObstacle(); // Change success tiles in FloorplanHouseDesigner to be the same obstacle type that was just added         
+                FloorCanvasDesigner.ChangeSuccessTilesToCurrentObstacle(); // Change success tiles in FloorplanHouseDesigner to be the same obstacle type that was just added
                 HouseLayout.DeepCopyFloorplan(FloorCanvasDesigner.FloorplanHouseDesigner); // Copy the designer mode house layout to now be the actual house layout
 
                 if (FloorCanvasDesigner.currentObstacleBeingAdded == ObstacleType.Room || FloorCanvasDesigner.currentObstacleBeingAdded == ObstacleType.Wall) // Just placed room, now need to add doorway
@@ -573,9 +577,19 @@ namespace VacuumSim
             StopSimulationButton.Enabled = true;
             FinishOrEditFloorplanButton.Enabled = false;
             ControlsPane.Panel1.Enabled = false;
+            LoadDefaultFloorplanButton.Enabled = false;
+            LoadSavedFloorplanButton.Enabled = false;
+            SaveFloorplanButton.Enabled = false;
+            EraserModeButton.Enabled = false;
+            RoomCreatorModeButton.Enabled = false;
+            ChairTableWidthSelector.Enabled = false;
+            ChairTableHeightSelector.Enabled = false;
+            ObstacleSelector.Enabled = false;
+            FloorTypeGroupBox.Enabled = false;
             Simulation.simStarted = true;
             Simulation.simTimeElapsed = 0;
             FloorCanvasCalculator.frameCount = 0;
+
             VacDisplay.batterySecondsRemaining = (int)RobotBatteryLifeSelector.Value * 60;
         }
 
@@ -591,6 +605,15 @@ namespace VacuumSim
             StopSimulationButton.Enabled = false;
             FinishOrEditFloorplanButton.Enabled = true;
             ControlsPane.Panel1.Enabled = true;
+            LoadDefaultFloorplanButton.Enabled = true;
+            LoadSavedFloorplanButton.Enabled = true;
+            SaveFloorplanButton.Enabled = true;
+            EraserModeButton.Enabled = true;
+            RoomCreatorModeButton.Enabled = true;
+            ChairTableWidthSelector.Enabled = true;
+            ChairTableHeightSelector.Enabled = true;
+            ObstacleSelector.Enabled = true;
+            FloorTypeGroupBox.Enabled = true;
             Simulation.simStarted = false;
             Simulation.simTimeElapsed = 0;
             FloorCanvasCalculator.frameCount = 0;
@@ -600,7 +623,12 @@ namespace VacuumSim
 
         private void Form1_Load(object sender, EventArgs e)
         {
+        }
 
+        // Just forces a redraw
+        private void FloorTypeControlChanged(object sender, EventArgs e)
+        {
+            FloorCanvas.Invalidate();
         }
     }
 
