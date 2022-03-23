@@ -504,6 +504,7 @@ namespace VacuumSim
             FloorCanvasDesigner.currentlyPlacingVacuum = false;
             FloorCanvasDesigner.currentlyAddingObstacle = false;
             FloorCanvasDesigner.justPlacedDoorway = false;
+            FloorCanvasDesigner.successAddingObstacle = false;
 
             FloorCanvas.Invalidate();
         }
