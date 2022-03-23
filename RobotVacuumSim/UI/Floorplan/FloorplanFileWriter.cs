@@ -20,8 +20,8 @@ namespace VacuumSim
         {
             string[] lines = new string[HouseLayout.numTilesPerCol + 1]; // NumTilesPerCol is technically the number of rows. Confusing, I know. The +1 is for the extra top row of data
 
-            lines[0] = "SavedGroupID " + currentObstacleGroupNumber; // Save the obstacle group number we were on 
-
+            lines[0] = "SavedGroupID " + currentObstacleGroupNumber + " "; // Save the obstacle group number we were on 
+            lines[0] += "Dimensions " + HouseLayout.numTilesPerRow + " " + HouseLayout.numTilesPerCol; // Save the floorplan dimensions
             
             for (int i = 0; i < HouseLayout.numTilesPerCol; i++)
             {

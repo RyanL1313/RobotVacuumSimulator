@@ -14,7 +14,6 @@ namespace VacuumSim
         public int y; // y coordinate of top left tile corner
         public ObstacleType obstacle;
         public int groupID; // ID of obstacle group this tile belongs to
-        public int roomID; // ID of room this tile belongs to
 
         public float Dirtiness;
         private float dirtyThreshold = 0.05f;
@@ -47,7 +46,6 @@ namespace VacuumSim
             this.obstacle = obstacle;
             this.Dirtiness = 0.5f;
             this.groupID = -1;
-            this.roomID = -1;
         }
 
         // overloaded constructor for specifying float dirtiness.
@@ -57,7 +55,6 @@ namespace VacuumSim
             this.y = y;
             this.obstacle = obstacle;
             this.groupID = -1;
-            this.roomID = -1;
 
             // Enforce given dirtiness is between 0-100 (percentage)
             if (dirtiness > 100.0f)

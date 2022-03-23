@@ -6,19 +6,21 @@ using System.Threading.Tasks;
 
 namespace VacuumSim
 {
-    // Some obstacle types can be chosen by the user (Chest, Chair, Table)
-    // and others are just for use exclusively by us (Floor, Wall, Doorway, Error, Success)
+    // Some obstacle types can be chosen by the user (Room, Chest, Chair, Table)
+    // and others are just for use exclusively by us (Floor, Wall, Error, Success)
     // Note: Error and Success only get used by the designer mode house layout in Form1.cs
     // Error == red tile, Success == green tile
     public enum ObstacleType
-    { Floor, Wall, Chest, Chair, Table, Doorway, Error, Success };
+    { Room, Floor, Wall, Chest, Chair, Table, Error, Success };
 
     public class FloorplanLayout
     {
-        public const int maxTilesPerRow = 50; // Maximum tiles allowed per row
-        public const int maxTilesPerCol = 40; // Maximum tiles allowed per column
-        public int numTilesPerRow { get; set; } = 25; // Default value
-        public int numTilesPerCol { get; set; } = 20; // Default value
+        /* Note: The extra +2 for each of these variables is due to the house boundary */
+        public const int maxTilesPerRow = 52; // Maximum tiles allowed per row
+        public const int maxTilesPerCol = 42; // Maximum tiles allowed per column
+        public int numTilesPerRow { get; set; } = 27; // Default value
+        public int numTilesPerCol { get; set; } = 22; // Default value
+
         public const int tileSideLength = 15; // Pixel length of each side of the tiles
         public Tile[,] floorLayout { get; set; } // 2D array of tiles
         public bool gridLinesOn { get; set; } = true; // Should grid lines currently be displaying?
@@ -46,23 +48,23 @@ namespace VacuumSim
 
             // Initialize the grid with blank tiles and the coordinates of those tiles
             for (int i = 0; i < maxTilesPerRow; i++)
-            {
                 for (int j = 0; j < maxTilesPerCol; j++)
-                {
                     floorLayout[i, j] = new Tile(i * tileSideLength, j * tileSideLength, ObstacleType.Floor, 1.0f);
-                }
-            }
+
+            // Initialize the boundary wall tiles
+            for (int i = 0; i < numTilesPerRow; i++)
+                for (int j = 0; j < numTilesPerCol; j++)
+                    if (i == 0 || j == 0 || i == numTilesPerRow - 1 || j == numTilesPerCol - 1) // Boundary wall tile
+                        floorLayout[i, j] = new Tile(i * tileSideLength, j * tileSideLength, ObstacleType.Wall);
         }
 
         /* Returns the Tile object by requested row and column. */
-
         public Tile GetTileFromRowCol(int row, int col)
         {
             return floorLayout[col, row];
         }
 
         /* Returns the Tile object located at the (x, y) coordinates in the FloorCanvas PictureBox */
-
         public Tile GetTileFromCoordinates(int x, int y)
         {
             int xTileIndex = x / tileSideLength;
@@ -91,41 +93,47 @@ namespace VacuumSim
         }
 
         /* Returns the maximum x coordinates. Vacuum should not go past this. */
-
         public int GetMaximumXCoordinates()
         {
             return numTilesPerRow * tileSideLength;
         }
 
         /* Returns the maximum y coordinates. Vacuum should not go past this. */
-
         public int GetMaximumYCoordinates()
         {
             return numTilesPerCol * tileSideLength;
         }
 
         /* Modifies the obstacle located in a certain tile based on the (x, y) coordinates in the FloorCanvas PictureBox */
-
         public void ModifyTileBasedOnCoordinates(int x, int y, ObstacleType ob)
         {
             // Get row, col indices of selected tile based on the coordinates selected by the user
             int xTileIndex = x / tileSideLength;
             int yTileIndex = y / tileSideLength;
 
-            if (xTileIndex > numTilesPerRow || yTileIndex > numTilesPerCol)
+            if (xTileIndex > maxTilesPerRow || yTileIndex > maxTilesPerCol)
                 return; // Outside grid
 
             floorLayout[xTileIndex, yTileIndex].obstacle = ob;
         }
 
         /* Modifies the obstacle located in a certain tile based on the chosen indices of floorLayout */
-
         public void ModifyTileBasedOnIndices(int xTileIndex, int yTileIndex, ObstacleType ob)
         {
-            if (xTileIndex > numTilesPerRow || yTileIndex > numTilesPerCol)
+            if (xTileIndex >= maxTilesPerRow || yTileIndex >= maxTilesPerCol)
                 return; // Outside grid
 
             floorLayout[xTileIndex, yTileIndex].obstacle = ob;
+        }
+
+        /* Modifies the obstacle and group ID of a tile based on the chosen indices of floorLayout */
+        public void ModifyTileBasedOnIndices(int xTileIndex, int yTileIndex, ObstacleType ob, int groupID)
+        {
+            if (xTileIndex >= maxTilesPerRow || yTileIndex >= maxTilesPerCol)
+                return; // Outside grid
+
+            floorLayout[xTileIndex, yTileIndex].obstacle = ob;
+            floorLayout[xTileIndex, yTileIndex].groupID = groupID;
         }
 
         /* Copies every non-static attribute of "source". */
@@ -155,8 +163,10 @@ namespace VacuumSim
             string lowercase = strObstacle.ToLower();
             ObstacleType ret = ObstacleType.Floor;
 
-            if (lowercase.Equals("blank") || lowercase.Equals("none"))
+            if (lowercase.Equals("blank") || lowercase.Equals("none") || lowercase.Equals("floor"))
                 ret = ObstacleType.Floor;
+            else if (lowercase.Equals("room"))
+                ret = ObstacleType.Room;
             else if (lowercase.Equals("wall"))
                 ret = ObstacleType.Wall;
             else if (lowercase.Equals("chest"))
