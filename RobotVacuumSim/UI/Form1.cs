@@ -10,6 +10,8 @@ using System.Windows.Forms;
 using System.Reflection;
 using VacuumSim.Sim;
 using VacuumSim.UI.FloorplanGraphics;
+using System.Text.Json;
+using System.IO;
 
 namespace VacuumSim
 {
@@ -628,6 +630,31 @@ namespace VacuumSim
         {
             FloorCanvas.Invalidate();
         }
+
+        private void GenerateReport()
+        {
+            SimulationReport rep = new SimulationReport
+            {
+                SimulationID = HouseLayout.GetFloorPlanID(),
+                NumberOfRooms = HouseLayout.numRooms,
+                HouseWidthFeet = (int)HouseWidthSelector.Value,
+                HouseHeightFeet = (int)HouseHeightSelector.Value,
+                HouseFloorType = FloorTypeGroupBox.Controls.OfType<RadioButton>()
+                           .FirstOrDefault(n => n.Checked).Name,
+                RobotBatteryLifeMinutes = (int)RobotBatteryLifeSelector.Value,
+                RobotEfficiency = VacuumEfficiencySlider.Value,
+                RobotPathingAlgorithm = RobotPathAlgorithmSelector.Text,
+                RobotSpeedInchesPerSecond = (int)RobotSpeedSelector.Value,
+                SimulatedSeconds = 999999,
+                SimulationStartTime = "IMPLEMENT",
+            };
+
+            string fileName = "SimulationReport.json";
+
+            var JSONOpts = new JsonSerializerOptions { IncludeFields = true, WriteIndented = true };
+            string jsonString = JsonSerializer.Serialize(rep, JSONOpts);
+            File.WriteAllText(fileName, jsonString);
+        }
     }
 
     /// <summary>
@@ -647,5 +674,29 @@ namespace VacuumSim
     /// </summary>
     public class SimulationReport
     {
+        public string SimulationID;
+        public string SimulationStartTime;
+        public int SimulatedSeconds;
+        public int HouseWidthFeet;
+        public int HouseHeightFeet;
+        public string HouseFloorType;
+        public int NumberOfRooms;
+        public int RobotBatteryLifeMinutes;
+        public int RobotSpeedInchesPerSecond;
+        public float RobotEfficiency;
+        public string RobotPathingAlgorithm;
+        /*
+         Simulation ID
+        Simulation start time
+        Amount of simulated time (simulation clock)
+        House size
+        House floor type
+        Number of rooms (pending room implementation)
+        Robot battery life
+        Robot speed
+        Robot efficiency (should determine a way to calculate this)
+        Pathing algorithm used
+        Floorplan file (optional?)
+        */
     }
 }
