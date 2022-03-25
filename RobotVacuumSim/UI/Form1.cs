@@ -204,16 +204,43 @@ namespace VacuumSim
             FloorCanvas.Invalidate(); // Re-draw canvas to show new whiskers display
         }
 
+        private void FloorTypeControlChanged(object sender, EventArgs e)
+        {
+            // Update the default vacuum efficiency based on the selected floor covering
+            if (HardWoodRadioButton.Checked)
+            {
+                VacuumEfficiencySlider.Value = 90;
+                ActualVacuumData.VacuumEfficiency = 90.0f / 100.0f;
+            }
+            else if (LoopPileRadioButton.Checked)
+            {
+                VacuumEfficiencySlider.Value = 75;
+                ActualVacuumData.VacuumEfficiency = 75.0f / 100.0f;
+            }
+            else if (CutPileRadioButton.Checked)
+            {
+                VacuumEfficiencySlider.Value = 70;
+                ActualVacuumData.VacuumEfficiency = 70.0f / 100.0f;
+            }
+            else if (FriezeCutPileRadioButton.Checked)
+            {
+                VacuumEfficiencySlider.Value = 65;
+                ActualVacuumData.VacuumEfficiency = 65.0f / 100.0f;
+            }
+
+            FloorCanvas.Invalidate();
+        }
+
         private void VacuumEfficiencySlider_Scroll(object sender, EventArgs e)
         {
             VacuumEfficiencyValueLabel.Text = VacuumEfficiencySlider.Value + "%";
-            ActualVacuumData.VacuumEfficiency = VacuumEfficiencySlider.Value;
+            ActualVacuumData.VacuumEfficiency = VacuumEfficiencySlider.Value / 100.0f;
         }
 
         private void WhiskerEfficiencySlider_Scroll(object sender, EventArgs e)
         {
             WhiskersEfficiencyValueLabel.Text = WhiskersEfficiencySlider.Value + "%";
-            ActualVacuumData.WhiskerEfficiency = WhiskersEfficiencySlider.Value;
+            ActualVacuumData.WhiskerEfficiency = WhiskersEfficiencySlider.Value / 100.0f;
         }
 
         private void ShowInstructionsButton_Click(object sender, EventArgs e)
@@ -535,10 +562,12 @@ namespace VacuumSim
             InnerTile possibleInnerTileBeingCleanedByVacuum = HouseLayout.GetInnerTileBeingCleanedByVacuum(VacDisplay);
             List<InnerTile> possibleInnerTilesBeingCleanedByWhiskers = HouseLayout.GetInnerTilesBeingCleanedByWhiskers(VacDisplay);
 
-            // Iterate through each inner 
-            foreach (InnerTile innerTile in possibleInnerTilesBeingCleanedByWhiskers)
+            // Check for collision. If one occurred, deal with it by updating the vacuum's coordinates based on the previous direction traveled
+            if (VacDisplay.VacuumCollidedWithObstacle(possibleInnerTilesBeingCleanedByWhiskers))
             {
+                VacDisplay.HandleCollision(ActualVacuumData, HouseLayout);
 
+                VacDisplay.vacuumHeading = (VacDisplay.vacuumHeading + 180) % 360; // Start moving in opposite direction (Note: I just have this here for my "straight line" algorithm I'm using for proof of concept)
             }
 
             // Check if possible inner tile is currently being cleaned by the vacuum
@@ -548,9 +577,7 @@ namespace VacuumSim
                 possibleInnerTileBeingCleanedByVacuum.CleanTile(ActualVacuumData.VacuumEfficiency);
                 curInnerTileVacuumIsCleaning = possibleInnerTileBeingCleanedByVacuum;
             }
-
             
-
             // Iterate through each possible inner tile and check if it is currently being cleaned by the whiskers
             // If not, clean the inner tile and add it to the list
             foreach (InnerTile innerTile in possibleInnerTilesBeingCleanedByWhiskers)
@@ -670,12 +697,6 @@ namespace VacuumSim
         private void Form1_Load(object sender, EventArgs e)
         {
 
-        }
-
-        // Just forces a redraw
-        private void FloorTypeControlChanged(object sender, EventArgs e)
-        {
-            FloorCanvas.Invalidate();
         }
     }
 

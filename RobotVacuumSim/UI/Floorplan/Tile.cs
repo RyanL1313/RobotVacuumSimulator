@@ -82,7 +82,7 @@ namespace VacuumSim
             }
             else if (corner == FloorplanLayout.UR)
             {
-                innerTiles[numInnerTilesInRowAndCol - 1, numInnerTilesInRowAndCol - 1].obstacle = ob;
+                innerTiles[numInnerTilesInRowAndCol - 1, 0].obstacle = ob;
             }
             else if (corner == FloorplanLayout.UL)
             {

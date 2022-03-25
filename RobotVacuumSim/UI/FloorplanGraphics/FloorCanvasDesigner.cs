@@ -485,7 +485,7 @@ namespace VacuumSim.UI.FloorplanGraphics
         /// Then, in "FloorCanvas_MouseUp" in Form1.cs, it is decided if the vacuum can be placed or not, depending on if it was placed in a valid location or not
         /// </summary>
         /// <param name="HouseLayout"> The floorplan layout for the actual house </param>
-        /// <param name="VacDisplay"> The display of the vacuum onto the canvas </param>
+        /// <param name="ActualVacuumData"> The vacuum data </param>
         public static void AttemptPlaceVacuum(FloorplanLayout HouseLayout, Vacuum ActualVacuumData)
         {
             vacuumPlacingLocationIsValid = true; // Initially set to true, could get changed if vacuum is in invalid position
