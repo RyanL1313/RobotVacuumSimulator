@@ -341,6 +341,7 @@ namespace VacuumSim
 
         private void StopSimulationButton_Click(object sender, EventArgs e)
         {
+            Simulation.lastSimTimeElapsed = Simulation.simTimeElapsed;
             ResetSimulationValues();
         }
 
@@ -648,7 +649,7 @@ namespace VacuumSim
                 RobotEfficiency = VacuumEfficiencySlider.Value,
                 RobotPathingAlgorithm = RobotPathAlgorithmSelector.Text,
                 RobotSpeedInchesPerSecond = (int)RobotSpeedSelector.Value,
-                SimulatedSeconds = 999999,
+                SimulatedSeconds = Simulation.lastSimTimeElapsed,
                 SimulationStartTime = Simulation.simulationStartTime,
             };
 
