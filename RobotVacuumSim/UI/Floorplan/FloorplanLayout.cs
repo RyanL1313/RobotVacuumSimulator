@@ -54,7 +54,6 @@ namespace VacuumSim
                 for (int j = 0; j < maxTilesPerCol; j++)
                 {
                     floorLayout[i, j] = new Tile(i * tileSideLength, j * tileSideLength, ObstacleType.Floor);
-                    floorLayout[i, j].InitializeSubTiles(i * tileSideLength, j * tileSideLength, ObstacleType.Floor, 1.0f); // Initialize this tile's sub-tiles
                 }
             }
 
@@ -66,7 +65,6 @@ namespace VacuumSim
                     if (i == 0 || j == 0 || i == numTilesPerRow - 1 || j == numTilesPerCol - 1) // Boundary wall tile
                     {
                         floorLayout[i, j] = new Tile(i * tileSideLength, j * tileSideLength, ObstacleType.Wall);
-                        floorLayout[i, j].InitializeSubTiles(i * tileSideLength, j * tileSideLength, ObstacleType.Floor, 1.0f); // Initialize this tile's sub-tiles
                     }
                 }
             }
@@ -258,7 +256,7 @@ namespace VacuumSim
         /// Returns all four pairs of indices of a chair/table's leg locations
         /// </summary>
         /// <param name="chairOrTableTile"> The chair/table tile that was encountered </param>
-        /// <returns></returns>
+        /// <returns> A 4x2 array for the four pairs of indices </returns>
         public int[,] GetChairOrTableLegIndices(Tile chairOrTableTile)
         {
             float[,] coordinates = GetChairOrTableLegCoordinates(chairOrTableTile);
@@ -274,11 +272,57 @@ namespace VacuumSim
             return indices;
         }
 
+        /// <summary>
+        /// Sets the obstacles for all necessary inner tiles to get used in the simulation for cleaning and collision detection
+        /// </summary>
+        public void SetInnerTileObstacles()
+        {
+            for (int i = 0; i < numTilesPerRow; i++)
+            {
+                for (int j = 0; j < numTilesPerCol; j++)
+                {
+                    if (floorLayout[i, j].obstacle == ObstacleType.Wall || floorLayout[i, j].obstacle == ObstacleType.Chest)
+                    {
+                        floorLayout[i, j].SetWallChestInnerTileObstacles(floorLayout[i, j].obstacle);
+                    }
+                    else if (floorLayout[i, j].obstacle == ObstacleType.Chair || floorLayout[i, j].obstacle == ObstacleType.Table)
+                    {
+                        int[,] chairOrTableLegIndices = GetChairOrTableLegIndices(floorLayout[i, j]);
+
+                        if (i != chairOrTableLegIndices[UL, 0] || j != chairOrTableLegIndices[UL, 1]) // Make sure we haven't already encountered this chair/table before
+                            continue; // Move onto the next tile
+
+                        // Set the inner tiles that hold this chair/table's legs to have a Chair/Table obstacle
+                        floorLayout[chairOrTableLegIndices[LL, 0], chairOrTableLegIndices[LL, 1]].SetChairTableInnerTileObstacle(floorLayout[i, j].obstacle, LL);
+                        floorLayout[chairOrTableLegIndices[LR, 0], chairOrTableLegIndices[LR, 1]].SetChairTableInnerTileObstacle(floorLayout[i, j].obstacle, LR);
+                        floorLayout[chairOrTableLegIndices[UR, 0], chairOrTableLegIndices[UR, 1]].SetChairTableInnerTileObstacle(floorLayout[i, j].obstacle, UR);
+                        floorLayout[chairOrTableLegIndices[UL, 0], chairOrTableLegIndices[UL, 1]].SetChairTableInnerTileObstacle(floorLayout[i, j].obstacle, UL);
+                    }
+                }
+            }
+
+
+        }
+
+        /// <summary>
+        /// Sets every tile's inner tiles to have a Floor obstacle
+        /// Gets called after a simulation finishes
+        /// </summary>
+        public void ResetInnerTileObstacles()
+        {
+            for (int i = 0; i < numTilesPerRow; i++)
+            {
+                for (int j = 0; j < numTilesPerCol; j++)
+                {
+                    floorLayout[i, j].SetAllInnerTilesToFloorTiles();
+                }
+            }
+        }
+
         /* Returns a 'hashed' number to give an ID a floorplan
            Completely arbitary hashing method but kinda fun.
            Totally open to changing this up later.
         */
-
         public string GetFloorPlanID()
         {
             string uuid = "";           // string to build the ID

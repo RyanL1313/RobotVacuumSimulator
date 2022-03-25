@@ -18,6 +18,11 @@ namespace VacuumSim.UI.Floorplan
 
         public InnerTile(int x, int y, ObstacleType obstacle, float dirtiness)
         {
+            this.x = x;
+            this.y = y;
+            this.obstacle = obstacle;
+            this.dirtiness = dirtiness;
+
             // Enforce given dirtiness is between 0-100 (percentage)
             if (dirtiness > 100.0f)
             {

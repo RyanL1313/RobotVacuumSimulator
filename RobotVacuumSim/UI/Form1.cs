@@ -589,8 +589,9 @@ namespace VacuumSim
             Simulation.simStarted = true;
             Simulation.simTimeElapsed = 0;
             FloorCanvasCalculator.frameCount = 0;
-
             VacDisplay.batterySecondsRemaining = (int)RobotBatteryLifeSelector.Value * 60;
+
+            HouseLayout.SetInnerTileObstacles();
         }
 
         /// <summary>
@@ -617,11 +618,15 @@ namespace VacuumSim
             Simulation.simTimeElapsed = 0;
             FloorCanvasCalculator.frameCount = 0;
             VacDisplay.batterySecondsRemaining = (int)RobotBatteryLifeSelector.Value * 60;
+
+            HouseLayout.ResetInnerTileObstacles();
+
             FloorCanvas.Invalidate(); // Re-trigger paint event
         }
 
         private void Form1_Load(object sender, EventArgs e)
         {
+
         }
 
         // Just forces a redraw
