@@ -5,6 +5,8 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Drawing;
 using VacuumSim.Sim;
+using VacuumSim.UI.Floorplan;
+using VacuumSim.Components;
 
 /// <summary>
 /// Includes anything graphics-related that gets applied to the floorplan
@@ -132,6 +134,56 @@ namespace VacuumSim.UI.FloorplanGraphics
         }
 
         /// <summary>
+        /// Draws gridlines showing all inner tiles.
+        /// Just used for testing purposes. Wouldn't recommend using because it slows down things a lot.
+        /// That's probably because there's a maximum of 72,000 inner tiles (that'll do it)
+        /// </summary>
+        /// <param name="canvasEditor"> Graphics object to edit FloorCanvas </param>
+        /// <param name="HouseLayout"> The floorplan layout display </param>
+        public static void DrawInnerTileGridLines(Graphics canvasEditor, FloorplanLayout HouseLayout)
+        {
+            for (int i = 0; i < HouseLayout.numTilesPerRow; i++)
+            {
+                for (int j = 0; j < HouseLayout.numTilesPerCol; j++)
+                {
+                    for (int k = 0; k < Tile.numInnerTilesInRowAndCol; k++)
+                    {
+                        for (int l = 0; l < Tile.numInnerTilesInRowAndCol; l++)
+                        {
+                            DrawInnerTileOutline(i, j, k, l, new Pen(Color.Aqua), canvasEditor);
+                        }
+                    }    
+                }
+            }
+        }
+
+        /// <summary>
+        /// Paints tiles being cleaned by the vacuum whiskers yellow, and paints the tile being cleaned by the vacuum aqua blue.
+        /// Just used for testing purposes. Will probably be pretty useful for debugging collision detection and vacuum cleaning.
+        /// </summary>
+        /// <param name="canvasEditor"> Graphics object to edit FloorCanvas </param>
+        /// <param name="HouseLayout"> The floorplan layout display </param>
+        /// <param name="VacDisplay"> The display of the vacuum used in the simulation </param>
+        public static void PaintInnerTilesGettingCleaned(Graphics canvasEditor, FloorplanLayout HouseLayout, VacuumDisplay VacDisplay)
+        {
+            int vacuumX = (int)VacDisplay.vacuumCoords[0];
+            int vacuumY = (int)VacDisplay.vacuumCoords[1];
+            InnerTile centerInnerTile = HouseLayout.GetInnerTileFromCoordinates(vacuumX, vacuumY);
+            SolidBrush brush = new SolidBrush(Color.Yellow);
+
+            for (int i = centerInnerTile.x - InnerTile.innerTileSideLength; i <= centerInnerTile.x + InnerTile.innerTileSideLength; i += InnerTile.innerTileSideLength)
+            {
+                for (int j = centerInnerTile.y - InnerTile.innerTileSideLength; j <= centerInnerTile.y + InnerTile.innerTileSideLength; j += InnerTile.innerTileSideLength)
+                {
+                    canvasEditor.FillRectangle(brush, i, j, InnerTile.innerTileSideLength, InnerTile.innerTileSideLength);
+                }
+            }
+
+            brush = new SolidBrush(Color.Aqua);
+            canvasEditor.FillRectangle(brush, centerInnerTile.x, centerInnerTile.y, InnerTile.innerTileSideLength, InnerTile.innerTileSideLength);
+        }
+
+        /// <summary>
         /// Fills in a tile on the floorplan grid
         /// </summary>
         /// <param name="rowIndex"> Index of chosen row </param>
@@ -182,6 +234,32 @@ namespace VacuumSim.UI.FloorplanGraphics
             canvasEditor.DrawLine(penColor, p3, p4);
             canvasEditor.DrawLine(penColor, p4, p1);
         }
+
+        /// <summary>
+        /// Draws an inner tile.
+        /// Just used for testing purposes.
+        /// </summary>
+        /// <param name="parentColIndex"> Index of column </param>
+        /// <param name="parentRowIndex"> Index of row </param>
+        /// <param name="innerColIndex"> Index of inner tile column </param>
+        /// <param name="innerRowIndex"> Index of inner tile row </param>
+        /// <param name="penColor"> Pen color </param>
+        /// <param name="canvasEditor"> Graphics object to edit FloorCanvas </param>
+        private static void DrawInnerTileOutline(int parentColIndex, int parentRowIndex, int innerColIndex, int innerRowIndex, Pen penColor, Graphics canvasEditor)
+        {
+            // Get the coordinates of each tile corner
+            Point p1 = new Point(FloorplanLayout.tileSideLength * parentColIndex + InnerTile.innerTileSideLength * innerColIndex, FloorplanLayout.tileSideLength * parentRowIndex + InnerTile.innerTileSideLength * innerRowIndex);
+            Point p2 = new Point(FloorplanLayout.tileSideLength * parentColIndex + InnerTile.innerTileSideLength * innerColIndex + InnerTile.innerTileSideLength, FloorplanLayout.tileSideLength * parentRowIndex + InnerTile.innerTileSideLength * innerRowIndex);
+            Point p3 = new Point(FloorplanLayout.tileSideLength * parentColIndex + InnerTile.innerTileSideLength * innerColIndex + InnerTile.innerTileSideLength, FloorplanLayout.tileSideLength * parentRowIndex + InnerTile.innerTileSideLength * innerRowIndex + InnerTile.innerTileSideLength);
+            Point p4 = new Point(FloorplanLayout.tileSideLength * parentColIndex + InnerTile.innerTileSideLength * innerColIndex, FloorplanLayout.tileSideLength * parentRowIndex + InnerTile.innerTileSideLength * innerRowIndex + InnerTile.innerTileSideLength);
+
+            // Draw the tile
+            canvasEditor.DrawLine(penColor, p1, p2);
+            canvasEditor.DrawLine(penColor, p2, p3);
+            canvasEditor.DrawLine(penColor, p3, p4);
+            canvasEditor.DrawLine(penColor, p4, p1);
+        }
+
 
         /// <summary>
         /// Updates floorplan after the user changes the house width.
@@ -408,12 +486,12 @@ namespace VacuumSim.UI.FloorplanGraphics
         /// </summary>
         /// <param name="HouseLayout"> The floorplan layout for the actual house </param>
         /// <param name="VacDisplay"> The display of the vacuum onto the canvas </param>
-        public static void AttemptPlaceVacuum(FloorplanLayout HouseLayout, VacuumDisplay VacDisplay)
+        public static void AttemptPlaceVacuum(FloorplanLayout HouseLayout, Vacuum ActualVacuumData)
         {
             vacuumPlacingLocationIsValid = true; // Initially set to true, could get changed if vacuum is in invalid position
 
             // Get center tile and its (x, y) indices
-            Tile tileContainingVacuumCenter = HouseLayout.GetTileFromCoordinates((int)VacDisplay.vacuumCoords[0], (int)VacDisplay.vacuumCoords[1]);
+            Tile tileContainingVacuumCenter = HouseLayout.GetTileFromCoordinates((int)ActualVacuumData.VacuumCoords[0], (int)ActualVacuumData.VacuumCoords[1]);
 
             int[] centerTileIndices = FloorplanLayout.GetTileIndices(tileContainingVacuumCenter.x, tileContainingVacuumCenter.y);
 
@@ -451,21 +529,21 @@ namespace VacuumSim.UI.FloorplanGraphics
                 if (tile.obstacle == ObstacleType.Wall || tile.obstacle == ObstacleType.Chest) // Check for circle intersection with line
                 {
                     // Will get set to the coordinates of an edge or stay the same
-                    float testX = VacDisplay.vacuumCoords[0];
-                    float testY = VacDisplay.vacuumCoords[1];
+                    float testX = ActualVacuumData.VacuumCoords[0];
+                    float testY = ActualVacuumData.VacuumCoords[1];
 
-                    if (VacDisplay.vacuumCoords[0] < tile.x) // Vacuum's center is to the left of the left vertical tile line
+                    if (ActualVacuumData.VacuumCoords[0] < tile.x) // Vacuum's center is to the left of the left vertical tile line
                         testX = tile.x;
-                    else if (VacDisplay.vacuumCoords[0] > tile.x + lenTile) // Vacuum's center is to the right of the right vertical tile line
+                    else if (ActualVacuumData.VacuumCoords[0] > tile.x + lenTile) // Vacuum's center is to the right of the right vertical tile line
                         testX = tile.x + lenTile;
 
-                    if (VacDisplay.vacuumCoords[1] < tile.y) // Vacuum's center is above the top horizontal tile line
+                    if (ActualVacuumData.VacuumCoords[1] < tile.y) // Vacuum's center is above the top horizontal tile line
                         testY = tile.y;
-                    else if (VacDisplay.vacuumCoords[1] > tile.y + lenTile) // Vacuum's center is below the bottom horizontal line
+                    else if (ActualVacuumData.VacuumCoords[1] > tile.y + lenTile) // Vacuum's center is below the bottom horizontal line
                         testY = tile.y + lenTile;
 
-                    float distX = VacDisplay.vacuumCoords[0] - testX;
-                    float distY = VacDisplay.vacuumCoords[1] - testY;
+                    float distX = ActualVacuumData.VacuumCoords[0] - testX;
+                    float distY = ActualVacuumData.VacuumCoords[1] - testY;
                     float distance = (float)Math.Sqrt((distX * distX) + (distY * distY));
 
                     if (distance <= vacRadius)
@@ -478,7 +556,7 @@ namespace VacuumSim.UI.FloorplanGraphics
                     // Iterate through each chair/table leg coordinate pair and check for collision with any of the legs
                     for (int i = 0; i < 4; i++)
                     {
-                        double sumCircleCenterDistSquared = Math.Pow(VacDisplay.vacuumCoords[0] - chairOrTableLegCoords[i, 0], 2) + Math.Pow(VacDisplay.vacuumCoords[1] - chairOrTableLegCoords[i, 1], 2);
+                        double sumCircleCenterDistSquared = Math.Pow(ActualVacuumData.VacuumCoords[0] - chairOrTableLegCoords[i, 0], 2) + Math.Pow(ActualVacuumData.VacuumCoords[1] - chairOrTableLegCoords[i, 1], 2);
 
                         // Check if distance between circle centers is between the sum and difference of their radii
                         // If so, the circles intersect

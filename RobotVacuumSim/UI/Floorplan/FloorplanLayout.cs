@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using VacuumSim.UI.Floorplan;
 
 namespace VacuumSim
 {
@@ -273,6 +274,22 @@ namespace VacuumSim
         }
 
         /// <summary>
+        /// Returns an InnerTile based on passed in coordinates of FloorCanvas
+        /// </summary>
+        /// <param name="x"> X Coordinate in FloorCanvas </param>
+        /// <param name="y"> Y coordinate in FloorCanvas </param>
+        /// <returns> The requested InnerTile object </returns>
+        public InnerTile GetInnerTileFromCoordinates(int x, int y)
+        {
+            Tile affectedTile = GetTileFromCoordinates(x, y);
+
+            int innerTileXIndex = (x - affectedTile.x) / InnerTile.innerTileSideLength;
+            int innerTileYIndex = (y - affectedTile.y) / InnerTile.innerTileSideLength;
+
+            return affectedTile.innerTiles[innerTileXIndex, innerTileYIndex];
+        }
+
+        /// <summary>
         /// Sets the obstacles for all necessary inner tiles to get used in the simulation for cleaning and collision detection
         /// </summary>
         public void SetInnerTileObstacles()
@@ -317,6 +334,38 @@ namespace VacuumSim
                     floorLayout[i, j].SetAllInnerTilesToFloorTiles();
                 }
             }
+        }
+
+        /// <summary>
+        /// Gets every inner tile currently being cleaned by the vacuum whiskers
+        /// This consists of every inner tile surrounding the center inner tile which contains the center-point of the vacuum
+        /// </summary>
+        /// <param name="VacDisplay"> The display of the vacuum in the simulation </param>
+        /// <returns> The list of 8 inner tiles getting cleaned by the vacuum's whiskers </returns>
+        public List<InnerTile> GetInnerTilesBeingCleanedByWhiskers(VacuumDisplay VacDisplay)
+        {
+            InnerTile centerInnerTile = GetInnerTileBeingCleanedByVacuum(VacDisplay);
+            List<InnerTile> retInnerTiles = new List<InnerTile>();
+
+            for (int i = centerInnerTile.x - InnerTile.innerTileSideLength; i <= centerInnerTile.x + InnerTile.innerTileSideLength; i += InnerTile.innerTileSideLength)
+            {
+                for (int j = centerInnerTile.y - InnerTile.innerTileSideLength; j <= centerInnerTile.y + InnerTile.innerTileSideLength; j += InnerTile.innerTileSideLength)
+                {
+                    retInnerTiles.Add(GetInnerTileFromCoordinates(i, j));
+                }
+            }
+
+            return retInnerTiles;
+        }
+
+        /// <summary>
+        /// Gets the inner tile currently being cleaned by the vacuum
+        /// </summary>
+        /// <param name="VacDisplay"> The display of the vacuum in the simulation</param>
+        /// <returns> The inner tile currently being cleaned by the vacuum </returns>
+        public InnerTile GetInnerTileBeingCleanedByVacuum(VacuumDisplay VacDisplay)
+        {
+            return GetInnerTileFromCoordinates((int)VacDisplay.vacuumCoords[0], (int)VacDisplay.vacuumCoords[1]);
         }
 
         /* Returns a 'hashed' number to give an ID a floorplan

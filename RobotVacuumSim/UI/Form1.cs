@@ -10,6 +10,8 @@ using System.Windows.Forms;
 using System.Reflection;
 using VacuumSim.Sim;
 using VacuumSim.UI.FloorplanGraphics;
+using VacuumSim.Components;
+using VacuumSim.UI.Floorplan;
 
 namespace VacuumSim
 {
@@ -30,6 +32,9 @@ namespace VacuumSim
         private List<string> SimulationSpeeds = new List<string> { "1x", "5x", "50x" };
         private FloorplanLayout HouseLayout;
         private VacuumDisplay VacDisplay;
+        private Vacuum ActualVacuumData;
+        private List<InnerTile> curInnerTilesWhiskersAreCleaning = new List<InnerTile>();
+        private InnerTile curInnerTileVacuumIsCleaning;
 
         /// <summary>
         /// Initializes the algorithm selector to allow for choosing an algorithm type as specified by the PathAlgorithm enum.
@@ -66,6 +71,7 @@ namespace VacuumSim
             HouseLayout = new FloorplanLayout();
             FloorCanvasDesigner.FloorplanHouseDesigner = new FloorplanLayout();
             VacDisplay = new VacuumDisplay();
+            ActualVacuumData = new Vacuum();
 
             // Enable double buffering for FloorCanvas
             this.DoubleBuffered = true;
@@ -201,11 +207,13 @@ namespace VacuumSim
         private void VacuumEfficiencySlider_Scroll(object sender, EventArgs e)
         {
             VacuumEfficiencyValueLabel.Text = VacuumEfficiencySlider.Value + "%";
+            ActualVacuumData.VacuumEfficiency = VacuumEfficiencySlider.Value;
         }
 
         private void WhiskerEfficiencySlider_Scroll(object sender, EventArgs e)
         {
             WhiskersEfficiencyValueLabel.Text = WhiskersEfficiencySlider.Value + "%";
+            ActualVacuumData.WhiskerEfficiency = WhiskersEfficiencySlider.Value;
         }
 
         private void ShowInstructionsButton_Click(object sender, EventArgs e)
@@ -358,7 +366,10 @@ namespace VacuumSim
             FloorCanvasDesigner.SetAntiAliasing(canvasEditor);
             FloorCanvasDesigner.DisplayFloorCovering(canvasEditor, HouseLayout, SelectedFloorType);
             FloorCanvasDesigner.PaintChairAndTableBackgrounds(canvasEditor, HouseLayout);
+            
             FloorCanvasDesigner.DrawVacuum(canvasEditor, VacDisplay);
+            if (Simulation.simStarted) FloorCanvasDesigner.PaintInnerTilesGettingCleaned(canvasEditor, HouseLayout, VacDisplay); // testing purposes
+            //if (Simulation.simStarted) FloorCanvasDesigner.DrawInnerTileGridLines(canvasEditor, HouseLayout); // testing purposes
             FloorCanvasDesigner.DrawFloorplan(canvasEditor, HouseLayout, VacDisplay);
         }
 
@@ -405,10 +416,12 @@ namespace VacuumSim
                 FloorCanvasDesigner.currentlyPlacingVacuum = true;
 
                 // Set the current vacuum coordinates to the coordinates clicked by the user
-                VacDisplay.vacuumCoords[0] = canvasCoords.X;
-                VacDisplay.vacuumCoords[1] = canvasCoords.Y;
+                ActualVacuumData.VacuumCoords[0] = canvasCoords.X;
+                ActualVacuumData.VacuumCoords[1] = canvasCoords.Y;
 
-                FloorCanvasDesigner.AttemptPlaceVacuum(HouseLayout, VacDisplay);
+                VacDisplay.CenterVacuumDisplay(ActualVacuumData.VacuumCoords, HouseLayout); // Also, center the vacuum display within the correct inner tile
+
+                FloorCanvasDesigner.AttemptPlaceVacuum(HouseLayout, ActualVacuumData);
             }
             else if (FloorCanvasDesigner.currentlyAddingDoorway) // User currently needs to add a doorway to the room they just placed
             {
@@ -511,16 +524,45 @@ namespace VacuumSim
 
         private void VacuumBodyTimer_Tick(object sender, EventArgs e)
         {
-            // TO-DO: Calculate next (x, y) position of vacuum based on selected algorithm (backend)
+            // Get the actual coordinates of the new vacuum position
+            ActualVacuumData.VacuumCoords[0] += FloorCanvasCalculator.GetDistanceTraveledPerFrame(VacDisplay.vacuumSpeed) * (float)Math.Cos((Math.PI * VacDisplay.vacuumHeading) / 180);
+            ActualVacuumData.VacuumCoords[1] += FloorCanvasCalculator.GetDistanceTraveledPerFrame(VacDisplay.vacuumSpeed) * (float)Math.Sin((Math.PI * VacDisplay.vacuumHeading) / 180);
 
-            // Animating the vacuum to go in a circle (change this to move the vacuum however you'd like)
-            VacDisplay.vacuumCoords[0] += FloorCanvasCalculator.GetDistanceTraveledPerFrame(VacDisplay.vacuumSpeed) * (float)Math.Cos((Math.PI * VacDisplay.vacuumHeading) / 180);
-            VacDisplay.vacuumCoords[1] += FloorCanvasCalculator.GetDistanceTraveledPerFrame(VacDisplay.vacuumSpeed) * (float)Math.Sin((Math.PI * VacDisplay.vacuumHeading) / 180);
+            // Update the vacuum display's coordinates based on the actual coordinates just calculated. The vacuum display's centerpoint will get centered within an inner tile
+            VacDisplay.CenterVacuumDisplay(ActualVacuumData.VacuumCoords, HouseLayout);
 
-            VacDisplay.vacuumHeading = (VacDisplay.vacuumHeading + 45) % 360;
+            // Get the inner tile that might get cleaned by the vacuum and the other 8 inner tiles that might get cleaned by the whiskers
+            InnerTile possibleInnerTileBeingCleanedByVacuum = HouseLayout.GetInnerTileBeingCleanedByVacuum(VacDisplay);
+            List<InnerTile> possibleInnerTilesBeingCleanedByWhiskers = HouseLayout.GetInnerTilesBeingCleanedByWhiskers(VacDisplay);
+
+            // Iterate through each inner 
+            foreach (InnerTile innerTile in possibleInnerTilesBeingCleanedByWhiskers)
+            {
+
+            }
+
+            // Check if possible inner tile is currently being cleaned by the vacuum
+            // If not, clean this inner tile and set it as the current inner tile being cleaned by the vacuum
+            if (curInnerTileVacuumIsCleaning != possibleInnerTileBeingCleanedByVacuum) // New tile
+            {
+                possibleInnerTileBeingCleanedByVacuum.CleanTile(ActualVacuumData.VacuumEfficiency);
+                curInnerTileVacuumIsCleaning = possibleInnerTileBeingCleanedByVacuum;
+            }
+
+            
+
+            // Iterate through each possible inner tile and check if it is currently being cleaned by the whiskers
+            // If not, clean the inner tile and add it to the list
+            foreach (InnerTile innerTile in possibleInnerTilesBeingCleanedByWhiskers)
+            {
+                if (!(curInnerTilesWhiskersAreCleaning.Contains(innerTile)))
+                {
+                    innerTile.CleanTile(ActualVacuumData.WhiskerEfficiency);
+                    curInnerTilesWhiskersAreCleaning.Add(innerTile);
+                }
+            }
 
             FloorCanvasCalculator.UpdateSimulationData(VacDisplay);
-
             BatteryLeftLabel.Text = FloorCanvasCalculator.GetBatteryRemainingText(VacDisplay);
             SimTimeElapsedLabel.Text = FloorCanvasCalculator.GetTimeElapsedText();
 
@@ -590,6 +632,7 @@ namespace VacuumSim
             Simulation.simTimeElapsed = 0;
             FloorCanvasCalculator.frameCount = 0;
             VacDisplay.batterySecondsRemaining = (int)RobotBatteryLifeSelector.Value * 60;
+            VacDisplay.CenterVacuumDisplay(ActualVacuumData.VacuumCoords, HouseLayout);
 
             HouseLayout.SetInnerTileObstacles();
         }
