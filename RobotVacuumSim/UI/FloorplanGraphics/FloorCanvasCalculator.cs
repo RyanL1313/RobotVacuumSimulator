@@ -15,7 +15,7 @@ namespace VacuumSim.UI.FloorplanGraphics
     public class FloorCanvasCalculator
     {
         public static int frameCount { get; set; } = 0; // Count of frames displayed during a simulation
-        public const int framesPerSimSecond = 4; // Number of frames per simulation second
+        public const int framesPerSimSecond = 5; // Number of frames per simulation second
 
         /// <summary>
         /// Calculates the endpoints of the vacuum's whiskers

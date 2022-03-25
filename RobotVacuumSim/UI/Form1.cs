@@ -323,8 +323,8 @@ namespace VacuumSim
             FloorplanFileReader.LoadTileGridData("../../../UI/Floorplan/SavedFloorplan.txt", HouseLayout);
 
             // Set the house width and height selector values to the size of the newly-loaded floorplan
-            HouseWidthSelector.Value = HouseLayout.numTilesPerRow * 2;
-            HouseHeightSelector.Value = HouseLayout.numTilesPerCol * 2;
+            HouseWidthSelector.Value = HouseLayout.numTilesPerRow * 2 - 4;
+            HouseHeightSelector.Value = HouseLayout.numTilesPerCol * 2 - 4;
 
             FloorCanvas.Invalidate();
         }

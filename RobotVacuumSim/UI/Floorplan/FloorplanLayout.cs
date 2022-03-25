@@ -21,9 +21,10 @@ namespace VacuumSim
         public int numTilesPerRow { get; set; } = 27; // Default value
         public int numTilesPerCol { get; set; } = 22; // Default value
 
-        public const int tileSideLength = 15; // Pixel length of each side of the tiles
+        public const int tileSideLength = 18; // Pixel length of each side of the tiles
         public Tile[,] floorLayout { get; set; } // 2D array of tiles
         public bool gridLinesOn { get; set; } = true; // Should grid lines currently be displaying?
+        public const bool subGridLinesOn = false; // Should the sub-grid lines currently be showing (just used for testing purposes if so)?
         public int numObstacleGroups = 0; // Amount of obstacle groups currently drawn to the canvas
         public int numRooms = 0; // Number of rooms present in the house
         public const float chairAndTableLegRadius = (2.0f * tileSideLength) / 24.0f; // Chairs/Tables will have a 2 inch radius (4 inch diameter)
@@ -31,6 +32,8 @@ namespace VacuumSim
         public const int LR = 1; // Used to access lower right leg of chair/table
         public const int UR = 2; // Used to access upper right leg of chair/table
         public const int UL = 3; // Used to access upper left leg of chair/table
+        public int totalFloorplanArea = 0; // Total area of the floorplan (including covered-up sub-tiles)
+        public int totalCleanableFloorplanArea = 0; // Total area of the floorplan that can be cleaned
 
         /* Feel free to remove this gigantic comment block later. */
         /* Creates the 2D array of tiles and sets the tiles' default attributes */
@@ -41,21 +44,32 @@ namespace VacuumSim
         /* tile based on the row and column and another helper method */
         /* (GetTileFromCoordinates) to easily access a tile based on the coordinates */
         /* clicked on by the user. */
-
         public FloorplanLayout()
         {
             floorLayout = new Tile[maxTilesPerRow, maxTilesPerCol]; // Create the 2D array of tiles
 
             // Initialize the grid with blank tiles and the coordinates of those tiles
             for (int i = 0; i < maxTilesPerRow; i++)
+            {
                 for (int j = 0; j < maxTilesPerCol; j++)
-                    floorLayout[i, j] = new Tile(i * tileSideLength, j * tileSideLength, ObstacleType.Floor, 1.0f);
+                {
+                    floorLayout[i, j] = new Tile(i * tileSideLength, j * tileSideLength, ObstacleType.Floor);
+                    floorLayout[i, j].InitializeSubTiles(i * tileSideLength, j * tileSideLength, ObstacleType.Floor, 1.0f); // Initialize this tile's sub-tiles
+                }
+            }
 
             // Initialize the boundary wall tiles
             for (int i = 0; i < numTilesPerRow; i++)
+            {
                 for (int j = 0; j < numTilesPerCol; j++)
+                {
                     if (i == 0 || j == 0 || i == numTilesPerRow - 1 || j == numTilesPerCol - 1) // Boundary wall tile
+                    {
                         floorLayout[i, j] = new Tile(i * tileSideLength, j * tileSideLength, ObstacleType.Wall);
+                        floorLayout[i, j].InitializeSubTiles(i * tileSideLength, j * tileSideLength, ObstacleType.Floor, 1.0f); // Initialize this tile's sub-tiles
+                    }
+                }
+            }
         }
 
         /* Returns the Tile object by requested row and column. */

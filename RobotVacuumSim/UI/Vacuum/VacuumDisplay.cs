@@ -8,7 +8,7 @@ namespace VacuumSim
 {
     public class VacuumDisplay
     {
-        public const float vacuumDiameter = (12.8f * FloorplanLayout.tileSideLength) / 24.0f; // Ratio of inches compared to actual drawing size Remove later - access from VacuumController
+        public const float vacuumDiameter = (12.0f * FloorplanLayout.tileSideLength) / 24.0f; // Ratio of inches compared to actual drawing size Remove later - access from VacuumController
         public float[] vacuumCoords = { 200.0f, 30.0f }; // (x, y) coordinates of vacuum
         public int vacuumHeading { get; set; } = 0; // Angle vacuum is traveling at (think of unit circle, so 0 is to the right)
         public int whiskersHeadingWRTVacuum { get; set; } = 30; // Angle of whiskers CW from vacuum heading
