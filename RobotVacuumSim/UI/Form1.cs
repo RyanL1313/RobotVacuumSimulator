@@ -334,6 +334,9 @@ namespace VacuumSim
         private void StartSimulationButton_Click(object sender, EventArgs e)
         {
             SetInitialSimulationValues();
+
+            // Store simulation start time for the simulation report
+            Simulation.simulationStartTime = DateTime.Now.ToString("F");
         }
 
         private void StopSimulationButton_Click(object sender, EventArgs e)
@@ -631,7 +634,7 @@ namespace VacuumSim
             FloorCanvas.Invalidate();
         }
 
-        private void GenerateReport()
+        private void GenerateReport(object sender, EventArgs e)
         {
             SimulationReport rep = new SimulationReport
             {
@@ -646,7 +649,7 @@ namespace VacuumSim
                 RobotPathingAlgorithm = RobotPathAlgorithmSelector.Text,
                 RobotSpeedInchesPerSecond = (int)RobotSpeedSelector.Value,
                 SimulatedSeconds = 999999,
-                SimulationStartTime = "IMPLEMENT",
+                SimulationStartTime = Simulation.simulationStartTime,
             };
 
             string fileName = "SimulationReport.json";

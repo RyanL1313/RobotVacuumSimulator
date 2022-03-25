@@ -98,6 +98,7 @@ namespace VacuumSim
             this.FloorCanvas = new System.Windows.Forms.PictureBox();
             this.VacuumBodyTimer = new System.Windows.Forms.Timer(this.components);
             this.VacuumWhiskersTimer = new System.Windows.Forms.Timer(this.components);
+            this.button1 = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.LeftPane)).BeginInit();
             this.LeftPane.Panel1.SuspendLayout();
             this.LeftPane.Panel2.SuspendLayout();
@@ -408,15 +409,16 @@ namespace VacuumSim
             // LoadSaveFloorplanGroupBox
             // 
             this.LoadSaveFloorplanGroupBox.AutoSize = true;
+            this.LoadSaveFloorplanGroupBox.Controls.Add(this.button1);
             this.LoadSaveFloorplanGroupBox.Controls.Add(this.LoadSavedFloorplanButton);
             this.LoadSaveFloorplanGroupBox.Controls.Add(this.SaveFloorplanButton);
             this.LoadSaveFloorplanGroupBox.Controls.Add(this.LoadDefaultFloorplanButton);
             this.LoadSaveFloorplanGroupBox.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.LoadSaveFloorplanGroupBox.Location = new System.Drawing.Point(0, 604);
+            this.LoadSaveFloorplanGroupBox.Location = new System.Drawing.Point(0, 596);
             this.LoadSaveFloorplanGroupBox.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.LoadSaveFloorplanGroupBox.Name = "LoadSaveFloorplanGroupBox";
             this.LoadSaveFloorplanGroupBox.Padding = new System.Windows.Forms.Padding(3, 2, 3, 2);
-            this.LoadSaveFloorplanGroupBox.Size = new System.Drawing.Size(400, 88);
+            this.LoadSaveFloorplanGroupBox.Size = new System.Drawing.Size(400, 96);
             this.LoadSaveFloorplanGroupBox.TabIndex = 13;
             this.LoadSaveFloorplanGroupBox.TabStop = false;
             this.LoadSaveFloorplanGroupBox.Text = "Load/Save";
@@ -1092,6 +1094,16 @@ namespace VacuumSim
             this.VacuumWhiskersTimer.Interval = 10;
             this.VacuumWhiskersTimer.Tick += new System.EventHandler(this.VacuumWhiskersTimer_Tick);
             // 
+            // button1
+            // 
+            this.button1.Location = new System.Drawing.Point(270, 52);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(108, 23);
+            this.button1.TabIndex = 17;
+            this.button1.Text = "button1";
+            this.button1.UseVisualStyleBackColor = true;
+            this.button1.Click += new System.EventHandler(this.GenerateReport);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
@@ -1214,6 +1226,7 @@ namespace VacuumSim
         private System.Windows.Forms.Label PlaceVacuumInstructionsLabel;
         private System.Windows.Forms.GroupBox ObstaclesGroupBox;
         private System.Windows.Forms.Label CreateDoorwayInstructionsLabel;
+        private System.Windows.Forms.Button button1;
     }
 }
 
