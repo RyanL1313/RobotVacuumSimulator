@@ -1029,7 +1029,7 @@ namespace VacuumSim
             this.SimTimeElapsedLabel.AutoSize = true;
             this.SimTimeElapsedLabel.BackColor = System.Drawing.SystemColors.Window;
             this.SimTimeElapsedLabel.Font = new System.Drawing.Font("Georgia", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.SimTimeElapsedLabel.Location = new System.Drawing.Point(161, 786);
+            this.SimTimeElapsedLabel.Location = new System.Drawing.Point(161, 792);
             this.SimTimeElapsedLabel.Name = "SimTimeElapsedLabel";
             this.SimTimeElapsedLabel.Size = new System.Drawing.Size(69, 16);
             this.SimTimeElapsedLabel.TabIndex = 4;
@@ -1040,7 +1040,7 @@ namespace VacuumSim
             this.SimTimeElapsedTitleLabel.AutoSize = true;
             this.SimTimeElapsedTitleLabel.BackColor = System.Drawing.SystemColors.Window;
             this.SimTimeElapsedTitleLabel.Font = new System.Drawing.Font("Georgia", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.SimTimeElapsedTitleLabel.Location = new System.Drawing.Point(3, 786);
+            this.SimTimeElapsedTitleLabel.Location = new System.Drawing.Point(3, 792);
             this.SimTimeElapsedTitleLabel.Name = "SimTimeElapsedTitleLabel";
             this.SimTimeElapsedTitleLabel.Size = new System.Drawing.Size(163, 16);
             this.SimTimeElapsedTitleLabel.TabIndex = 3;
@@ -1051,7 +1051,7 @@ namespace VacuumSim
             this.BatteryLeftLabel.AutoSize = true;
             this.BatteryLeftLabel.BackColor = System.Drawing.SystemColors.Window;
             this.BatteryLeftLabel.Font = new System.Drawing.Font("Georgia", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.BatteryLeftLabel.Location = new System.Drawing.Point(84, 767);
+            this.BatteryLeftLabel.Location = new System.Drawing.Point(84, 773);
             this.BatteryLeftLabel.Name = "BatteryLeftLabel";
             this.BatteryLeftLabel.Size = new System.Drawing.Size(84, 16);
             this.BatteryLeftLabel.TabIndex = 2;
@@ -1062,7 +1062,7 @@ namespace VacuumSim
             this.BatteryLeftTitleLabel.AutoSize = true;
             this.BatteryLeftTitleLabel.BackColor = System.Drawing.SystemColors.Window;
             this.BatteryLeftTitleLabel.Font = new System.Drawing.Font("Georgia", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.BatteryLeftTitleLabel.Location = new System.Drawing.Point(3, 767);
+            this.BatteryLeftTitleLabel.Location = new System.Drawing.Point(3, 773);
             this.BatteryLeftTitleLabel.Name = "BatteryLeftTitleLabel";
             this.BatteryLeftTitleLabel.Size = new System.Drawing.Size(84, 16);
             this.BatteryLeftTitleLabel.TabIndex = 1;
