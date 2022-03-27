@@ -156,8 +156,8 @@ namespace VacuumSim.UI.FloorplanGraphics
                             Tile theTile = HouseLayout.floorLayout[i, j];
                             InnerTile theInnerTile = HouseLayout.GetInnerTileFromCoordinates(theTile.x + k * InnerTile.innerTileSideLength, theTile.y + l * InnerTile.innerTileSideLength);
 
-                            float blueIntensity = theInnerTile.dirtiness / 100.0f * 40.0f;
-                            float redIntensity = 40.0f - (theInnerTile.dirtiness / 100.0f * 40.0f);
+                            float blueIntensity = theInnerTile.dirtiness / 100.0f * 60.0f;
+                            float redIntensity = 60.0f - (theInnerTile.dirtiness / 100.0f * 60.0f);
                             innerTileColor = Color.FromArgb((int)redIntensity, 0, (int)blueIntensity);
                             heatMapPainter = new SolidBrush(innerTileColor);
 

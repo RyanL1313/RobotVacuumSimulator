@@ -15,6 +15,7 @@ namespace VacuumSim.UI.Floorplan
         public float dirtiness;
         private float dirtyThreshold = 0.05f;
         public const int innerTileSideLength = 3; // Each inner tile's side is 3 pixels (4 inches) long
+        public string uniqueID = Guid.NewGuid().ToString(); // To distinguish this inner tile from other ones
 
         public InnerTile(int x, int y, ObstacleType obstacle, float dirtiness)
         {
@@ -22,7 +23,6 @@ namespace VacuumSim.UI.Floorplan
             this.y = y;
             this.obstacle = obstacle;
             this.dirtiness = dirtiness;
-
             // Enforce given dirtiness is between 0-100 (percentage)
             if (dirtiness > 100.0f)
             {

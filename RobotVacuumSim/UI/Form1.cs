@@ -35,6 +35,7 @@ namespace VacuumSim
         private Vacuum ActualVacuumData;
         private List<InnerTile> curInnerTilesWhiskersAreCleaning = new List<InnerTile>();
         private InnerTile curInnerTileVacuumIsCleaning;
+        private FloorCleaner floorCleaner = new FloorCleaner();
 
         /// <summary>
         /// Initializes the algorithm selector to allow for choosing an algorithm type as specified by the PathAlgorithm enum.
@@ -424,7 +425,7 @@ namespace VacuumSim
 
                 FloorCanvasDesigner.DrawVacuum(canvasEditor, VacDisplay);
                 if (Simulation.simStarted) FloorCanvasDesigner.PaintInnerTilesGettingCleaned(canvasEditor, HouseLayout, VacDisplay); // testing purposes
-                                                                                                                                     //FloorCanvasDesigner.DrawInnerTileGridLines(canvasEditor, HouseLayout); // testing purposes
+                //FloorCanvasDesigner.DrawInnerTileGridLines(canvasEditor, HouseLayout); // testing purposes
                 FloorCanvasDesigner.DrawFloorplan(canvasEditor, HouseLayout, VacDisplay);
             }
         }
@@ -587,7 +588,7 @@ namespace VacuumSim
             // Update the vacuum display's coordinates based on the actual coordinates just calculated. The vacuum display's centerpoint will get centered within an inner tile
             VacDisplay.CenterVacuumDisplay(ActualVacuumData.VacuumCoords, HouseLayout);
 
-            // Get the inner tile that might get cleaned by the vacuum and the other 8 inner tiles that might get cleaned by the whiskers
+            // Get the inner tile that might get cleaned by the vacuum and the other 3 inner tiles that might get cleaned by the whiskers
             InnerTile possibleInnerTileBeingCleanedByVacuum = HouseLayout.GetInnerTileBeingCleanedByVacuum(VacDisplay);
             List<InnerTile> possibleInnerTilesBeingCleanedByWhiskers = HouseLayout.GetInnerTilesBeingCleanedByWhiskers(VacDisplay);
 
@@ -599,24 +600,8 @@ namespace VacuumSim
                 VacDisplay.vacuumHeading = (VacDisplay.vacuumHeading + 180) % 360; // Start moving in opposite direction (Note: I just have this here for my "straight line" algorithm I'm using for proof of concept)
             }
 
-            // Check if possible inner tile is currently being cleaned by the vacuum
-            // If not, clean this inner tile and set it as the current inner tile being cleaned by the vacuum
-            if (curInnerTileVacuumIsCleaning != possibleInnerTileBeingCleanedByVacuum) // New tile
-            {
-                possibleInnerTileBeingCleanedByVacuum.CleanTile(ActualVacuumData.VacuumEfficiency);
-                curInnerTileVacuumIsCleaning = possibleInnerTileBeingCleanedByVacuum;
-            }
-            
-            // Iterate through each possible inner tile and check if it is currently being cleaned by the whiskers
-            // If not, clean the inner tile and add it to the list
-            foreach (InnerTile innerTile in possibleInnerTilesBeingCleanedByWhiskers)
-            {
-                if (!(curInnerTilesWhiskersAreCleaning.Contains(innerTile)))
-                {
-                    innerTile.CleanTile(ActualVacuumData.WhiskerEfficiency);
-                    curInnerTilesWhiskersAreCleaning.Add(innerTile);
-                }
-            }
+            // Clean affected inner tiles
+            floorCleaner.CleanInnerTiles(VacDisplay, ActualVacuumData, possibleInnerTileBeingCleanedByVacuum, possibleInnerTilesBeingCleanedByWhiskers);
 
             FloorCanvasCalculator.UpdateSimulationData(VacDisplay);
             BatteryLeftLabel.Text = FloorCanvasCalculator.GetBatteryRemainingText(VacDisplay);
