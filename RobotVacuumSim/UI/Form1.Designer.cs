@@ -170,7 +170,7 @@ namespace VacuumSim
             this.CreateDoorwayInstructionsLabel.AutoSize = true;
             this.CreateDoorwayInstructionsLabel.Font = new System.Drawing.Font("Elephant", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
             this.CreateDoorwayInstructionsLabel.ForeColor = System.Drawing.Color.Navy;
-            this.CreateDoorwayInstructionsLabel.Location = new System.Drawing.Point(37, 676);
+            this.CreateDoorwayInstructionsLabel.Location = new System.Drawing.Point(41, 659);
             this.CreateDoorwayInstructionsLabel.MaximumSize = new System.Drawing.Size(400, 0);
             this.CreateDoorwayInstructionsLabel.Name = "CreateDoorwayInstructionsLabel";
             this.CreateDoorwayInstructionsLabel.Size = new System.Drawing.Size(387, 36);
@@ -232,7 +232,7 @@ namespace VacuumSim
             this.FinishOrEditFloorplanButton.Name = "FinishOrEditFloorplanButton";
             this.FinishOrEditFloorplanButton.Size = new System.Drawing.Size(108, 22);
             this.FinishOrEditFloorplanButton.TabIndex = 17;
-            this.FinishOrEditFloorplanButton.Text = "Finish Floorplan";
+            this.FinishOrEditFloorplanButton.Text = "Finish Floor Plan";
             this.FinishOrEditFloorplanButton.UseVisualStyleBackColor = true;
             this.FinishOrEditFloorplanButton.Click += new System.EventHandler(this.FinishOrEditFloorplanButton_Click);
             // 
@@ -408,49 +408,48 @@ namespace VacuumSim
             // LoadSaveFloorplanGroupBox
             // 
             this.LoadSaveFloorplanGroupBox.AutoSize = true;
-            this.LoadSaveFloorplanGroupBox.Controls.Add(this.LoadSavedFloorplanButton);
             this.LoadSaveFloorplanGroupBox.Controls.Add(this.SaveFloorplanButton);
             this.LoadSaveFloorplanGroupBox.Controls.Add(this.LoadDefaultFloorplanButton);
-            this.LoadSaveFloorplanGroupBox.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.LoadSaveFloorplanGroupBox.Location = new System.Drawing.Point(0, 721);
+            this.LoadSaveFloorplanGroupBox.Controls.Add(this.LoadSavedFloorplanButton);
+            this.LoadSaveFloorplanGroupBox.Location = new System.Drawing.Point(4, 722);
             this.LoadSaveFloorplanGroupBox.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.LoadSaveFloorplanGroupBox.Name = "LoadSaveFloorplanGroupBox";
             this.LoadSaveFloorplanGroupBox.Padding = new System.Windows.Forms.Padding(3, 2, 3, 2);
-            this.LoadSaveFloorplanGroupBox.Size = new System.Drawing.Size(467, 88);
+            this.LoadSaveFloorplanGroupBox.Size = new System.Drawing.Size(465, 103);
             this.LoadSaveFloorplanGroupBox.TabIndex = 13;
             this.LoadSaveFloorplanGroupBox.TabStop = false;
             this.LoadSaveFloorplanGroupBox.Text = "Load/Save";
             // 
             // LoadSavedFloorplanButton
             // 
-            this.LoadSavedFloorplanButton.Location = new System.Drawing.Point(6, 46);
+            this.LoadSavedFloorplanButton.Location = new System.Drawing.Point(9, 57);
             this.LoadSavedFloorplanButton.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.LoadSavedFloorplanButton.Name = "LoadSavedFloorplanButton";
             this.LoadSavedFloorplanButton.Size = new System.Drawing.Size(152, 22);
             this.LoadSavedFloorplanButton.TabIndex = 16;
-            this.LoadSavedFloorplanButton.Text = "Load Saved Floorplan";
+            this.LoadSavedFloorplanButton.Text = "Load Saved Floor Plan";
             this.LoadSavedFloorplanButton.UseVisualStyleBackColor = true;
             this.LoadSavedFloorplanButton.Click += new System.EventHandler(this.LoadSavedFloorplanButton_Click);
             // 
             // SaveFloorplanButton
             // 
-            this.SaveFloorplanButton.Location = new System.Drawing.Point(353, 46);
+            this.SaveFloorplanButton.Location = new System.Drawing.Point(342, 61);
             this.SaveFloorplanButton.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.SaveFloorplanButton.Name = "SaveFloorplanButton";
             this.SaveFloorplanButton.Size = new System.Drawing.Size(108, 22);
             this.SaveFloorplanButton.TabIndex = 13;
-            this.SaveFloorplanButton.Text = "Save Floorplan";
+            this.SaveFloorplanButton.Text = "Save Floor Plan";
             this.SaveFloorplanButton.UseVisualStyleBackColor = true;
             this.SaveFloorplanButton.Click += new System.EventHandler(this.SaveFloorplanButton_Click);
             // 
             // LoadDefaultFloorplanButton
             // 
-            this.LoadDefaultFloorplanButton.Location = new System.Drawing.Point(7, 20);
+            this.LoadDefaultFloorplanButton.Location = new System.Drawing.Point(9, 31);
             this.LoadDefaultFloorplanButton.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.LoadDefaultFloorplanButton.Name = "LoadDefaultFloorplanButton";
-            this.LoadDefaultFloorplanButton.Size = new System.Drawing.Size(151, 22);
+            this.LoadDefaultFloorplanButton.Size = new System.Drawing.Size(152, 22);
             this.LoadDefaultFloorplanButton.TabIndex = 12;
-            this.LoadDefaultFloorplanButton.Text = "Load Default Floorplan";
+            this.LoadDefaultFloorplanButton.Text = "Load Default Floor Plan";
             this.LoadDefaultFloorplanButton.UseVisualStyleBackColor = true;
             this.LoadDefaultFloorplanButton.Click += new System.EventHandler(this.LoadDefaultFloorplanButton_Click);
             // 
@@ -619,7 +618,7 @@ namespace VacuumSim
             this.FloorplanDesignLabel.Name = "FloorplanDesignLabel";
             this.FloorplanDesignLabel.Size = new System.Drawing.Size(467, 24);
             this.FloorplanDesignLabel.TabIndex = 5;
-            this.FloorplanDesignLabel.Text = "Floorplan Design";
+            this.FloorplanDesignLabel.Text = "Floor Plan Design";
             this.FloorplanDesignLabel.TextAlign = System.Drawing.ContentAlignment.TopCenter;
             // 
             // ControlsPane
@@ -680,8 +679,8 @@ namespace VacuumSim
             this.PlaceVacuumInstructionsLabel.Name = "PlaceVacuumInstructionsLabel";
             this.PlaceVacuumInstructionsLabel.Size = new System.Drawing.Size(380, 54);
             this.PlaceVacuumInstructionsLabel.TabIndex = 21;
-            this.PlaceVacuumInstructionsLabel.Text = "Click and drag on the floorplan to place the vacuum. Once the vacuum is successfu" +
-    "lly placed, you can start the simulation.";
+            this.PlaceVacuumInstructionsLabel.Text = "Click and drag on the floor plan to place the vacuum. Once the vacuum is successf" +
+    "ully placed, you can start the simulation.";
             this.PlaceVacuumInstructionsLabel.Visible = false;
             // 
             // InitialVacuumHeadingLabel
@@ -899,7 +898,7 @@ namespace VacuumSim
             this.LoadSaveSimSettingsGroupBox.Enabled = false;
             this.LoadSaveSimSettingsGroupBox.Location = new System.Drawing.Point(3, 219);
             this.LoadSaveSimSettingsGroupBox.Name = "LoadSaveSimSettingsGroupBox";
-            this.LoadSaveSimSettingsGroupBox.Size = new System.Drawing.Size(380, 87);
+            this.LoadSaveSimSettingsGroupBox.Size = new System.Drawing.Size(474, 87);
             this.LoadSaveSimSettingsGroupBox.TabIndex = 16;
             this.LoadSaveSimSettingsGroupBox.TabStop = false;
             this.LoadSaveSimSettingsGroupBox.Text = "Load/Save";
@@ -1089,7 +1088,7 @@ namespace VacuumSim
             // 
             // VacuumWhiskersTimer
             // 
-            this.VacuumWhiskersTimer.Interval = 10;
+            this.VacuumWhiskersTimer.Interval = 250;
             this.VacuumWhiskersTimer.Tick += new System.EventHandler(this.VacuumWhiskersTimer_Tick);
             // 
             // Form1

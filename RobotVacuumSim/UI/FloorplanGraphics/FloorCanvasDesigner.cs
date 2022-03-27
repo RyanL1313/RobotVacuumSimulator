@@ -26,6 +26,7 @@ namespace VacuumSim.UI.FloorplanGraphics
         public static bool chairTableDrawingModeOn = false; // Is the user currently in chair/table drawing mode?
         public static bool currentlyAddingObstacle = false; // Is the user currently adding an obstacle?
         public static bool successAddingObstacle = true; // Was the previous attempt at adding an obstacle successful?
+        public static bool displayingHeatMap = false; // Are we currently displaying the heatmap?
         public static ObstacleType currentObstacleBeingAdded; // Current obstacle being added
         public static int[] currentIndicesOfSelectedTile = { -1, -1 }; // col, row indices of tile currently selected
         public static FloorplanLayout FloorplanHouseDesigner; // Floorplan that gets used when adding obstacle
@@ -169,14 +170,13 @@ namespace VacuumSim.UI.FloorplanGraphics
             int vacuumX = (int)VacDisplay.vacuumCoords[0];
             int vacuumY = (int)VacDisplay.vacuumCoords[1];
             InnerTile centerInnerTile = HouseLayout.GetInnerTileFromCoordinates(vacuumX, vacuumY);
-            SolidBrush brush = new SolidBrush(Color.Yellow);
 
-            for (int i = centerInnerTile.x - InnerTile.innerTileSideLength; i <= centerInnerTile.x + InnerTile.innerTileSideLength; i += InnerTile.innerTileSideLength)
+            SolidBrush brush = new SolidBrush(Color.Yellow);
+            List<InnerTile> tilesCleanedByWhiskers = HouseLayout.GetInnerTilesBeingCleanedByWhiskers(VacDisplay);
+
+            foreach (InnerTile iTile in tilesCleanedByWhiskers)
             {
-                for (int j = centerInnerTile.y - InnerTile.innerTileSideLength; j <= centerInnerTile.y + InnerTile.innerTileSideLength; j += InnerTile.innerTileSideLength)
-                {
-                    canvasEditor.FillRectangle(brush, i, j, InnerTile.innerTileSideLength, InnerTile.innerTileSideLength);
-                }
+                canvasEditor.FillRectangle(brush, iTile.x, iTile.y, InnerTile.innerTileSideLength, InnerTile.innerTileSideLength);
             }
 
             brush = new SolidBrush(Color.Aqua);
@@ -407,9 +407,9 @@ namespace VacuumSim.UI.FloorplanGraphics
             SolidBrush vacuumBrush;
 
             // Determine brush and pen color
-            if (!currentlyPlacingVacuum) // Not currently placing the vacuum. Draw it magenta
+            if (!currentlyPlacingVacuum) // Not currently placing the vacuum. Draw it magenta and its whiskers medium spring green
             {
-                whiskersPen = new Pen(Color.Magenta);
+                whiskersPen = new Pen(Color.MediumSpringGreen);
                 vacuumBrush = new SolidBrush(Color.Magenta);
             }
             else // Currently placing the vacuum. Will be red or lime green depending on if vacuum is in valid location or not
@@ -429,9 +429,12 @@ namespace VacuumSim.UI.FloorplanGraphics
             FloorCanvasCalculator.CalculateWhiskerCoordinates(VacDisplay);
 
             // Draw vacuum whiskers
-            PointF whiskersStart = new PointF(VacDisplay.whiskersStartingCoords[0], VacDisplay.whiskersStartingCoords[1]);
-            PointF whiskersEnd = new PointF(VacDisplay.whiskersEndingCoords[0], VacDisplay.whiskersEndingCoords[1]);
-            CanvasEditor.DrawLine(whiskersPen, whiskersStart, whiskersEnd);
+            PointF leftWhiskersStart = new PointF(VacDisplay.leftWhiskersStartingCoords[0], VacDisplay.leftWhiskersStartingCoords[1]);
+            PointF leftWhiskersEnd = new PointF(VacDisplay.leftWhiskersEndingCoords[0], VacDisplay.leftWhiskersEndingCoords[1]);
+            PointF rightWhiskersStart = new PointF(VacDisplay.rightWhiskersStartingCoords[0], VacDisplay.rightWhiskersStartingCoords[1]);
+            PointF rightWhiskersEnd = new PointF(VacDisplay.rightWhiskersEndingCoords[0], VacDisplay.rightWhiskersEndingCoords[1]);
+            CanvasEditor.DrawLine(whiskersPen, leftWhiskersStart, leftWhiskersEnd);
+            CanvasEditor.DrawLine(whiskersPen, rightWhiskersStart, rightWhiskersEnd);
 
             // Draw vacuum body
             FillCircle(vacuumBrush, VacuumDisplay.vacuumDiameter / 2, VacDisplay.vacuumCoords[0], VacDisplay.vacuumCoords[1], CanvasEditor);
@@ -685,8 +688,6 @@ namespace VacuumSim.UI.FloorplanGraphics
                             GetGroupIDOfConnectedDoorway(FloorplanHouseDesigner, FloorplanHouseDesigner.floorLayout[i, j]) != FloorplanHouseDesigner.floorLayout[i, j].groupID &&
                             !IsRoomCornerTile(FloorplanHouseDesigner, FloorplanHouseDesigner.floorLayout[i, j]))
                         {
-                            int doorwayGID = GetGroupIDOfConnectedDoorway(FloorplanHouseDesigner, FloorplanHouseDesigner.floorLayout[i, j]);
-
                             FloorplanHouseDesigner.ModifyTileBasedOnIndices(i, j, ObstacleType.Floor);
                         }
                     }     

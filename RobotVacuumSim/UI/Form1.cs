@@ -274,7 +274,7 @@ namespace VacuumSim
                 ObstaclesGroupBox.Enabled = false;
                 FloorCanvasDesigner.eraserModeOn = false;
                 EraserModeButton.Text = "Eraser Mode: OFF";
-                FinishOrEditFloorplanButton.Text = "Edit Floorplan";
+                FinishOrEditFloorplanButton.Text = "Edit Floor Plan";
                 LoadSaveFloorplanGroupBox.Enabled = false;
 
                 // Vacuum widget attributes
@@ -312,7 +312,7 @@ namespace VacuumSim
                 RoomDimensionsGroupBox.Enabled = ObstacleSelector.SelectedIndex == 0;
                 ChairTableDimensionsGroupBox.Enabled = ObstacleSelector.SelectedIndex == 1 || ObstacleSelector.SelectedIndex == 2;
                 LoadSaveFloorplanGroupBox.Enabled = true;
-                FinishOrEditFloorplanButton.Text = "Finish Floorplan";
+                FinishOrEditFloorplanButton.Text = "Finish Floor Plan";
 
                 // Vacuum widget attributes
                 VacuumAttributesLabel.Enabled = false;
@@ -346,8 +346,7 @@ namespace VacuumSim
 
         private void SaveFloorplanButton_Click(object sender, EventArgs e)
         {
-            // Modify this in the future
-            FloorplanFileWriter.SaveTileGridData("../../../UI/Floorplan/SavedFloorplan.txt", HouseLayout);
+            FloorplanFileWriter.SaveTileGridData("../../../UI/Floorplan/SavedFloorPlan.txt", HouseLayout);
         }
 
         private void LoadDefaultFloorplanButton_Click(object sender, EventArgs e)
@@ -355,14 +354,14 @@ namespace VacuumSim
             HouseWidthSelector.Value = 50; // 25 tiles wide (excluding boundary walls)
             HouseHeightSelector.Value = 40; // 20 tiles high (excluding boundary walls)
 
-            FloorplanFileReader.LoadTileGridData("../../../UI/Floorplan/DefaultFloorplan.txt", HouseLayout);
+            FloorplanFileReader.LoadTileGridData("../../../UI/Floorplan/DefaultFloorPlan.txt", HouseLayout);
 
             FloorCanvas.Invalidate(); // Re-trigger paint event
         }
 
         private void LoadSavedFloorplanButton_Click(object sender, EventArgs e)
         {
-            FloorplanFileReader.LoadTileGridData("../../../UI/Floorplan/SavedFloorplan.txt", HouseLayout);
+            FloorplanFileReader.LoadTileGridData("../../../UI/Floorplan/SavedFloorPlan.txt", HouseLayout);
 
             // Set the house width and height selector values to the size of the newly-loaded floorplan
             HouseWidthSelector.Value = HouseLayout.numTilesPerRow * 2 - 4;
@@ -402,8 +401,9 @@ namespace VacuumSim
             FloorCanvasDesigner.PaintChairAndTableBackgrounds(canvasEditor, HouseLayout);
             
             FloorCanvasDesigner.DrawVacuum(canvasEditor, VacDisplay);
-            if (Simulation.simStarted) FloorCanvasDesigner.PaintInnerTilesGettingCleaned(canvasEditor, HouseLayout, VacDisplay); // testing purposes
-            //if (Simulation.simStarted) FloorCanvasDesigner.DrawInnerTileGridLines(canvasEditor, HouseLayout); // testing purposes
+            //if (Simulation.simStarted) 
+                FloorCanvasDesigner.PaintInnerTilesGettingCleaned(canvasEditor, HouseLayout, VacDisplay); // testing purposes
+            //FloorCanvasDesigner.DrawInnerTileGridLines(canvasEditor, HouseLayout); // testing purposes
             FloorCanvasDesigner.DrawFloorplan(canvasEditor, HouseLayout, VacDisplay);
         }
 
@@ -667,6 +667,7 @@ namespace VacuumSim
             FloorCanvasCalculator.frameCount = 0;
             VacDisplay.batterySecondsRemaining = (int)RobotBatteryLifeSelector.Value * 60;
             VacDisplay.CenterVacuumDisplay(ActualVacuumData.VacuumCoords, HouseLayout);
+            VacDisplay.vacuumHeading = (int)InitialVacuumHeadingSelector.Value;
 
             HouseLayout.SetInnerTileObstacles();
         }
@@ -695,6 +696,7 @@ namespace VacuumSim
             Simulation.simTimeElapsed = 0;
             FloorCanvasCalculator.frameCount = 0;
             VacDisplay.batterySecondsRemaining = (int)RobotBatteryLifeSelector.Value * 60;
+            InitialVacuumHeadingSelector.Value = VacDisplay.vacuumHeading;
 
             HouseLayout.ResetInnerTileObstacles();
 
