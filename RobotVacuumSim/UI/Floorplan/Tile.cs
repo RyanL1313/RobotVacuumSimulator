@@ -27,7 +27,7 @@ namespace VacuumSim
             this.groupID = -1;
 
             this.innerTiles = new InnerTile[numInnerTilesInRowAndCol, numInnerTilesInRowAndCol]; // Create the 2D array of inner tiles
-            InitializeInnerTiles(x, y, obstacle, 1.0f); // Give the inner tiles their initial values
+            InitializeInnerTiles(x, y, obstacle, 100.0f); // Give the inner tiles their initial values
         }
 
         /// <summary>
@@ -91,16 +91,17 @@ namespace VacuumSim
         }
 
         /// <summary>
-        /// Sets every inner tile for this tile to a Floor obstacle type
+        /// Sets every inner tile for this tile to a Floor obstacle type and have a dirtiness of 100
         /// This gets called after a simulation is stopped/ends
         /// </summary>
-        public void SetAllInnerTilesToFloorTiles()
+        public void ResetAllInnerTiles()
         {
             for (int i = 0; i < numInnerTilesInRowAndCol; i++)
             {
                 for (int j = 0; j < numInnerTilesInRowAndCol; j++)
                 {
                     innerTiles[i, j].obstacle = ObstacleType.Floor;
+                    innerTiles[i, j].dirtiness = 100.0f;
                 }
             }
         }

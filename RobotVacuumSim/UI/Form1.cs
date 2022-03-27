@@ -377,7 +377,23 @@ namespace VacuumSim
 
         private void StopSimulationButton_Click(object sender, EventArgs e)
         {
-            ResetSimulationValues();
+            // Need to save simulation data right here
+
+            ResetValuesAfterSimEnd();
+
+            FloorCanvas.Invalidate();
+        }
+
+        private void YesRunAnotherSimulationButton_Click(object sender, EventArgs e)
+        {
+            ResetValuesAfterExitingHeatMap();
+
+            FloorCanvas.Invalidate();
+        }
+
+        private void NoRunAnotherSimulationButton_Click(object sender, EventArgs e)
+        {
+            this.Close(); // User is finished running the program
         }
 
         private void EraserModeButton_Click(object sender, EventArgs e)
@@ -396,15 +412,21 @@ namespace VacuumSim
             var SelectedFloorType = FloorTypeGroupBox.Controls.OfType<RadioButton>()
                            .FirstOrDefault(n => n.Checked).Name;
 
-            FloorCanvasDesigner.SetAntiAliasing(canvasEditor);
-            FloorCanvasDesigner.DisplayFloorCovering(canvasEditor, HouseLayout, SelectedFloorType);
-            FloorCanvasDesigner.PaintChairAndTableBackgrounds(canvasEditor, HouseLayout);
-            
-            FloorCanvasDesigner.DrawVacuum(canvasEditor, VacDisplay);
-            //if (Simulation.simStarted) 
-                FloorCanvasDesigner.PaintInnerTilesGettingCleaned(canvasEditor, HouseLayout, VacDisplay); // testing purposes
-            //FloorCanvasDesigner.DrawInnerTileGridLines(canvasEditor, HouseLayout); // testing purposes
-            FloorCanvasDesigner.DrawFloorplan(canvasEditor, HouseLayout, VacDisplay);
+            if (FloorCanvasDesigner.displayingHeatMap)
+            {
+                FloorCanvasDesigner.DrawHeatMap(canvasEditor, HouseLayout);
+            }
+            else
+            {
+                FloorCanvasDesigner.SetAntiAliasing(canvasEditor);
+                FloorCanvasDesigner.DisplayFloorCovering(canvasEditor, HouseLayout, SelectedFloorType);
+                FloorCanvasDesigner.PaintChairAndTableBackgrounds(canvasEditor, HouseLayout);
+
+                FloorCanvasDesigner.DrawVacuum(canvasEditor, VacDisplay);
+                if (Simulation.simStarted) FloorCanvasDesigner.PaintInnerTilesGettingCleaned(canvasEditor, HouseLayout, VacDisplay); // testing purposes
+                                                                                                                                     //FloorCanvasDesigner.DrawInnerTileGridLines(canvasEditor, HouseLayout); // testing purposes
+                FloorCanvasDesigner.DrawFloorplan(canvasEditor, HouseLayout, VacDisplay);
+            }
         }
 
         /// <summary>
@@ -424,7 +446,7 @@ namespace VacuumSim
 
             // Make sure we don't re-draw the canvas if the user is still selecting the same tile while in floorplan drawing mode (efficiency concerns)
             // Also, prevent drawing on the canvas based on various other conditions
-            if (FloorCanvasDesigner.justPlacedDoorway || !FloorCanvasDesigner.eraserModeOn && !FloorCanvasDesigner.currentlyAddingDoorway && !FloorCanvasDesigner.settingVacuumAttributes && 
+            if (FloorCanvasDesigner.justPlacedDoorway || FloorCanvasDesigner.displayingHeatMap || !FloorCanvasDesigner.eraserModeOn && !FloorCanvasDesigner.currentlyAddingDoorway && !FloorCanvasDesigner.settingVacuumAttributes && 
                 selectedTileIndices[0] == FloorCanvasDesigner.currentIndicesOfSelectedTile[0] && selectedTileIndices[1] == FloorCanvasDesigner.currentIndicesOfSelectedTile[1])
                 return;
             else
@@ -600,9 +622,9 @@ namespace VacuumSim
             BatteryLeftLabel.Text = FloorCanvasCalculator.GetBatteryRemainingText(VacDisplay);
             SimTimeElapsedLabel.Text = FloorCanvasCalculator.GetTimeElapsedText();
 
-            // Reset simulation data if battery just ran out
+            // Save and reset simulation data if battery just ran out
             if (VacDisplay.batterySecondsRemaining <= 0)
-                ResetSimulationValues();
+                ResetValuesAfterSimEnd();
 
             FloorCanvas.Invalidate();
         }
@@ -675,32 +697,48 @@ namespace VacuumSim
         /// <summary>
         /// Resetting UI, vacuum, and simulation data after simulation finishes
         /// </summary>
-        private void ResetSimulationValues()
+        private void ResetValuesAfterSimEnd()
         {
+            FloorCanvasDesigner.displayingHeatMap = true;
             VacuumBodyTimer.Enabled = false;
             VacuumWhiskersTimer.Enabled = false;
-            HouseLayout.gridLinesOn = true;
-            StartSimulationButton.Enabled = true;
-            StopSimulationButton.Enabled = false;
-            FinishOrEditFloorplanButton.Enabled = true;
-            ControlsPane.Panel1.Enabled = true;
-            LoadDefaultFloorplanButton.Enabled = true;
-            LoadSavedFloorplanButton.Enabled = true;
-            SaveFloorplanButton.Enabled = true;
-            EraserModeButton.Enabled = true;            
-            ChairTableWidthSelector.Enabled = true;
-            ChairTableHeightSelector.Enabled = true;
-            ObstacleSelector.Enabled = true;
-            FloorTypeGroupBox.Enabled = true;
             Simulation.simStarted = false;
             Simulation.simTimeElapsed = 0;
             FloorCanvasCalculator.frameCount = 0;
             VacDisplay.batterySecondsRemaining = (int)RobotBatteryLifeSelector.Value * 60;
             InitialVacuumHeadingSelector.Value = VacDisplay.vacuumHeading;
-
-            HouseLayout.ResetInnerTileObstacles();
+            YesRunAnotherSimulationButton.Visible = true;
+            NoRunAnotherSimulationButton.Visible = true;
+            RunAnotherSimulationLabel.Visible = true;
 
             FloorCanvas.Invalidate(); // Re-trigger paint event
+        }
+
+        /// <summary>
+        /// Resetting values after the user chooses to return to designing a floor plan after seeing the heat map for their previous run
+        /// </summary>
+        private void ResetValuesAfterExitingHeatMap()
+        {
+            FloorCanvasDesigner.displayingHeatMap = false;
+            FinishOrEditFloorplanButton.Enabled = true;
+            ControlsPane.Panel1.Enabled = true;
+            LoadDefaultFloorplanButton.Enabled = true;
+            LoadSavedFloorplanButton.Enabled = true;
+            SaveFloorplanButton.Enabled = true;
+            EraserModeButton.Enabled = true;
+            ChairTableWidthSelector.Enabled = true;
+            ChairTableHeightSelector.Enabled = true;
+            ObstacleSelector.Enabled = true;
+            FloorTypeGroupBox.Enabled = true;
+            StartSimulationButton.Enabled = true;
+            StopSimulationButton.Enabled = false;
+            YesRunAnotherSimulationButton.Visible = false;
+            NoRunAnotherSimulationButton.Visible = false;
+            RunAnotherSimulationLabel.Visible = false;
+
+            HouseLayout.ResetInnerTiles();
+
+            FloorCanvas.Invalidate();
         }
 
         private void Form1_Load(object sender, EventArgs e)

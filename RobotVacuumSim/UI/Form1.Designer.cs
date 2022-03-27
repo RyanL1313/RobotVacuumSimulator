@@ -49,9 +49,9 @@ namespace VacuumSim
             this.RoomWidthSelector = new System.Windows.Forms.NumericUpDown();
             this.RoomHeightSelector = new System.Windows.Forms.NumericUpDown();
             this.LoadSaveFloorplanGroupBox = new System.Windows.Forms.GroupBox();
-            this.LoadSavedFloorplanButton = new System.Windows.Forms.Button();
             this.SaveFloorplanButton = new System.Windows.Forms.Button();
             this.LoadDefaultFloorplanButton = new System.Windows.Forms.Button();
+            this.LoadSavedFloorplanButton = new System.Windows.Forms.Button();
             this.HouseDimensionsGroupBox = new System.Windows.Forms.GroupBox();
             this.HouseWidthLabel = new System.Windows.Forms.Label();
             this.HouseHeightLabel = new System.Windows.Forms.Label();
@@ -81,6 +81,9 @@ namespace VacuumSim
             this.RobotBatteryLifeLabel = new System.Windows.Forms.Label();
             this.RobotBatteryLifeSelector = new System.Windows.Forms.NumericUpDown();
             this.WhiskersEfficiencyValueLabel = new System.Windows.Forms.Label();
+            this.RunAnotherSimulationLabel = new System.Windows.Forms.Label();
+            this.NoRunAnotherSimulationButton = new System.Windows.Forms.Button();
+            this.YesRunAnotherSimulationButton = new System.Windows.Forms.Button();
             this.LoadSaveSimSettingsGroupBox = new System.Windows.Forms.GroupBox();
             this.LoadSimulationButton = new System.Windows.Forms.Button();
             this.SaveSimulationButton = new System.Windows.Forms.Button();
@@ -420,17 +423,6 @@ namespace VacuumSim
             this.LoadSaveFloorplanGroupBox.TabStop = false;
             this.LoadSaveFloorplanGroupBox.Text = "Load/Save";
             // 
-            // LoadSavedFloorplanButton
-            // 
-            this.LoadSavedFloorplanButton.Location = new System.Drawing.Point(9, 57);
-            this.LoadSavedFloorplanButton.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
-            this.LoadSavedFloorplanButton.Name = "LoadSavedFloorplanButton";
-            this.LoadSavedFloorplanButton.Size = new System.Drawing.Size(152, 22);
-            this.LoadSavedFloorplanButton.TabIndex = 16;
-            this.LoadSavedFloorplanButton.Text = "Load Saved Floor Plan";
-            this.LoadSavedFloorplanButton.UseVisualStyleBackColor = true;
-            this.LoadSavedFloorplanButton.Click += new System.EventHandler(this.LoadSavedFloorplanButton_Click);
-            // 
             // SaveFloorplanButton
             // 
             this.SaveFloorplanButton.Location = new System.Drawing.Point(342, 61);
@@ -452,6 +444,17 @@ namespace VacuumSim
             this.LoadDefaultFloorplanButton.Text = "Load Default Floor Plan";
             this.LoadDefaultFloorplanButton.UseVisualStyleBackColor = true;
             this.LoadDefaultFloorplanButton.Click += new System.EventHandler(this.LoadDefaultFloorplanButton_Click);
+            // 
+            // LoadSavedFloorplanButton
+            // 
+            this.LoadSavedFloorplanButton.Location = new System.Drawing.Point(9, 57);
+            this.LoadSavedFloorplanButton.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.LoadSavedFloorplanButton.Name = "LoadSavedFloorplanButton";
+            this.LoadSavedFloorplanButton.Size = new System.Drawing.Size(152, 22);
+            this.LoadSavedFloorplanButton.TabIndex = 16;
+            this.LoadSavedFloorplanButton.Text = "Load Saved Floor Plan";
+            this.LoadSavedFloorplanButton.UseVisualStyleBackColor = true;
+            this.LoadSavedFloorplanButton.Click += new System.EventHandler(this.LoadSavedFloorplanButton_Click);
             // 
             // HouseDimensionsGroupBox
             // 
@@ -656,6 +659,9 @@ namespace VacuumSim
             // 
             // ControlsPane.Panel2
             // 
+            this.ControlsPane.Panel2.Controls.Add(this.RunAnotherSimulationLabel);
+            this.ControlsPane.Panel2.Controls.Add(this.NoRunAnotherSimulationButton);
+            this.ControlsPane.Panel2.Controls.Add(this.YesRunAnotherSimulationButton);
             this.ControlsPane.Panel2.Controls.Add(this.LoadSaveSimSettingsGroupBox);
             this.ControlsPane.Panel2.Controls.Add(this.SimulationControlLabel);
             this.ControlsPane.Panel2.Controls.Add(this.SimulationSpeedLabel);
@@ -890,6 +896,40 @@ namespace VacuumSim
             this.WhiskersEfficiencyValueLabel.Size = new System.Drawing.Size(29, 15);
             this.WhiskersEfficiencyValueLabel.TabIndex = 18;
             this.WhiskersEfficiencyValueLabel.Text = "50%";
+            // 
+            // RunAnotherSimulationLabel
+            // 
+            this.RunAnotherSimulationLabel.AutoSize = true;
+            this.RunAnotherSimulationLabel.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
+            this.RunAnotherSimulationLabel.Location = new System.Drawing.Point(334, 147);
+            this.RunAnotherSimulationLabel.MaximumSize = new System.Drawing.Size(150, 0);
+            this.RunAnotherSimulationLabel.Name = "RunAnotherSimulationLabel";
+            this.RunAnotherSimulationLabel.Size = new System.Drawing.Size(122, 30);
+            this.RunAnotherSimulationLabel.TabIndex = 19;
+            this.RunAnotherSimulationLabel.Text = "Do You Want to Run Another Simulation?";
+            this.RunAnotherSimulationLabel.Visible = false;
+            // 
+            // NoRunAnotherSimulationButton
+            // 
+            this.NoRunAnotherSimulationButton.Location = new System.Drawing.Point(407, 190);
+            this.NoRunAnotherSimulationButton.Name = "NoRunAnotherSimulationButton";
+            this.NoRunAnotherSimulationButton.Size = new System.Drawing.Size(58, 23);
+            this.NoRunAnotherSimulationButton.TabIndex = 18;
+            this.NoRunAnotherSimulationButton.Text = "No";
+            this.NoRunAnotherSimulationButton.UseVisualStyleBackColor = true;
+            this.NoRunAnotherSimulationButton.Visible = false;
+            this.NoRunAnotherSimulationButton.Click += new System.EventHandler(this.NoRunAnotherSimulationButton_Click);
+            // 
+            // YesRunAnotherSimulationButton
+            // 
+            this.YesRunAnotherSimulationButton.Location = new System.Drawing.Point(322, 190);
+            this.YesRunAnotherSimulationButton.Name = "YesRunAnotherSimulationButton";
+            this.YesRunAnotherSimulationButton.Size = new System.Drawing.Size(58, 23);
+            this.YesRunAnotherSimulationButton.TabIndex = 17;
+            this.YesRunAnotherSimulationButton.Text = "Yes";
+            this.YesRunAnotherSimulationButton.UseVisualStyleBackColor = true;
+            this.YesRunAnotherSimulationButton.Visible = false;
+            this.YesRunAnotherSimulationButton.Click += new System.EventHandler(this.YesRunAnotherSimulationButton_Click);
             // 
             // LoadSaveSimSettingsGroupBox
             // 
@@ -1213,6 +1253,9 @@ namespace VacuumSim
         private System.Windows.Forms.Label PlaceVacuumInstructionsLabel;
         private System.Windows.Forms.GroupBox ObstaclesGroupBox;
         private System.Windows.Forms.Label CreateDoorwayInstructionsLabel;
+        private System.Windows.Forms.Button YesRunAnotherSimulationButton;
+        private System.Windows.Forms.Label RunAnotherSimulationLabel;
+        private System.Windows.Forms.Button NoRunAnotherSimulationButton;
     }
 }
 

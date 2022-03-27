@@ -322,16 +322,16 @@ namespace VacuumSim
         }
 
         /// <summary>
-        /// Sets every tile's inner tiles to have a Floor obstacle
+        /// Sets every tile's inner tiles to have a Floor obstacle and dirtiness of 100
         /// Gets called after a simulation finishes
         /// </summary>
-        public void ResetInnerTileObstacles()
+        public void ResetInnerTiles()
         {
             for (int i = 0; i < numTilesPerRow; i++)
             {
                 for (int j = 0; j < numTilesPerCol; j++)
                 {
-                    floorLayout[i, j].SetAllInnerTilesToFloorTiles();
+                    floorLayout[i, j].ResetAllInnerTiles();
                 }
             }
         }

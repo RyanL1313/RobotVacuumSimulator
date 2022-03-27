@@ -83,7 +83,7 @@ namespace VacuumSim.UI.FloorplanGraphics
         /// Draws the floorplan to FloorCanvas based on HouseLayout's 2D array of tiles
         /// </summary>
         /// <param name="CanvasEditor"> Graphics object to edit FloorCanvas </param>
-        /// <param name="HouseLayout"> The current floorplan layout </param>
+        /// <param name="HouseLayout"> The current floor plan layout </param>
         public static void DrawFloorplan(Graphics CanvasEditor, FloorplanLayout HouseLayout, VacuumDisplay VacDisplay)
         {
             // Get the current layout, depending on if we're in design mode or just displaying the floorplan
@@ -135,12 +135,46 @@ namespace VacuumSim.UI.FloorplanGraphics
         }
 
         /// <summary>
+        /// Draws the heatmap showing what locations the vacuum cleaned well and not so well.
+        /// Gets displayed after a simulation ends. Disappears after the user returns to editing the floorplan
+        /// </summary>
+        /// <param name="canvasEditor"> Graphics object to edit FloorCanvas </param>
+        /// <param name="HouseLayout"> The floor plan layout </param>
+        public static void DrawHeatMap(Graphics canvasEditor, FloorplanLayout HouseLayout)
+        {
+            Brush heatMapPainter;
+            Color innerTileColor;
+
+            for (int i = 0; i < HouseLayout.numTilesPerRow; i++)
+            {
+                for (int j = 0; j < HouseLayout.numTilesPerCol; j++)
+                {
+                    for (int k = 0; k < Tile.numInnerTilesInRowAndCol; k++)
+                    {
+                        for (int l = 0; l < Tile.numInnerTilesInRowAndCol; l++)
+                        {
+                            Tile theTile = HouseLayout.floorLayout[i, j];
+                            InnerTile theInnerTile = HouseLayout.GetInnerTileFromCoordinates(theTile.x + k * InnerTile.innerTileSideLength, theTile.y + l * InnerTile.innerTileSideLength);
+
+                            float blueIntensity = theInnerTile.dirtiness / 100.0f * 40.0f;
+                            float redIntensity = 40.0f - (theInnerTile.dirtiness / 100.0f * 40.0f);
+                            innerTileColor = Color.FromArgb((int)redIntensity, 0, (int)blueIntensity);
+                            heatMapPainter = new SolidBrush(innerTileColor);
+
+                            canvasEditor.FillRectangle(heatMapPainter, theTile.x + k * InnerTile.innerTileSideLength, theTile.y + l * InnerTile.innerTileSideLength, InnerTile.innerTileSideLength, InnerTile.innerTileSideLength);
+                        }
+                    }
+                }
+            }
+        }
+
+        /// <summary>
         /// Draws gridlines showing all inner tiles.
         /// Just used for testing purposes. Wouldn't recommend using because it slows down things a lot.
         /// That's probably because there's a maximum of 72,000 inner tiles (that'll do it)
         /// </summary>
         /// <param name="canvasEditor"> Graphics object to edit FloorCanvas </param>
-        /// <param name="HouseLayout"> The floorplan layout display </param>
+        /// <param name="HouseLayout"> The floor plan layout display </param>
         public static void DrawInnerTileGridLines(Graphics canvasEditor, FloorplanLayout HouseLayout)
         {
             for (int i = 0; i < HouseLayout.numTilesPerRow; i++)
@@ -163,7 +197,7 @@ namespace VacuumSim.UI.FloorplanGraphics
         /// Just used for testing purposes. Will probably be pretty useful for debugging collision detection and vacuum cleaning.
         /// </summary>
         /// <param name="canvasEditor"> Graphics object to edit FloorCanvas </param>
-        /// <param name="HouseLayout"> The floorplan layout display </param>
+        /// <param name="HouseLayout"> The floor plan layout display </param>
         /// <param name="VacDisplay"> The display of the vacuum used in the simulation </param>
         public static void PaintInnerTilesGettingCleaned(Graphics canvasEditor, FloorplanLayout HouseLayout, VacuumDisplay VacDisplay)
         {
@@ -184,7 +218,7 @@ namespace VacuumSim.UI.FloorplanGraphics
         }
 
         /// <summary>
-        /// Fills in a tile on the floorplan grid
+        /// Fills in a tile on the floor plan grid
         /// </summary>
         /// <param name="rowIndex"> Index of chosen row </param>
         /// <param name="colIndex"> Index of chosen column </param>
@@ -273,7 +307,7 @@ namespace VacuumSim.UI.FloorplanGraphics
         /// decreased in size. However, if a room is reduced to a single column of wall tiles or is
         /// completely obfuscated, the room gets removed.
         /// </summary>
-        /// <param name="HouseLayout"> The floorplan layout </param>
+        /// <param name="HouseLayout"> The floor plan layout </param>
         /// <param name="prevNumTilesPerRow"> Number of tiles per row before the user changed the house width </param>
         public static void UpdateFloorplanAfterHouseWidthChanged(FloorplanLayout HouseLayout, int prevNumTilesPerRow)
         {
@@ -650,6 +684,12 @@ namespace VacuumSim.UI.FloorplanGraphics
             }
         }
 
+        /// <summary>
+        /// Processes user's attempt to add a doorway to the floor plan
+        /// </summary>
+        /// <param name="xTileIndex"> The selected column </param>
+        /// <param name="yTileIndex"> The selected row </param>
+        /// <returns> Whether or not a doorway was successfully added </returns>
         public static bool AttemptAddDoorwayToRoom(int xTileIndex, int yTileIndex)
         {
             if (FloorplanHouseDesigner.floorLayout[xTileIndex, yTileIndex].obstacle == ObstacleType.Success) // User can add doorway here
@@ -790,6 +830,12 @@ namespace VacuumSim.UI.FloorplanGraphics
                 FloorplanHouseDesigner.ModifyTileBasedOnIndices(xTileIndex, yTileIndex, ObstacleType.Success);
         }
 
+        /// <summary>
+        /// Removes a room from the floorplan.
+        /// </summary>
+        /// <param name="HouseLayout"> The floor plan layout </param>
+        /// <param name="xTileIndex"> The selected column </param>
+        /// <param name="yTileIndex"> The selected row </param>
         public static void RemoveRoomFromFloorplan(FloorplanLayout HouseLayout, int xTileIndex, int yTileIndex)
         {
             if (IsBoundaryWallTile(HouseLayout, HouseLayout.floorLayout[xTileIndex, yTileIndex]))
