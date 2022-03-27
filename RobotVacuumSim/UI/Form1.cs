@@ -129,8 +129,9 @@ namespace VacuumSim
             HouseLayout.numTilesPerRow = ((int)HouseWidthSelector.Value + 4) / 2; // Get number of tiles per row based on house width chosen by user
             FloorCanvasDesigner.UpdateFloorplanAfterHouseWidthChanged(HouseLayout, prevNumTilesPerRow);
 
-            // Update RoomWidthSelector value if necessary
+            // Update selected obstacle widths if necessary
             RoomWidthSelector.Value = Math.Min(RoomWidthSelector.Value, HouseWidthSelector.Value);
+            ChairTableWidthSelector.Value = Math.Min(ChairTableWidthSelector.Value, HouseWidthSelector.Value);
 
             FloorCanvas.Invalidate(); // Re-draw canvas to reflect change in house width
         }
@@ -144,8 +145,10 @@ namespace VacuumSim
             HouseLayout.numTilesPerCol = ((int)HouseHeightSelector.Value + 4) / 2; // Get number of tiles per column based on house height chosen by user
             FloorCanvasDesigner.UpdateFloorplanAfterHouseHeightChanged(HouseLayout, prevNumTilesPerCol);
 
-            // Update RoomHeightSelector value if necessary
+            // Update selected obstacle heights if necessary
             RoomHeightSelector.Value = Math.Min(RoomHeightSelector.Value, HouseHeightSelector.Value);
+            ChairTableHeightSelector.Value = Math.Min(ChairTableHeightSelector.Value, HouseHeightSelector.Value);
+
 
             FloorCanvas.Invalidate(); // Re-draw canvas to reflect change in house height
         }
@@ -170,20 +173,23 @@ namespace VacuumSim
         {
             if ((int)ChairTableWidthSelector.Value % 2 == 1) // Prevent non-even entries
                 ChairTableWidthSelector.Value += 1;
+
+            ChairTableWidthSelector.Value = Math.Min(ChairTableWidthSelector.Value, HouseWidthSelector.Value);
         }
 
         private void ChairTableHeightSelector_ValueChanged(object sender, EventArgs e)
         {
             if ((int)ChairTableHeightSelector.Value % 2 == 1) // Prevent non-even entries
                 ChairTableHeightSelector.Value += 1;
+
+            ChairTableHeightSelector.Value = Math.Min(ChairTableHeightSelector.Value, HouseHeightSelector.Value);
         }
 
         private void SimulationSpeedSelector_SelectedIndexChanged(object sender, EventArgs e)
         {
             Simulation.simSpeed = Int32.Parse(SimulationSpeedSelector.SelectedItem.ToString().TrimEnd('x'));
 
-            // Set the vacuum timer to update every 1000 / (simulation speed) / 4 seconds
-            // The reason I divide by 4 is so 4 frames appear each "simulation second"
+            // Set the vacuum timer to update every 1000 / (simulation speed) / (frames per simulation second)
             VacuumBodyTimer.Interval = 1000 / Simulation.simSpeed / FloorCanvasCalculator.framesPerSimSecond;
         }
 
