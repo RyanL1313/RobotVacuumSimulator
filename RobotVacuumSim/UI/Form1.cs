@@ -34,6 +34,7 @@ namespace VacuumSim
         private VacuumDisplay VacDisplay;
         private Vacuum ActualVacuumData;
         private FloorCleaner floorCleaner = new FloorCleaner();
+        private CollisionHandler collisionHandler = new CollisionHandler();
 
         /// <summary>
         /// Initializes the algorithm selector to allow for choosing an algorithm type as specified by the PathAlgorithm enum.
@@ -428,6 +429,7 @@ namespace VacuumSim
                 FloorCanvasDesigner.PaintChairAndTableBackgrounds(canvasEditor, HouseLayout);
 
                 FloorCanvasDesigner.DrawVacuum(canvasEditor, VacDisplay);
+                //if (Simulation.simStarted) FloorCanvasDesigner.PaintVacuumHitboxInnerTiles(canvasEditor, HouseLayout, VacDisplay);
                 //if (Simulation.simStarted) FloorCanvasDesigner.PaintInnerTilesGettingCleaned(canvasEditor, HouseLayout, VacDisplay); // testing purposes
                 //FloorCanvasDesigner.DrawInnerTileGridLines(canvasEditor, HouseLayout); // testing purposes
                 FloorCanvasDesigner.DrawFloorplan(canvasEditor, HouseLayout, VacDisplay);
@@ -592,24 +594,16 @@ namespace VacuumSim
             // Update the vacuum display's coordinates based on the actual coordinates just calculated. The vacuum display's centerpoint will get centered within an inner tile
             VacDisplay.CenterVacuumDisplay(ActualVacuumData.VacuumCoords, HouseLayout);
 
-            // Get the inner tile that might get cleaned by the vacuum and the other 3 inner tiles that might get cleaned by the whiskers
-            InnerTile possibleInnerTileBeingCleanedByVacuum = HouseLayout.GetInnerTileBeingCleanedByVacuum(VacDisplay);
-            List<InnerTile> possibleInnerTilesBeingCleanedByWhiskers = HouseLayout.GetInnerTilesBeingCleanedByWhiskers(VacDisplay);
-
             // Check for collision. If one occurred, deal with it by updating the vacuum's coordinates based on the previous direction traveled
-            if (VacDisplay.VacuumCollidedWithObstacle(possibleInnerTilesBeingCleanedByWhiskers))
+            if (collisionHandler.VacuumCollidedWithObstacle(VacDisplay, HouseLayout))
             {
-                VacDisplay.HandleCollision(ActualVacuumData, HouseLayout);
-
-                // Update affected tiles after the collision adjustment
-                possibleInnerTileBeingCleanedByVacuum = HouseLayout.GetInnerTileBeingCleanedByVacuum(VacDisplay);
-                possibleInnerTilesBeingCleanedByWhiskers = HouseLayout.GetInnerTilesBeingCleanedByWhiskers(VacDisplay);
+                collisionHandler.HandleCollision(VacDisplay, ActualVacuumData, HouseLayout);
 
                 VacDisplay.vacuumHeading = (VacDisplay.vacuumHeading + 180) % 360; // Start moving in opposite direction (Note: I just have this here for my "straight line" algorithm I'm using for proof of concept)
             }
 
             // Clean affected inner tiles
-            floorCleaner.CleanInnerTiles(VacDisplay, ActualVacuumData, possibleInnerTileBeingCleanedByVacuum, possibleInnerTilesBeingCleanedByWhiskers);
+            floorCleaner.CleanInnerTiles(VacDisplay, ActualVacuumData, HouseLayout);
 
             FloorCanvasCalculator.UpdateSimulationData(VacDisplay);
             BatteryLeftLabel.Text = FloorCanvasCalculator.GetBatteryRemainingText(VacDisplay);

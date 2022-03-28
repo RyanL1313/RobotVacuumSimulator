@@ -218,6 +218,23 @@ namespace VacuumSim.UI.FloorplanGraphics
         }
 
         /// <summary>
+        /// Paints tiles containing the vacuum display orange.
+        /// </summary>
+        /// <param name="canvasEditor"> Graphics object to edit FloorCanvas </param>
+        /// <param name="HouseLayout"> The floor plan layout display </param>
+        /// <param name="VacDisplay"> The display of the vacuum used in the simulation </param>
+        public static void PaintVacuumHitboxInnerTiles(Graphics canvasEditor, FloorplanLayout HouseLayout, VacuumDisplay VacDisplay)
+        {
+            List<InnerTile> vacuumHitboxInnerTiles = HouseLayout.GetVacuumHitboxInnerTiles(VacDisplay, HouseLayout);
+            SolidBrush brush = new SolidBrush(Color.Orange);
+
+            foreach (InnerTile iTile in vacuumHitboxInnerTiles)
+            {
+                canvasEditor.FillRectangle(brush, iTile.x, iTile.y, InnerTile.innerTileSideLength, InnerTile.innerTileSideLength);
+            }
+        }
+
+        /// <summary>
         /// Fills in a tile on the floor plan grid
         /// </summary>
         /// <param name="rowIndex"> Index of chosen row </param>

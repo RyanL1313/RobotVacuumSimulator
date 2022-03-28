@@ -12,8 +12,11 @@ namespace VacuumSim.Components
         private List<InnerTile> curInnerTilesWhiskersAreCleaning = new List<InnerTile>();
         private InnerTile curInnerTileVacuumIsCleaning;
 
-        public void CleanInnerTiles(VacuumDisplay VacDisplay, Vacuum ActualVacuumData, InnerTile encounteredVacuumTile, List<InnerTile> encounteredWhiskerTiles)
+        public void CleanInnerTiles(VacuumDisplay VacDisplay, Vacuum ActualVacuumData, FloorplanLayout HouseLayout)
         {
+            InnerTile encounteredVacuumTile = HouseLayout.GetInnerTileBeingCleanedByVacuum(VacDisplay);
+            List<InnerTile> encounteredWhiskerTiles = HouseLayout.GetInnerTilesBeingCleanedByWhiskers(VacDisplay);
+
             // Check if possible inner tile is currently being cleaned by the vacuum
             // If not, clean this inner tile and set it as the current inner tile being cleaned by the vacuum
             if (curInnerTileVacuumIsCleaning != encounteredVacuumTile) // New tile

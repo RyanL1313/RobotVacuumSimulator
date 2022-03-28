@@ -409,6 +409,30 @@ namespace VacuumSim
             return GetInnerTileFromCoordinates((int)VacDisplay.vacuumCoords[0], (int)VacDisplay.vacuumCoords[1]);
         }
 
+        /// <summary>
+        /// Returns every inner tile the vacuum display resides in
+        /// </summary>
+        /// <param name="VacDisplay"> The display of the vacuum </param>
+        /// <param name="HouseLayout"> The floor plan layout </param>
+        /// <returns> The requested list of inner tiles </returns>
+        public List<InnerTile> GetVacuumHitboxInnerTiles(VacuumDisplay VacDisplay, FloorplanLayout HouseLayout)
+        {
+            int vacuumX = (int)VacDisplay.vacuumCoords[0];
+            int vacuumY = (int)VacDisplay.vacuumCoords[1];
+            InnerTile centerInnerTile = HouseLayout.GetInnerTileFromCoordinates(vacuumX, vacuumY);
+            List<InnerTile> retList = new List<InnerTile>();
+
+            for (int x = vacuumX - InnerTile.innerTileSideLength; x <= vacuumX + InnerTile.innerTileSideLength; x++)
+            {
+                for (int y = vacuumY - InnerTile.innerTileSideLength; y <= vacuumY + InnerTile.innerTileSideLength; y++)
+                {
+                    retList.Add(GetInnerTileFromCoordinates(x, y));
+                }
+            }
+
+            return retList;
+        }
+
         /* Returns a 'hashed' number to give an ID a floorplan
            Completely arbitary hashing method but kinda fun.
            Totally open to changing this up later.
