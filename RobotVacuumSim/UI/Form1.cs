@@ -33,8 +33,6 @@ namespace VacuumSim
         private FloorplanLayout HouseLayout;
         private VacuumDisplay VacDisplay;
         private Vacuum ActualVacuumData;
-        private List<InnerTile> curInnerTilesWhiskersAreCleaning = new List<InnerTile>();
-        private InnerTile curInnerTileVacuumIsCleaning;
         private FloorCleaner floorCleaner = new FloorCleaner();
 
         /// <summary>
@@ -602,6 +600,10 @@ namespace VacuumSim
             if (VacDisplay.VacuumCollidedWithObstacle(possibleInnerTilesBeingCleanedByWhiskers))
             {
                 VacDisplay.HandleCollision(ActualVacuumData, HouseLayout);
+
+                // Update affected tiles after the collision adjustment
+                possibleInnerTileBeingCleanedByVacuum = HouseLayout.GetInnerTileBeingCleanedByVacuum(VacDisplay);
+                possibleInnerTilesBeingCleanedByWhiskers = HouseLayout.GetInnerTilesBeingCleanedByWhiskers(VacDisplay);
 
                 VacDisplay.vacuumHeading = (VacDisplay.vacuumHeading + 180) % 360; // Start moving in opposite direction (Note: I just have this here for my "straight line" algorithm I'm using for proof of concept)
             }
