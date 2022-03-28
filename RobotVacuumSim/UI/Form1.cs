@@ -428,7 +428,7 @@ namespace VacuumSim
                 FloorCanvasDesigner.PaintChairAndTableBackgrounds(canvasEditor, HouseLayout);
 
                 FloorCanvasDesigner.DrawVacuum(canvasEditor, VacDisplay);
-                if (Simulation.simStarted) FloorCanvasDesigner.PaintInnerTilesGettingCleaned(canvasEditor, HouseLayout, VacDisplay); // testing purposes
+                //if (Simulation.simStarted) FloorCanvasDesigner.PaintInnerTilesGettingCleaned(canvasEditor, HouseLayout, VacDisplay); // testing purposes
                 //FloorCanvasDesigner.DrawInnerTileGridLines(canvasEditor, HouseLayout); // testing purposes
                 FloorCanvasDesigner.DrawFloorplan(canvasEditor, HouseLayout, VacDisplay);
             }
