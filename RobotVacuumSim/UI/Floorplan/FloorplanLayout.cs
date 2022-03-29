@@ -165,6 +165,8 @@ namespace VacuumSim
                     numRooms = source.numRooms;
                     numObstacleGroups = source.numObstacleGroups;
                     gridLinesOn = source.gridLinesOn;
+                    totalFloorplanArea = source.totalFloorplanArea;
+                    totalNonCleanableFloorplanArea = source.totalNonCleanableFloorplanArea;
                 }
             }
         }
