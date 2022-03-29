@@ -653,11 +653,22 @@ namespace VacuumSim
                 SimulationStartTime = Simulation.simulationStartTime,
             };
 
-            string fileName = "SimulationReport.json";
+            // Open a dialog to ask the user where to save the report.
+            SaveFileDialog saveFileDialog = new SaveFileDialog();
+            saveFileDialog.Filter = "JSON file|*.json";
+            saveFileDialog.Title = "Save Simulation Report";
+            saveFileDialog.ShowDialog();
+
+            string filename = "SimulationResults.json";
+
+            if (saveFileDialog.FileName != "")
+            {
+                filename = saveFileDialog.FileName;
+            }
 
             var JSONOpts = new JsonSerializerOptions { IncludeFields = true, WriteIndented = true };
             string jsonString = JsonSerializer.Serialize(rep, JSONOpts);
-            File.WriteAllText(fileName, jsonString);
+            File.WriteAllText(filename, jsonString);
         }
     }
 
