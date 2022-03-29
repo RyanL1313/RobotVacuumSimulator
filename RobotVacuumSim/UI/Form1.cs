@@ -653,7 +653,7 @@ namespace VacuumSim
                 SimulationStartTime = Simulation.simulationStartTime,
             };
 
-            // Open a dialog to ask the user where to save the report.
+            // Save file dialog
             SaveFileDialog saveFileDialog = new SaveFileDialog();
             saveFileDialog.Filter = "JSON file|*.json";
             saveFileDialog.Title = "Save Simulation Report";
