@@ -169,6 +169,42 @@ namespace VacuumSim.UI.FloorplanGraphics
         }
 
         /// <summary>
+        /// Shows a trail of where the vacuum has cleaned during the running simulation
+        /// </summary>
+        /// <param name="canvasEditor"> Graphics object to edit FloorCanvas </param>
+        /// <param name="HouseLayout"> The floor plan layout </param>
+        public static void DisplayCleanedTiles(Graphics canvasEditor, FloorplanLayout HouseLayout)
+        {
+            Brush heatMapPainter;
+            Color innerTileColor;
+
+            for (int i = 0; i < HouseLayout.numTilesPerRow; i++)
+            {
+                for (int j = 0; j < HouseLayout.numTilesPerCol; j++)
+                {
+                    for (int k = 0; k < Tile.numInnerTilesInRowAndCol; k++)
+                    {
+                        for (int l = 0; l < Tile.numInnerTilesInRowAndCol; l++)
+                        {
+                            Tile theTile = HouseLayout.floorLayout[i, j];
+                            InnerTile theInnerTile = HouseLayout.GetInnerTileFromCoordinates(theTile.x + k * InnerTile.innerTileSideLength, theTile.y + l * InnerTile.innerTileSideLength);
+
+                            // Only paint an inner tile that has been cleaned at least once
+                            if (theInnerTile.dirtiness < 100)
+                            {
+                                float redIntensity = 200.0f - (theInnerTile.dirtiness / 100.0f * 200.0f);
+                                innerTileColor = Color.FromArgb((int)redIntensity, 0, 0);
+                                heatMapPainter = new SolidBrush(innerTileColor);
+
+                                canvasEditor.FillRectangle(heatMapPainter, theTile.x + k * InnerTile.innerTileSideLength, theTile.y + l * InnerTile.innerTileSideLength, InnerTile.innerTileSideLength, InnerTile.innerTileSideLength);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        /// <summary>
         /// Draws gridlines showing all inner tiles.
         /// Just used for testing purposes. Wouldn't recommend using because it slows down things a lot.
         /// That's probably because there's a maximum of 72,000 inner tiles (that'll do it)

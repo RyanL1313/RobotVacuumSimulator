@@ -427,10 +427,10 @@ namespace VacuumSim
                 FloorCanvasDesigner.SetAntiAliasing(canvasEditor);
                 FloorCanvasDesigner.DisplayFloorCovering(canvasEditor, HouseLayout, SelectedFloorType);
                 FloorCanvasDesigner.PaintChairAndTableBackgrounds(canvasEditor, HouseLayout);
-
+                FloorCanvasDesigner.DisplayCleanedTiles(canvasEditor, HouseLayout);
                 FloorCanvasDesigner.DrawVacuum(canvasEditor, VacDisplay);
-                //if (Simulation.simStarted) FloorCanvasDesigner.PaintVacuumHitboxInnerTiles(canvasEditor, HouseLayout, VacDisplay);
-                //if (Simulation.simStarted) FloorCanvasDesigner.PaintInnerTilesGettingCleaned(canvasEditor, HouseLayout, VacDisplay); // testing purposes
+                if (Simulation.simStarted) FloorCanvasDesigner.PaintVacuumHitboxInnerTiles(canvasEditor, HouseLayout, VacDisplay);
+                if (Simulation.simStarted) FloorCanvasDesigner.PaintInnerTilesGettingCleaned(canvasEditor, HouseLayout, VacDisplay); // testing purposes
                 //FloorCanvasDesigner.DrawInnerTileGridLines(canvasEditor, HouseLayout); // testing purposes
                 FloorCanvasDesigner.DrawFloorplan(canvasEditor, HouseLayout, VacDisplay);
             }
