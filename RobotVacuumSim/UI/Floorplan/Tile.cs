@@ -27,7 +27,7 @@ namespace VacuumSim
             this.groupID = -1;
 
             this.innerTiles = new InnerTile[numInnerTilesInRowAndCol, numInnerTilesInRowAndCol]; // Create the 2D array of inner tiles
-            InitializeInnerTiles(x, y, obstacle, 100.0f); // Give the inner tiles their initial values
+            InitializeInnerTiles(x, y, 100.0f); // Give the inner tiles their initial values
         }
 
         /// <summary>
@@ -37,13 +37,13 @@ namespace VacuumSim
         /// <param name="parentTileY"> y coordinate of top-left corner of the inner tile </param>
         /// <param name="obstacle"> The obstacle contained within this sub-tile </param>
         /// <param name="dirtiness"> The dirtiness level of this inner tile. Starts at 1 and gets closer to 0 as the vacuum cleans it. </param>
-        public void InitializeInnerTiles(int parentTileX, int parentTileY, ObstacleType obstacle, float dirtiness)
+        public void InitializeInnerTiles(int parentTileX, int parentTileY, float dirtiness)
         {
             for (int i = 0; i < numInnerTilesInRowAndCol; i++)
             {
                 for (int j = 0; j < numInnerTilesInRowAndCol; j++)
                 {
-                    innerTiles[i, j] = new InnerTile(parentTileX + i * InnerTile.innerTileSideLength, parentTileY + j * InnerTile.innerTileSideLength, obstacle, dirtiness);
+                    innerTiles[i, j] = new InnerTile(parentTileX + i * InnerTile.innerTileSideLength, parentTileY + j * InnerTile.innerTileSideLength, ObstacleType.Floor, dirtiness);
                 }
             }    
         }
