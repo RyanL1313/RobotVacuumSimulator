@@ -33,8 +33,8 @@ namespace VacuumSim
         public const int LR = 1; // Used to access lower right leg of chair/table
         public const int UR = 2; // Used to access upper right leg of chair/table
         public const int UL = 3; // Used to access upper left leg of chair/table
-        public int totalFloorplanArea = 0; // Total area of the floorplan (including covered-up sub-tiles)
-        public int totalCleanableFloorplanArea = 0; // Total area of the floorplan that can be cleaned
+        public int totalFloorplanArea = 0; // Total area of the floorplan (including covered-up sub-tiles) in inches
+        public int totalNonCleanableFloorplanArea = 0; // Total area of the floorplan that cannot be cleaned in inches
 
         /* Feel free to remove this gigantic comment block later. */
         /* Creates the 2D array of tiles and sets the tiles' default attributes */
@@ -432,6 +432,36 @@ namespace VacuumSim
 
             return retList;
         }
+
+        /// <summary>
+        /// Calculates the total area of the floorplan and the area that cannot be cleaned (**both in inches**)
+        /// Can subtract area that cannot be cleaned from total area to get area that can be cleaned
+        /// </summary>
+        public void PerformAreaCalculations()
+        {
+            for (int i = 0; i < numTilesPerRow; i++)
+            {
+                for (int j = 0; j < numTilesPerCol; j++)
+                {
+                    for (int k = 0; k < Tile.numInnerTilesInRowAndCol; k++)
+                    {
+                        for (int l = 0; l < Tile.numInnerTilesInRowAndCol; l++)
+                        {
+                            Tile theTile = floorLayout[i, j];
+                            InnerTile theInnerTile = GetInnerTileFromCoordinates(theTile.x + k * InnerTile.innerTileSideLength, theTile.y + l * InnerTile.innerTileSideLength);
+
+                            totalFloorplanArea += InnerTile.innerTileSideLength * InnerTile.innerTileSideLength;
+                            if (theInnerTile.obstacle != ObstacleType.Floor) // Can't clean this
+                                totalNonCleanableFloorplanArea += InnerTile.innerTileSideLength * InnerTile.innerTileSideLength;
+                        }
+                    }
+                }
+            }
+
+            // Pixels to inches conversions
+            totalFloorplanArea = (int)(totalFloorplanArea * ((24.0f / tileSideLength) * (24.0f / tileSideLength)));
+            totalNonCleanableFloorplanArea = (int)(totalNonCleanableFloorplanArea * ((24.0f / tileSideLength) * (24.0f / tileSideLength)));
+        }      
 
         /* Returns a 'hashed' number to give an ID a floorplan
            Completely arbitary hashing method but kinda fun.

@@ -678,6 +678,7 @@ namespace VacuumSim
             VacDisplay.CenterVacuumDisplay(ActualVacuumData.VacuumCoords, HouseLayout);
             VacDisplay.vacuumHeading = (int)InitialVacuumHeadingSelector.Value;
 
+            HouseLayout.PerformAreaCalculations();
             HouseLayout.SetInnerTileObstacles();
         }
 
@@ -724,6 +725,8 @@ namespace VacuumSim
             RunAnotherSimulationLabel.Visible = false;
 
             HouseLayout.ResetInnerTiles();
+            HouseLayout.totalFloorplanArea = 0;
+            HouseLayout.totalNonCleanableFloorplanArea = 0;
 
             FloorCanvas.Invalidate();
         }
