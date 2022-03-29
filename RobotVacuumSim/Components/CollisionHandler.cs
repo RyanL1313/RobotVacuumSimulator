@@ -50,17 +50,22 @@ namespace VacuumSim.Components
                 ActualVacuumData.VacuumCoords[1] += InnerTile.innerTileSideLength; // Move the vacuum down 1 inner tile side length (remember the downwards +y axis)
             else if (VacDisplay.vacuumHeading > 0 && VacDisplay.vacuumHeading < 90) // Vacuum moved down and to the right
             {
-                ActualVacuumData.VacuumCoords[0] -= InnerTile.innerTileSideLength; // Move the vacuum to the left 1 inner tile side length
+                // Move the vacuum to the left 1 inner tile side length
+                ActualVacuumData.VacuumCoords[0] -= InnerTile.innerTileSideLength;
+                VacDisplay.CenterVacuumDisplay(ActualVacuumData.VacuumCoords, HouseLayout); // Re-center the vacuum display after fixing the collision
 
                 // Check if still colliding
-                List<InnerTile> possibleCollisionTiles = HouseLayout.GetInnerTilesBeingCleanedByWhiskers(VacDisplay);
                 if (VacuumCollidedWithObstacle(VacDisplay, HouseLayout))
                 {
-                    ActualVacuumData.VacuumCoords[0] += InnerTile.innerTileSideLength; // Move the vacuum back to where it was
-                    ActualVacuumData.VacuumCoords[1] -= InnerTile.innerTileSideLength; // Move the vacuum up 1 inner tile side length (remember the downwards +y axis)
+                    // Move the vacuum back to where it was
+                    ActualVacuumData.VacuumCoords[0] += InnerTile.innerTileSideLength;
+                    VacDisplay.CenterVacuumDisplay(ActualVacuumData.VacuumCoords, HouseLayout); // Re-center the vacuum display after fixing the collision
+
+                    // Move the vacuum up 1 inner tile side length (remember the downwards +y axis)
+                    ActualVacuumData.VacuumCoords[1] -= InnerTile.innerTileSideLength;
+                    VacDisplay.CenterVacuumDisplay(ActualVacuumData.VacuumCoords, HouseLayout); // Re-center the vacuum display after fixing the collision
 
                     // Check if still colliding
-                    List<InnerTile> morePossibleCollisionTiles = HouseLayout.GetInnerTilesBeingCleanedByWhiskers(VacDisplay);
                     if (VacuumCollidedWithObstacle(VacDisplay, HouseLayout))
                     {
                         ActualVacuumData.VacuumCoords[1] += InnerTile.innerTileSideLength; // Move the vacuum back to where it was
@@ -73,17 +78,22 @@ namespace VacuumSim.Components
             }
             else if (VacDisplay.vacuumHeading > 90 && VacDisplay.vacuumHeading < 180) // Vacuum moved down and to the left
             {
-                ActualVacuumData.VacuumCoords[0] += InnerTile.innerTileSideLength; // Move the vacuum to the right 1 inner tile side length
+                // Move the vacuum to the right 1 inner tile side length
+                ActualVacuumData.VacuumCoords[0] += InnerTile.innerTileSideLength;
+                VacDisplay.CenterVacuumDisplay(ActualVacuumData.VacuumCoords, HouseLayout); // Re-center the vacuum display after fixing the collision
 
                 // Check if still colliding
-                List<InnerTile> possibleCollisionTiles = HouseLayout.GetInnerTilesBeingCleanedByWhiskers(VacDisplay);
                 if (VacuumCollidedWithObstacle(VacDisplay, HouseLayout))
                 {
-                    ActualVacuumData.VacuumCoords[0] -= InnerTile.innerTileSideLength; // Move the vacuum back to where it was
-                    ActualVacuumData.VacuumCoords[1] -= InnerTile.innerTileSideLength; // Move the vacuum up 1 inner tile side length (remember the downwards +y axis)
+                    // Move the vacuum back to where it was
+                    ActualVacuumData.VacuumCoords[0] -= InnerTile.innerTileSideLength;
+                    VacDisplay.CenterVacuumDisplay(ActualVacuumData.VacuumCoords, HouseLayout); // Re-center the vacuum display after fixing the collision
+
+                    // Move the vacuum up 1 inner tile side length (remember the downwards +y axis)
+                    ActualVacuumData.VacuumCoords[1] -= InnerTile.innerTileSideLength;
+                    VacDisplay.CenterVacuumDisplay(ActualVacuumData.VacuumCoords, HouseLayout); // Re-center the vacuum display after fixing the collision
 
                     // Check if still colliding
-                    List<InnerTile> morePossibleCollisionTiles = HouseLayout.GetInnerTilesBeingCleanedByWhiskers(VacDisplay);
                     if (VacuumCollidedWithObstacle(VacDisplay, HouseLayout))
                     {
                         ActualVacuumData.VacuumCoords[1] += InnerTile.innerTileSideLength; // Move the vacuum back to where it was
@@ -96,17 +106,22 @@ namespace VacuumSim.Components
             }
             else if (VacDisplay.vacuumHeading > 180 && VacDisplay.vacuumHeading < 270) // Vacuum moved up and to the left
             {
-                ActualVacuumData.VacuumCoords[0] += InnerTile.innerTileSideLength; // Move the vacuum to the right 1 inner tile side length
+                // Move the vacuum to the right 1 inner tile side length
+                ActualVacuumData.VacuumCoords[0] += InnerTile.innerTileSideLength;
+                VacDisplay.CenterVacuumDisplay(ActualVacuumData.VacuumCoords, HouseLayout); // Re-center the vacuum display after fixing the collision
 
                 // Check if still colliding
-                List<InnerTile> possibleCollisionTiles = HouseLayout.GetInnerTilesBeingCleanedByWhiskers(VacDisplay);
                 if (VacuumCollidedWithObstacle(VacDisplay, HouseLayout))
                 {
-                    ActualVacuumData.VacuumCoords[0] -= InnerTile.innerTileSideLength; // Move the vacuum back to where it was
-                    ActualVacuumData.VacuumCoords[1] += InnerTile.innerTileSideLength; // Move the vacuum down 1 inner tile side length (remember the downwards +y axis)
+                    // Move the vacuum back to where it was
+                    ActualVacuumData.VacuumCoords[0] -= InnerTile.innerTileSideLength;
+                    VacDisplay.CenterVacuumDisplay(ActualVacuumData.VacuumCoords, HouseLayout); // Re-center the vacuum display after fixing the collision
+
+                    // Move the vacuum down 1 inner tile side length (remember the downwards +y axis)
+                    ActualVacuumData.VacuumCoords[1] += InnerTile.innerTileSideLength;
+                    VacDisplay.CenterVacuumDisplay(ActualVacuumData.VacuumCoords, HouseLayout); // Re-center the vacuum display after fixing the collision
 
                     // Check if still colliding
-                    List<InnerTile> morePossibleCollisionTiles = HouseLayout.GetInnerTilesBeingCleanedByWhiskers(VacDisplay);
                     if (VacuumCollidedWithObstacle(VacDisplay, HouseLayout))
                     {
                         ActualVacuumData.VacuumCoords[1] -= InnerTile.innerTileSideLength; // Move the vacuum back to where it was
@@ -119,17 +134,22 @@ namespace VacuumSim.Components
             }
             else if (VacDisplay.vacuumHeading > 270 && VacDisplay.vacuumHeading < 360) // Vacuum moved up and to the right
             {
-                ActualVacuumData.VacuumCoords[0] -= InnerTile.innerTileSideLength; // Move the vacuum to the left 1 inner tile side length
+                // Move the vacuum to the left 1 inner tile side length
+                ActualVacuumData.VacuumCoords[0] -= InnerTile.innerTileSideLength;
+                VacDisplay.CenterVacuumDisplay(ActualVacuumData.VacuumCoords, HouseLayout); // Re-center the vacuum display after fixing the collision
 
                 // Check if still colliding
-                List<InnerTile> possibleCollisionTiles = HouseLayout.GetInnerTilesBeingCleanedByWhiskers(VacDisplay);
                 if (VacuumCollidedWithObstacle(VacDisplay, HouseLayout))
                 {
-                    ActualVacuumData.VacuumCoords[0] += InnerTile.innerTileSideLength; // Move the vacuum back to where it was
-                    ActualVacuumData.VacuumCoords[1] += InnerTile.innerTileSideLength; // Move the vacuum down 1 inner tile side length (remember the downwards +y axis)
+                    // Move the vacuum back to where it was
+                    ActualVacuumData.VacuumCoords[0] += InnerTile.innerTileSideLength;
+                    VacDisplay.CenterVacuumDisplay(ActualVacuumData.VacuumCoords, HouseLayout); // Re-center the vacuum display after fixing the collision
+
+                    // Move the vacuum down 1 inner tile side length (remember the downwards +y axis)
+                    ActualVacuumData.VacuumCoords[1] += InnerTile.innerTileSideLength;
+                    VacDisplay.CenterVacuumDisplay(ActualVacuumData.VacuumCoords, HouseLayout); // Re-center the vacuum display after fixing the collision
 
                     // Check if still colliding
-                    List<InnerTile> morePossibleCollisionTiles = HouseLayout.GetInnerTilesBeingCleanedByWhiskers(VacDisplay);
                     if (VacuumCollidedWithObstacle(VacDisplay, HouseLayout))
                     {
                         ActualVacuumData.VacuumCoords[1] -= InnerTile.innerTileSideLength; // Move the vacuum back to where it was

@@ -429,7 +429,7 @@ namespace VacuumSim
                 FloorCanvasDesigner.PaintChairAndTableBackgrounds(canvasEditor, HouseLayout);
                 FloorCanvasDesigner.DisplayCleanedTiles(canvasEditor, HouseLayout);
                 FloorCanvasDesigner.DrawVacuum(canvasEditor, VacDisplay);
-                //if (Simulation.simStarted) FloorCanvasDesigner.PaintVacuumHitboxInnerTiles(canvasEditor, HouseLayout, VacDisplay);
+                //FloorCanvasDesigner.PaintVacuumHitboxInnerTiles(canvasEditor, HouseLayout, VacDisplay);
                 //if (Simulation.simStarted) FloorCanvasDesigner.PaintInnerTilesGettingCleaned(canvasEditor, HouseLayout, VacDisplay); // testing purposes
                 //FloorCanvasDesigner.DrawInnerTileGridLines(canvasEditor, HouseLayout); // testing purposes
                 FloorCanvasDesigner.DrawFloorplan(canvasEditor, HouseLayout, VacDisplay);
@@ -599,7 +599,8 @@ namespace VacuumSim
             {
                 collisionHandler.HandleCollision(VacDisplay, ActualVacuumData, HouseLayout);
 
-                VacDisplay.vacuumHeading = (VacDisplay.vacuumHeading + 180) % 360; // Start moving in opposite direction (Note: I just have this here for my "straight line" algorithm I'm using for proof of concept)
+                Random rnd = new Random();
+                VacDisplay.vacuumHeading = rnd.Next() % 360;
             }
 
             // Clean affected inner tiles
