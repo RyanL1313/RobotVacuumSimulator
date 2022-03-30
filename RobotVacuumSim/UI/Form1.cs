@@ -123,7 +123,7 @@ namespace VacuumSim
         {
             if ((int)HouseWidthSelector.Value % 2 == 1) // Prevent non-even entries
                 HouseWidthSelector.Value += 1; // Round up
-            
+
             int prevNumTilesPerRow = HouseLayout.numTilesPerRow; // Number of tiles in a row before the width was changed
             HouseLayout.numTilesPerRow = ((int)HouseWidthSelector.Value + 4) / 2; // Get number of tiles per row based on house width chosen by user
             FloorCanvasDesigner.UpdateFloorplanAfterHouseWidthChanged(HouseLayout, prevNumTilesPerRow);
@@ -147,7 +147,6 @@ namespace VacuumSim
             // Update selected obstacle heights if necessary
             RoomHeightSelector.Value = Math.Min(RoomHeightSelector.Value, HouseHeightSelector.Value);
             ChairTableHeightSelector.Value = Math.Min(ChairTableHeightSelector.Value, HouseHeightSelector.Value);
-
 
             FloorCanvas.Invalidate(); // Re-draw canvas to reflect change in house height
         }
@@ -352,7 +351,25 @@ namespace VacuumSim
 
         private void SaveFloorplanButton_Click(object sender, EventArgs e)
         {
-            FloorplanFileWriter.SaveTileGridData("../../../UI/Floorplan/SavedFloorPlan.txt", HouseLayout);
+            SaveFileDialog saveFloorplanDialog = new SaveFileDialog();
+            saveFloorplanDialog.Filter = "Text files (*.txt)|*.txt";
+            saveFloorplanDialog.Title = "Save Floorplan";
+            saveFloorplanDialog.ShowDialog();
+
+            string outFilePath;
+
+            if (saveFloorplanDialog.FileName != "")
+            {
+                outFilePath = saveFloorplanDialog.FileName;
+            }
+            else
+            {
+                // If the path fails then tell the user to try again.
+                MessageBox.Show("Invalid file path passed, please try again.");
+                return;
+            }
+
+            FloorplanFileWriter.SaveTileGridData(outFilePath, HouseLayout);
         }
 
         private void LoadDefaultFloorplanButton_Click(object sender, EventArgs e)
@@ -367,7 +384,28 @@ namespace VacuumSim
 
         private void LoadSavedFloorplanButton_Click(object sender, EventArgs e)
         {
-            FloorplanFileReader.LoadTileGridData("../../../UI/Floorplan/SavedFloorPlan.txt", HouseLayout);
+            string inFilePath;
+            // This handy bit of code gets the current user's desktop directory.
+            // We use this as the default directory for the load dialog.
+            string usrDesktopPath = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
+
+            OpenFileDialog openFloorplanDialog = new OpenFileDialog();
+            openFloorplanDialog.Title = "Open Floorplan";
+            openFloorplanDialog.Filter = "Text files (*.txt)|*.txt";
+            openFloorplanDialog.InitialDirectory = usrDesktopPath;
+            openFloorplanDialog.RestoreDirectory = true;
+
+            if (openFloorplanDialog.ShowDialog() == DialogResult.OK)
+            {
+                inFilePath = openFloorplanDialog.FileName;
+            }
+            else
+            {
+                // If the user closes the dialog without opening anything, just exit out.
+                return;
+            }
+
+            FloorplanFileReader.LoadTileGridData(inFilePath, HouseLayout);
 
             // Set the house width and height selector values to the size of the newly-loaded floorplan
             HouseWidthSelector.Value = HouseLayout.numTilesPerRow * 2 - 4;
@@ -453,7 +491,7 @@ namespace VacuumSim
 
             // Make sure we don't re-draw the canvas if the user is still selecting the same tile while in floorplan drawing mode (efficiency concerns)
             // Also, prevent drawing on the canvas based on various other conditions
-            if (FloorCanvasDesigner.justPlacedDoorway || FloorCanvasDesigner.displayingHeatMap || !FloorCanvasDesigner.eraserModeOn && !FloorCanvasDesigner.currentlyAddingDoorway && !FloorCanvasDesigner.settingVacuumAttributes && 
+            if (FloorCanvasDesigner.justPlacedDoorway || FloorCanvasDesigner.displayingHeatMap || !FloorCanvasDesigner.eraserModeOn && !FloorCanvasDesigner.currentlyAddingDoorway && !FloorCanvasDesigner.settingVacuumAttributes &&
                 selectedTileIndices[0] == FloorCanvasDesigner.currentIndicesOfSelectedTile[0] && selectedTileIndices[1] == FloorCanvasDesigner.currentIndicesOfSelectedTile[1])
                 return;
             else
@@ -572,7 +610,7 @@ namespace VacuumSim
                 }
                 else
                 {
-                    FloorCanvasDesigner.ChangeSuccessTilesToCurrentObstacle(); // Change success tiles in FloorplanHouseDesigner to be the same obstacle type that was just added         
+                    FloorCanvasDesigner.ChangeSuccessTilesToCurrentObstacle(); // Change success tiles in FloorplanHouseDesigner to be the same obstacle type that was just added
                     HouseLayout.DeepCopyFloorplan(FloorCanvasDesigner.FloorplanHouseDesigner); // Copy the designer mode house layout to now be the actual house layout
                 }
             }
@@ -667,7 +705,7 @@ namespace VacuumSim
             LoadDefaultFloorplanButton.Enabled = false;
             LoadSavedFloorplanButton.Enabled = false;
             SaveFloorplanButton.Enabled = false;
-            EraserModeButton.Enabled = false;            
+            EraserModeButton.Enabled = false;
             ChairTableWidthSelector.Enabled = false;
             ChairTableHeightSelector.Enabled = false;
             ObstacleSelector.Enabled = false;
@@ -734,7 +772,6 @@ namespace VacuumSim
 
         private void Form1_Load(object sender, EventArgs e)
         {
-
         }
     }
 
