@@ -34,7 +34,7 @@ namespace VacuumSim
         private FloorplanLayout HouseLayout;
         private VacuumDisplay VacDisplay;
         private VacuumController vc;
-        private Vacuum ActualVacuumData;
+        private Vacuum ActualVacuumData = new Vacuum();
         private FloorCleaner floorCleaner = new FloorCleaner();
         private CollisionHandler collisionHandler = new CollisionHandler();
 
@@ -66,7 +66,7 @@ namespace VacuumSim
         private void InitSimulationSpeedSelector()
         {
             SimulationSpeedSelector.DataSource = SimulationSpeeds;
-            Vacuum.VacuumSpeed = (int)RobotSpeedSelector.Value;
+            ActualVacuumData.VacuumSpeed = (int)RobotSpeedSelector.Value;
         }
 
         public Form1()
@@ -205,14 +205,14 @@ namespace VacuumSim
         private void RobotSpeedSelector_ValueChanged(object sender, EventArgs e)
         {
             VacDisplay.vacuumSpeed = (int)RobotSpeedSelector.Value;
-            Vacuum.VacuumSpeed = (int)RobotSpeedSelector.Value;
+            ActualVacuumData.VacuumSpeed = (int)RobotSpeedSelector.Value;
         }
 
         private void RobotBatteryLifeSelector_ValueChanged(object sender, EventArgs e)
         {
             BatteryLeftLabel.Text = "" + RobotBatteryLifeSelector.Value + " minutes";
             VacDisplay.batterySecondsRemaining = (int)RobotBatteryLifeSelector.Value * 60;
-            Vacuum.VacuumBattery = (int)RobotBatteryLifeSelector.Value;
+            ActualVacuumData.VacuumBattery = (int)RobotBatteryLifeSelector.Value;
         }
 
         private void InitialVacuumHeadingSelector_ValueChanged(object sender, EventArgs e)
@@ -386,11 +386,6 @@ namespace VacuumSim
             HouseHeightSelector.Value = HouseLayout.numTilesPerCol * 2 - 4;
 
             FloorCanvas.Invalidate();
-        }
-
-        private void StartSimulationButton_Click(object sender, EventArgs e)
-        {
-            SetInitialSimulationValues();
         }
 
         private void StopSimulationButton_Click(object sender, EventArgs e)
@@ -599,26 +594,6 @@ namespace VacuumSim
 
         private void VacuumBodyTimer_Tick(object sender, EventArgs e)
         {
-            // Get the actual coordinates of the new vacuum position
-            ActualVacuumData.VacuumCoords[0] += FloorCanvasCalculator.GetDistanceTraveledPerFrame(VacDisplay.vacuumSpeed) * (float)Math.Cos((Math.PI * VacDisplay.vacuumHeading) / 180);
-            ActualVacuumData.VacuumCoords[1] += FloorCanvasCalculator.GetDistanceTraveledPerFrame(VacDisplay.vacuumSpeed) * (float)Math.Sin((Math.PI * VacDisplay.vacuumHeading) / 180);
-
-            // Update the vacuum display's coordinates based on the actual coordinates just calculated. The vacuum display's centerpoint will get centered within an inner tile
-            VacDisplay.CenterVacuumDisplay(ActualVacuumData.VacuumCoords, HouseLayout);
-
-            // Check for collision. If one occurred, deal with it by updating the vacuum's coordinates based on the previous direction traveled
-            if (collisionHandler.VacuumCollidedWithObstacle(VacDisplay, HouseLayout))
-            {
-                collisionHandler.HandleCollision(VacDisplay, ActualVacuumData, HouseLayout);
-
-                Random rnd = new Random();
-                VacDisplay.vacuumHeading = rnd.Next() % 360;
-            }
-
-            // Clean affected inner tiles
-            floorCleaner.CleanInnerTiles(VacDisplay, ActualVacuumData, HouseLayout);
-
-            FloorCanvasCalculator.UpdateSimulationData(VacDisplay);
             BatteryLeftLabel.Text = FloorCanvasCalculator.GetBatteryRemainingText(VacDisplay);
             SimTimeElapsedLabel.Text = FloorCanvasCalculator.GetTimeElapsedText();
 
@@ -631,7 +606,7 @@ namespace VacuumSim
 
         private void VacAlgorithmTimer_Tick(object sender, EventArgs e)
         {
-            vc.ExecVPath(VacDisplay, HouseLayout, sender, e);
+            vc.ExecVPath(VacDisplay, HouseLayout, collisionHandler, floorCleaner, ActualVacuumData, sender, e);
             FloorCanvas.Invalidate();
         }
 
@@ -641,33 +616,11 @@ namespace VacuumSim
 
             FloorCanvas.Invalidate(); // Re-trigger paint event
         }
-        private void SaveFloorplanButton_Click(object sender, EventArgs e)
-        {
-            // Modify this in the future
-            FloorplanFileWriter.SaveTileGridData("../../../UI/Floorplan/SavedFloorplan.txt", HouseLayout);
-        }
 
-        private void LoadDefaultFloorplanButton_Click(object sender, EventArgs e)
-        {
-            HouseWidthSelector.Value = 50; // 25 tiles wide
-            HouseHeightSelector.Value = 40; // 20 tiles high
-
-            // Read the floorplan data file and store it in HouseLayoutAccessor.floorLayout
-            // Modify this in the future
-            FloorplanFileReader.LoadTileGridData("../../../UI/Floorplan/DefaultFloorplan.txt", HouseLayout);
-
-            FloorCanvas.Invalidate(); // Re-trigger paint event
-        }
-
-        private void LoadSavedFloorplanButton_Click(object sender, EventArgs e)
-        {
-
-        }
 
         private void StartSimulationButton_Click(object sender, EventArgs e)
         {
             SetInitialSimulationValues();
-            // TODO: update to initialize vc again after one algorithm completes. this works for now.
             if (Vacuum.VacuumAlgorithm[0] == 0)
             {
                 vc = new VRandAlgorithm();
@@ -690,11 +643,6 @@ namespace VacuumSim
             }
         }
 
-        private void StopSimulationButton_Click(object sender, EventArgs e)
-        {
-            ResetSimulationValues();
-
-        }
         /// <summary>
         /// Enables floorplan widgets if value is true, disables them if value is false
         /// </summary>

@@ -4,6 +4,8 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using VacuumSim.UI.FloorplanGraphics;
+
 
 namespace VacuumSim.Components
 {
@@ -12,7 +14,7 @@ namespace VacuumSim.Components
     /// </summary>
     public class VWallFollowAlgorithm : VacuumController
     {
-        public override void ExecVPath(VacuumDisplay VacDisplay, FloorplanLayout HouseLayout, object sender, EventArgs e)
+        public override void ExecVPath(VacuumDisplay VacDisplay, FloorplanLayout HouseLayout, CollisionHandler collisionHandler, FloorCleaner floorCleaner, Vacuum ActualVacuumData, object sender, EventArgs e)
         {
             Debug.WriteLine("running wall follow algorithm");
 
