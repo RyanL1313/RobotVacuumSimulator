@@ -430,9 +430,9 @@ namespace VacuumSim
             InnerTile centerInnerTile = HouseLayout.GetInnerTileFromCoordinates(vacuumX, vacuumY);
             List<InnerTile> retList = new List<InnerTile>();
 
-            for (int x = vacuumX - InnerTile.innerTileSideLength; x <= vacuumX + InnerTile.innerTileSideLength; x++)
+            for (int x = vacuumX - InnerTile.innerTileSideLength; x <= vacuumX + InnerTile.innerTileSideLength; x += InnerTile.innerTileSideLength)
             {
-                for (int y = vacuumY - InnerTile.innerTileSideLength; y <= vacuumY + InnerTile.innerTileSideLength; y++)
+                for (int y = vacuumY - InnerTile.innerTileSideLength; y <= vacuumY + InnerTile.innerTileSideLength; y += InnerTile.innerTileSideLength)
                 {
                     retList.Add(GetInnerTileFromCoordinates(x, y));
                 }
