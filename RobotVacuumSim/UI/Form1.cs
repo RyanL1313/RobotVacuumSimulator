@@ -197,7 +197,6 @@ namespace VacuumSim
             Simulation.simSpeed = Int32.Parse(SimulationSpeedSelector.SelectedItem.ToString().TrimEnd('x'));
 
             // Set the vacuum timer to update every 1000 / (simulation speed) / (frames per simulation second)
-            VacuumBodyTimer.Interval = 1000 / Simulation.simSpeed / FloorCanvasCalculator.framesPerSimSecond;
             VacAlgorithmTimer.Interval = 1000 / Simulation.simSpeed / FloorCanvasCalculator.framesPerSimSecond;
         }
 
@@ -646,21 +645,17 @@ namespace VacuumSim
             FloorCanvas.Invalidate();
         }
 
-        private void VacuumBodyTimer_Tick(object sender, EventArgs e)
+        private void VacAlgorithmTimer_Tick(object sender, EventArgs e)
         {
+            vc.ExecVPath(VacDisplay, HouseLayout, collisionHandler, floorCleaner, ActualVacuumData, sender, e);
+
+            // Decrement the battery
             BatteryLeftLabel.Text = FloorCanvasCalculator.GetBatteryRemainingText(VacDisplay);
             SimTimeElapsedLabel.Text = FloorCanvasCalculator.GetTimeElapsedText();
 
             // Save and reset simulation data if battery just ran out
             if (VacDisplay.batterySecondsRemaining <= 0)
                 ResetValuesAfterSimEnd();
-
-            FloorCanvas.Invalidate();
-        }
-
-        private void VacAlgorithmTimer_Tick(object sender, EventArgs e)
-        {
-            vc.ExecVPath(VacDisplay, HouseLayout, collisionHandler, floorCleaner, ActualVacuumData, sender, e);
             FloorCanvas.Invalidate();
         }
 
@@ -730,7 +725,6 @@ namespace VacuumSim
         /// </summary>
         private void SetInitialSimulationValues()
         {
-            VacuumBodyTimer.Enabled = true;
             VacuumWhiskersTimer.Enabled = true;
             HouseLayout.gridLinesOn = false;
             StartSimulationButton.Enabled = false;
@@ -777,7 +771,6 @@ namespace VacuumSim
         private void ResetValuesAfterSimEnd()
         {
             FloorCanvasDesigner.displayingHeatMap = true;
-            VacuumBodyTimer.Enabled = false;
             VacuumWhiskersTimer.Enabled = false;
             VacAlgorithmTimer.Enabled = false;
             HouseLayout.gridLinesOn = true;

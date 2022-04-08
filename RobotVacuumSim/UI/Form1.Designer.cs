@@ -101,7 +101,6 @@ namespace VacuumSim
             this.BatteryLeftLabel = new System.Windows.Forms.Label();
             this.BatteryLeftTitleLabel = new System.Windows.Forms.Label();
             this.FloorCanvas = new System.Windows.Forms.PictureBox();
-            this.VacuumBodyTimer = new System.Windows.Forms.Timer(this.components);
             this.VacuumWhiskersTimer = new System.Windows.Forms.Timer(this.components);
             this.VacAlgorithmTimer = new System.Windows.Forms.Timer(this.components);
             ((System.ComponentModel.ISupportInitialize)(this.LeftPane)).BeginInit();
@@ -1125,11 +1124,6 @@ namespace VacuumSim
             this.FloorCanvas.MouseMove += new System.Windows.Forms.MouseEventHandler(this.FloorCanvas_Click);
             this.FloorCanvas.MouseUp += new System.Windows.Forms.MouseEventHandler(this.FloorCanvas_MouseUp);
             // 
-            // VacuumBodyTimer
-            // 
-            this.VacuumBodyTimer.Interval = 1000;
-            this.VacuumBodyTimer.Tick += new System.EventHandler(this.VacuumBodyTimer_Tick);
-            // 
             // VacuumWhiskersTimer
             // 
             this.VacuumWhiskersTimer.Interval = 250;
@@ -1229,7 +1223,6 @@ namespace VacuumSim
         private System.Windows.Forms.Button LoadDefaultFloorplanButton;
         private System.Windows.Forms.PictureBox FloorCanvas;
         private System.Windows.Forms.ComboBox ObstacleSelector;
-        private System.Windows.Forms.Timer VacuumBodyTimer;
         private System.Windows.Forms.Timer VacuumWhiskersTimer;
         private System.Windows.Forms.Label BatteryLeftLabel;
         private System.Windows.Forms.Label BatteryLeftTitleLabel;
