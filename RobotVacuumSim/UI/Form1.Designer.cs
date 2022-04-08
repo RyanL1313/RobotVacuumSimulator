@@ -1,4 +1,6 @@
-﻿
+
+using VacuumSim.Components;
+
 namespace VacuumSim
 {
     partial class Form1
@@ -101,6 +103,7 @@ namespace VacuumSim
             this.FloorCanvas = new System.Windows.Forms.PictureBox();
             this.VacuumBodyTimer = new System.Windows.Forms.Timer(this.components);
             this.VacuumWhiskersTimer = new System.Windows.Forms.Timer(this.components);
+            this.VacAlgorithmTimer = new System.Windows.Forms.Timer(this.components);
             ((System.ComponentModel.ISupportInitialize)(this.LeftPane)).BeginInit();
             this.LeftPane.Panel1.SuspendLayout();
             this.LeftPane.Panel2.SuspendLayout();
@@ -802,6 +805,7 @@ namespace VacuumSim
             this.RobotPathAlgorithmSelector.Name = "RobotPathAlgorithmSelector";
             this.RobotPathAlgorithmSelector.Size = new System.Drawing.Size(133, 23);
             this.RobotPathAlgorithmSelector.TabIndex = 10;
+            this.RobotPathAlgorithmSelector.SelectedIndexChanged += new System.EventHandler(this.RobotPathAlgorithmSelector_SelectedIndexChanged);
             // 
             // RobotSpeedLabel
             // 
@@ -1131,6 +1135,11 @@ namespace VacuumSim
             this.VacuumWhiskersTimer.Interval = 250;
             this.VacuumWhiskersTimer.Tick += new System.EventHandler(this.VacuumWhiskersTimer_Tick);
             // 
+            // VacAlgorithmTimer
+            // 
+            this.VacAlgorithmTimer.Interval = 1000;
+            this.VacAlgorithmTimer.Tick += new System.EventHandler(this.VacAlgorithmTimer_Tick);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
@@ -1239,6 +1248,7 @@ namespace VacuumSim
         private System.Windows.Forms.NumericUpDown ChairTableHeightSelector;
         private System.Windows.Forms.NumericUpDown ChairTableWidthSelector;
         private System.Windows.Forms.Button EraserModeButton;
+        public System.Windows.Forms.Timer VacAlgorithmTimer;
         private System.Windows.Forms.Label WhiskersEfficiencyTitleLabel;
         private System.Windows.Forms.Label VacuumEfficiencyTitleLabel;
         private System.Windows.Forms.TrackBar WhiskersEfficiencySlider;
