@@ -15,9 +15,9 @@ namespace VacuumSim.Components
     {
         private bool spiralFlag = false;
         private int obstacleDistanceCounter = 0;
-        private double radius = 45;
-        private float rate = (float)(5 * Math.PI / 180);
-
+        //private double radius = 45;
+        private float rate = 0.1f;
+        private float radius = 0;
         public override void ExecVPath(VacuumDisplay VacDisplay, FloorplanLayout HouseLayout, CollisionHandler collisionHandler, FloorCleaner floorCleaner, Vacuum ActualVacuumData, object sender, EventArgs e)
         {
             //If the vacuum is not in a spiral, it will move in a straight line. This will be used when the vacuum first starts and after it hits
@@ -32,12 +32,15 @@ namespace VacuumSim.Components
             }
             else if (spiralFlag == true)
             {
-                ActualVacuumData.VacuumCoords[0] += FloorCanvasCalculator.GetDistanceTraveledPerFrame(VacDisplay.vacuumSpeed) * (float)Math.Cos((Math.PI * VacDisplay.vacuumHeading) / 180);
-                ActualVacuumData.VacuumCoords[1] += FloorCanvasCalculator.GetDistanceTraveledPerFrame(VacDisplay.vacuumSpeed) * (float)Math.Sin((Math.PI * VacDisplay.vacuumHeading) / 180);
 
-                VacDisplay.vacuumHeading = (int)((VacDisplay.vacuumHeading + radius)) % 360;
-                if (radius != 1)
-                    radius -= rate;
+                ActualVacuumData.VacuumCoords[0] += FloorCanvasCalculator.GetDistanceTraveledPerFrame(VacDisplay.vacuumSpeed) * ((float)Math.Cos((VacDisplay.vacuumHeading)) * radius);
+                ActualVacuumData.VacuumCoords[1] += FloorCanvasCalculator.GetDistanceTraveledPerFrame(VacDisplay.vacuumSpeed) * ((float)Math.Sin((VacDisplay.vacuumHeading)) * radius);
+
+                radius += rate;
+                VacDisplay.vacuumHeading = (VacDisplay.vacuumHeading + 1) % 360;
+                //if (radius != 1)
+                //    radius -= (2*Math.PI);
+                //Debug.WriteLine(radius);
             }
 
             VacDisplay.CenterVacuumDisplay(ActualVacuumData.VacuumCoords, HouseLayout);
@@ -51,7 +54,7 @@ namespace VacuumSim.Components
                 VacDisplay.vacuumHeading = rnd.Next() % 360;
                 spiralFlag = false;
                 obstacleDistanceCounter = 0;
-                radius = 45;
+                radius = 0;
             }
             floorCleaner.CleanInnerTiles(VacDisplay, ActualVacuumData, HouseLayout);
 
