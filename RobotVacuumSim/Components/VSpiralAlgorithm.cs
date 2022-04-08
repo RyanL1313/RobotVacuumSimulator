@@ -37,10 +37,8 @@ namespace VacuumSim.Components
                 ActualVacuumData.VacuumCoords[1] += FloorCanvasCalculator.GetDistanceTraveledPerFrame(VacDisplay.vacuumSpeed) * ((float)Math.Sin((VacDisplay.vacuumHeading)) * radius);
 
                 radius += rate;
-                VacDisplay.vacuumHeading = (VacDisplay.vacuumHeading + 1) % 360;
-                //if (radius != 1)
-                //    radius -= (2*Math.PI);
-                //Debug.WriteLine(radius);
+                VacDisplay.vacuumHeading = (VacDisplay.vacuumHeading + 1);
+
             }
 
             VacDisplay.CenterVacuumDisplay(ActualVacuumData.VacuumCoords, HouseLayout);
