@@ -789,7 +789,6 @@ namespace VacuumSim
             Simulation.simStarted = false;
             Simulation.simTimeElapsed = 0;
             FloorCanvasCalculator.movementCount = 0;
-            VacDisplay.batterySecondsRemaining = (int)RobotBatteryLifeSelector.Value * 60;
             InitialVacuumHeadingSelector.Value = VacDisplay.vacuumHeading;
             YesRunAnotherSimulationButton.Visible = true;
             NoRunAnotherSimulationButton.Visible = true;

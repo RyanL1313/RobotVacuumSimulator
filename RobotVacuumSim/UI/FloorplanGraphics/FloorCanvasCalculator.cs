@@ -86,7 +86,7 @@ namespace VacuumSim.UI.FloorplanGraphics
         {
             movementCount++;
 
-            if (movementCount % movementsPerSimSecond == 0)
+            if (movementCount % movementsPerSimSecond == 0 && VacDisplay.batterySecondsRemaining > 0)
             {
                 Simulation.simTimeElapsed++;
                 VacDisplay.batterySecondsRemaining--;
