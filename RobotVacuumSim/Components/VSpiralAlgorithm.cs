@@ -18,7 +18,7 @@ namespace VacuumSim.Components
         //private double radius = 45;
         private float rate = 0.1f;
         private float radius = 0;
-        public override void ExecVPath(VacuumDisplay VacDisplay, FloorplanLayout HouseLayout, CollisionHandler collisionHandler, FloorCleaner floorCleaner, Vacuum ActualVacuumData, object sender, EventArgs e)
+        public override void ExecVPath(VacuumDisplay VacDisplay, FloorplanLayout HouseLayout, CollisionHandler collisionHandler, FloorCleaner floorCleaner, Vacuum ActualVacuumData)
         {
             //If the vacuum is not in a spiral, it will move in a straight line. This will be used when the vacuum first starts and after it hits
             // an obstacle to ensure it has enough space to begin spiraling.
