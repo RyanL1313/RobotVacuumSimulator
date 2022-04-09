@@ -54,7 +54,7 @@ namespace VacuumSim
             Vacuum.VacuumAlgorithm.Clear();
         }
 
-            private void InitFloorTileSelector()
+        private void InitFloorTileSelector()
         {
             // Set the data source of the dropdown box to be the values of our ObstacleType enum
             //ObstacleSelector.DataSource = Enum.GetValues(typeof(ObstacleType));
@@ -269,12 +269,12 @@ namespace VacuumSim
         private void ShowInstructionsButton_Click(object sender, EventArgs e)
         {
             MessageBox.Show("Welcome to the Robot Vacuum Simulator. Below is a short guide on how to use this software:\n\n" +
-                "The first step is to create a floor plan. You can either start from scratch or start from a pre-loaded floor plan.\n" + 
+                "The first step is to create a floor plan. You can either start from scratch or start from a pre-loaded floor plan.\n" +
                 "There are two types of pre-loaded floor plans. A floor plan that you have created and saved, and a default floor plan\n" +
                 "created by us, the developers. You can then add/remove obstacles onto the floor plan. This can be achieved by selecting\n" +
                 "an obstacle (i.e. room, chair, table, chest) and then clicking-and-dragging the obstacle onto the floor plan. To remove obstacles,\n" +
                 "click on the \"Eraser Mode\" button to turn on eraser mode. Then, you can click on obstacles on the floor plan to remove them.\n" +
-                "Once you are satisfied with your floor plan, press \"Finish Floor Plan\". You can always go back to editing the floor plan by\n" + 
+                "Once you are satisfied with your floor plan, press \"Finish Floor Plan\". You can always go back to editing the floor plan by\n" +
                 "pressing \"Edit Floor Plan\". Pressing \"Finish Floor Plan\" will allow you to start setting the vacuum's attributes.\n\n" +
                 "Customize the vacuum's attributes by utilizing the different options in the \"Vacuum Attributes\" section. Place the vacuum\n" +
                 "onto the floor plan by clicking-and-dragging the vacuum onto a valid position. Once the vacuum is placed, you can set the simulation\n" +
@@ -283,7 +283,7 @@ namespace VacuumSim
                 "As the simulation is running, a trail will be shown behind the vacuum showing what areas of the house have been cleaned so far by the vacuum.\n\n" +
                 "Once the simulation has ended, the results will get saved and can be reviewed at any time. Also, after the simulation has ended, a heat map will get displayed\n" +
                 "showing how well each area of the house was cleaned by the vacuum. The more red a spot is, the better the vacuum cleaned it. The more blue\n" +
-                "a spot is, the worse the vacuum cleaned it.\n\n" + 
+                "a spot is, the worse the vacuum cleaned it.\n\n" +
                 "You can then proceed to run another simulation by pressing \"Yes\" when prompted.\n");
         }
 
@@ -439,12 +439,6 @@ namespace VacuumSim
             HouseHeightSelector.Value = HouseLayout.numTilesPerCol * 2 - 4;
 
             FloorCanvas.Invalidate();
-        }
-
-        private void StartSimulationButton_Click(object sender, EventArgs e)
-        {
-            SetInitialSimulationValues();
-            DEBUG_SHOW_DIRTINESS_STATS();
         }
 
         // TODO delete this func lol
@@ -696,7 +690,6 @@ namespace VacuumSim
             FloorCanvas.Invalidate(); // Re-trigger paint event
         }
 
-
         private void StartSimulationButton_Click(object sender, EventArgs e)
         {
             SetInitialSimulationValues();
@@ -712,12 +705,12 @@ namespace VacuumSim
             }
             else if (Vacuum.VacuumAlgorithm[0] == 2)
             {
-                vc  = new VSnakeAlgorithm();
+                vc = new VSnakeAlgorithm();
                 VacAlgorithmTimer.Enabled = true;
             }
             else if (Vacuum.VacuumAlgorithm[0] == 3)
             {
-                vc  = new VWallFollowAlgorithm();
+                vc = new VWallFollowAlgorithm();
                 VacAlgorithmTimer.Enabled = true;
             }
         }
@@ -839,7 +832,6 @@ namespace VacuumSim
             FloorCanvasCalculator.frameCount = 0;
             VacDisplay.batterySecondsRemaining = (int)RobotBatteryLifeSelector.Value * 60;
             RunAllAlgorithmsCheckbox.Enabled = true;
-
 
             FloorCanvas.Invalidate(); // Re-trigger paint event
             StartSimulationButton.Enabled = true;
