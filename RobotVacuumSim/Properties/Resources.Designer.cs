@@ -71,6 +71,15 @@ namespace VacuumSim.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to .
+        /// </summary>
+        internal static string DefaultFloorPlan {
+            get {
+                return ResourceManager.GetString("DefaultFloorPlan", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
         internal static System.Drawing.Bitmap frieze {

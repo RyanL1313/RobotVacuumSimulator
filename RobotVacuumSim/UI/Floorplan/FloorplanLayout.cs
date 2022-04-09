@@ -45,6 +45,7 @@ namespace VacuumSim
         /* tile based on the row and column and another helper method */
         /* (GetTileFromCoordinates) to easily access a tile based on the coordinates */
         /* clicked on by the user. */
+
         public FloorplanLayout()
         {
             floorLayout = new Tile[maxTilesPerRow, maxTilesPerCol]; // Create the 2D array of tiles
@@ -72,12 +73,14 @@ namespace VacuumSim
         }
 
         /* Returns the Tile object by requested row and column. */
+
         public Tile GetTileFromRowCol(int row, int col)
         {
             return floorLayout[col, row];
         }
 
         /* Returns the Tile object located at the (x, y) coordinates in the FloorCanvas PictureBox */
+
         public Tile GetTileFromCoordinates(int x, int y)
         {
             int xTileIndex = x / tileSideLength;
@@ -106,18 +109,21 @@ namespace VacuumSim
         }
 
         /* Returns the maximum x coordinates. Vacuum should not go past this. */
+
         public int GetMaximumXCoordinates()
         {
             return numTilesPerRow * tileSideLength;
         }
 
         /* Returns the maximum y coordinates. Vacuum should not go past this. */
+
         public int GetMaximumYCoordinates()
         {
             return numTilesPerCol * tileSideLength;
         }
 
         /* Modifies the obstacle located in a certain tile based on the (x, y) coordinates in the FloorCanvas PictureBox */
+
         public void ModifyTileBasedOnCoordinates(int x, int y, ObstacleType ob)
         {
             // Get row, col indices of selected tile based on the coordinates selected by the user
@@ -131,6 +137,7 @@ namespace VacuumSim
         }
 
         /* Modifies the obstacle located in a certain tile based on the chosen indices of floorLayout */
+
         public void ModifyTileBasedOnIndices(int xTileIndex, int yTileIndex, ObstacleType ob)
         {
             if (xTileIndex >= maxTilesPerRow || yTileIndex >= maxTilesPerCol)
@@ -140,6 +147,7 @@ namespace VacuumSim
         }
 
         /* Modifies the obstacle and group ID of a tile based on the chosen indices of floorLayout */
+
         public void ModifyTileBasedOnIndices(int xTileIndex, int yTileIndex, ObstacleType ob, int groupID)
         {
             if (xTileIndex >= maxTilesPerRow || yTileIndex >= maxTilesPerCol)
@@ -319,8 +327,6 @@ namespace VacuumSim
                     }
                 }
             }
-
-
         }
 
         /// <summary>
@@ -343,7 +349,7 @@ namespace VacuumSim
         /// This depends on the vacuum heading.
         /// </summary>
         /// <param name="VacDisplay"> The display of the vacuum in the simulation </param>
-        /// <returns> The list of 3 inner tiles getting cleaned by the vacuum's whiskers </returns>
+        /// <returns> The list of 6 inner tiles getting cleaned by the vacuum's whiskers </returns>
         public List<InnerTile> GetInnerTilesBeingCleanedByWhiskers(VacuumDisplay VacDisplay)
         {
             InnerTile centerInnerTile = GetInnerTileBeingCleanedByVacuum(VacDisplay);
@@ -351,50 +357,74 @@ namespace VacuumSim
 
             if (VacDisplay.vacuumHeading >= 0 && VacDisplay.vacuumHeading < 45)
             {
+                retInnerTiles.Add(GetInnerTileFromCoordinates(centerInnerTile.x - InnerTile.innerTileSideLength, centerInnerTile.y - InnerTile.innerTileSideLength));
+                retInnerTiles.Add(GetInnerTileFromCoordinates(centerInnerTile.x, centerInnerTile.y - InnerTile.innerTileSideLength));
                 retInnerTiles.Add(GetInnerTileFromCoordinates(centerInnerTile.x + InnerTile.innerTileSideLength, centerInnerTile.y - InnerTile.innerTileSideLength));
-                retInnerTiles.Add(GetInnerTileFromCoordinates(centerInnerTile.x + InnerTile.innerTileSideLength, centerInnerTile.y));
+                retInnerTiles.Add(GetInnerTileFromCoordinates(centerInnerTile.x - InnerTile.innerTileSideLength, centerInnerTile.y + InnerTile.innerTileSideLength));
+                retInnerTiles.Add(GetInnerTileFromCoordinates(centerInnerTile.x, centerInnerTile.y + InnerTile.innerTileSideLength));
                 retInnerTiles.Add(GetInnerTileFromCoordinates(centerInnerTile.x + InnerTile.innerTileSideLength, centerInnerTile.y + InnerTile.innerTileSideLength));
             }
             else if (VacDisplay.vacuumHeading >= 45 && VacDisplay.vacuumHeading < 90)
             {
+                retInnerTiles.Add(GetInnerTileFromCoordinates(centerInnerTile.x, centerInnerTile.y - InnerTile.innerTileSideLength));
+                retInnerTiles.Add(GetInnerTileFromCoordinates(centerInnerTile.x + InnerTile.innerTileSideLength, centerInnerTile.y - InnerTile.innerTileSideLength));
                 retInnerTiles.Add(GetInnerTileFromCoordinates(centerInnerTile.x + InnerTile.innerTileSideLength, centerInnerTile.y));
-                retInnerTiles.Add(GetInnerTileFromCoordinates(centerInnerTile.x + InnerTile.innerTileSideLength, centerInnerTile.y + InnerTile.innerTileSideLength));
                 retInnerTiles.Add(GetInnerTileFromCoordinates(centerInnerTile.x, centerInnerTile.y + InnerTile.innerTileSideLength));
+                retInnerTiles.Add(GetInnerTileFromCoordinates(centerInnerTile.x - InnerTile.innerTileSideLength, centerInnerTile.y + InnerTile.innerTileSideLength));
+                retInnerTiles.Add(GetInnerTileFromCoordinates(centerInnerTile.x - InnerTile.innerTileSideLength, centerInnerTile.y));
             }
             else if (VacDisplay.vacuumHeading >= 90 && VacDisplay.vacuumHeading < 135)
             {
-                retInnerTiles.Add(GetInnerTileFromCoordinates(centerInnerTile.x + InnerTile.innerTileSideLength, centerInnerTile.y + InnerTile.innerTileSideLength));
-                retInnerTiles.Add(GetInnerTileFromCoordinates(centerInnerTile.x, centerInnerTile.y + InnerTile.innerTileSideLength));
+                retInnerTiles.Add(GetInnerTileFromCoordinates(centerInnerTile.x - InnerTile.innerTileSideLength, centerInnerTile.y - InnerTile.innerTileSideLength));
+                retInnerTiles.Add(GetInnerTileFromCoordinates(centerInnerTile.x - InnerTile.innerTileSideLength, centerInnerTile.y));
                 retInnerTiles.Add(GetInnerTileFromCoordinates(centerInnerTile.x - InnerTile.innerTileSideLength, centerInnerTile.y + InnerTile.innerTileSideLength));
+                retInnerTiles.Add(GetInnerTileFromCoordinates(centerInnerTile.x + InnerTile.innerTileSideLength, centerInnerTile.y - InnerTile.innerTileSideLength));
+                retInnerTiles.Add(GetInnerTileFromCoordinates(centerInnerTile.x + InnerTile.innerTileSideLength, centerInnerTile.y));
+                retInnerTiles.Add(GetInnerTileFromCoordinates(centerInnerTile.x + InnerTile.innerTileSideLength, centerInnerTile.y + InnerTile.innerTileSideLength));
             }
             else if (VacDisplay.vacuumHeading >= 135 && VacDisplay.vacuumHeading < 180)
             {
                 retInnerTiles.Add(GetInnerTileFromCoordinates(centerInnerTile.x - InnerTile.innerTileSideLength, centerInnerTile.y));
-                retInnerTiles.Add(GetInnerTileFromCoordinates(centerInnerTile.x - InnerTile.innerTileSideLength, centerInnerTile.y + InnerTile.innerTileSideLength));
+                retInnerTiles.Add(GetInnerTileFromCoordinates(centerInnerTile.x - InnerTile.innerTileSideLength, centerInnerTile.y - InnerTile.innerTileSideLength));
+                retInnerTiles.Add(GetInnerTileFromCoordinates(centerInnerTile.x, centerInnerTile.y - InnerTile.innerTileSideLength));
                 retInnerTiles.Add(GetInnerTileFromCoordinates(centerInnerTile.x, centerInnerTile.y + InnerTile.innerTileSideLength));
+                retInnerTiles.Add(GetInnerTileFromCoordinates(centerInnerTile.x + InnerTile.innerTileSideLength, centerInnerTile.y + InnerTile.innerTileSideLength));
+                retInnerTiles.Add(GetInnerTileFromCoordinates(centerInnerTile.x + InnerTile.innerTileSideLength, centerInnerTile.y));
             }
             else if (VacDisplay.vacuumHeading >= 180 && VacDisplay.vacuumHeading < 225)
             {
                 retInnerTiles.Add(GetInnerTileFromCoordinates(centerInnerTile.x - InnerTile.innerTileSideLength, centerInnerTile.y - InnerTile.innerTileSideLength));
-                retInnerTiles.Add(GetInnerTileFromCoordinates(centerInnerTile.x - InnerTile.innerTileSideLength, centerInnerTile.y));
+                retInnerTiles.Add(GetInnerTileFromCoordinates(centerInnerTile.x, centerInnerTile.y - InnerTile.innerTileSideLength));
+                retInnerTiles.Add(GetInnerTileFromCoordinates(centerInnerTile.x + InnerTile.innerTileSideLength, centerInnerTile.y - InnerTile.innerTileSideLength));
                 retInnerTiles.Add(GetInnerTileFromCoordinates(centerInnerTile.x - InnerTile.innerTileSideLength, centerInnerTile.y + InnerTile.innerTileSideLength));
+                retInnerTiles.Add(GetInnerTileFromCoordinates(centerInnerTile.x, centerInnerTile.y + InnerTile.innerTileSideLength));
+                retInnerTiles.Add(GetInnerTileFromCoordinates(centerInnerTile.x + InnerTile.innerTileSideLength, centerInnerTile.y + InnerTile.innerTileSideLength));
             }
             else if (VacDisplay.vacuumHeading >= 225 && VacDisplay.vacuumHeading < 270)
             {
                 retInnerTiles.Add(GetInnerTileFromCoordinates(centerInnerTile.x, centerInnerTile.y - InnerTile.innerTileSideLength));
-                retInnerTiles.Add(GetInnerTileFromCoordinates(centerInnerTile.x - InnerTile.innerTileSideLength, centerInnerTile.y - InnerTile.innerTileSideLength));
+                retInnerTiles.Add(GetInnerTileFromCoordinates(centerInnerTile.x + InnerTile.innerTileSideLength, centerInnerTile.y - InnerTile.innerTileSideLength));
+                retInnerTiles.Add(GetInnerTileFromCoordinates(centerInnerTile.x + InnerTile.innerTileSideLength, centerInnerTile.y));
+                retInnerTiles.Add(GetInnerTileFromCoordinates(centerInnerTile.x, centerInnerTile.y + InnerTile.innerTileSideLength));
+                retInnerTiles.Add(GetInnerTileFromCoordinates(centerInnerTile.x - InnerTile.innerTileSideLength, centerInnerTile.y + InnerTile.innerTileSideLength));
                 retInnerTiles.Add(GetInnerTileFromCoordinates(centerInnerTile.x - InnerTile.innerTileSideLength, centerInnerTile.y));
             }
             else if (VacDisplay.vacuumHeading >= 270 && VacDisplay.vacuumHeading < 315)
             {
                 retInnerTiles.Add(GetInnerTileFromCoordinates(centerInnerTile.x - InnerTile.innerTileSideLength, centerInnerTile.y - InnerTile.innerTileSideLength));
-                retInnerTiles.Add(GetInnerTileFromCoordinates(centerInnerTile.x, centerInnerTile.y - InnerTile.innerTileSideLength));
+                retInnerTiles.Add(GetInnerTileFromCoordinates(centerInnerTile.x - InnerTile.innerTileSideLength, centerInnerTile.y));
+                retInnerTiles.Add(GetInnerTileFromCoordinates(centerInnerTile.x - InnerTile.innerTileSideLength, centerInnerTile.y + InnerTile.innerTileSideLength));
                 retInnerTiles.Add(GetInnerTileFromCoordinates(centerInnerTile.x + InnerTile.innerTileSideLength, centerInnerTile.y - InnerTile.innerTileSideLength));
+                retInnerTiles.Add(GetInnerTileFromCoordinates(centerInnerTile.x + InnerTile.innerTileSideLength, centerInnerTile.y));
+                retInnerTiles.Add(GetInnerTileFromCoordinates(centerInnerTile.x + InnerTile.innerTileSideLength, centerInnerTile.y + InnerTile.innerTileSideLength));
             }
             else if (VacDisplay.vacuumHeading >= 315 && VacDisplay.vacuumHeading < 360)
             {
+                retInnerTiles.Add(GetInnerTileFromCoordinates(centerInnerTile.x - InnerTile.innerTileSideLength, centerInnerTile.y));
+                retInnerTiles.Add(GetInnerTileFromCoordinates(centerInnerTile.x - InnerTile.innerTileSideLength, centerInnerTile.y - InnerTile.innerTileSideLength));
                 retInnerTiles.Add(GetInnerTileFromCoordinates(centerInnerTile.x, centerInnerTile.y - InnerTile.innerTileSideLength));
-                retInnerTiles.Add(GetInnerTileFromCoordinates(centerInnerTile.x + InnerTile.innerTileSideLength, centerInnerTile.y - InnerTile.innerTileSideLength));
+                retInnerTiles.Add(GetInnerTileFromCoordinates(centerInnerTile.x, centerInnerTile.y + InnerTile.innerTileSideLength));
+                retInnerTiles.Add(GetInnerTileFromCoordinates(centerInnerTile.x + InnerTile.innerTileSideLength, centerInnerTile.y + InnerTile.innerTileSideLength));
                 retInnerTiles.Add(GetInnerTileFromCoordinates(centerInnerTile.x + InnerTile.innerTileSideLength, centerInnerTile.y));
             }
 
@@ -424,9 +454,9 @@ namespace VacuumSim
             InnerTile centerInnerTile = HouseLayout.GetInnerTileFromCoordinates(vacuumX, vacuumY);
             List<InnerTile> retList = new List<InnerTile>();
 
-            for (int x = vacuumX - InnerTile.innerTileSideLength; x <= vacuumX + InnerTile.innerTileSideLength; x++)
+            for (int x = vacuumX - InnerTile.innerTileSideLength; x <= vacuumX + InnerTile.innerTileSideLength; x += InnerTile.innerTileSideLength)
             {
-                for (int y = vacuumY - InnerTile.innerTileSideLength; y <= vacuumY + InnerTile.innerTileSideLength; y++)
+                for (int y = vacuumY - InnerTile.innerTileSideLength; y <= vacuumY + InnerTile.innerTileSideLength; y += InnerTile.innerTileSideLength)
                 {
                     retList.Add(GetInnerTileFromCoordinates(x, y));
                 }
@@ -441,9 +471,9 @@ namespace VacuumSim
         /// </summary>
         public void PerformAreaCalculations()
         {
-            for (int i = 0; i < numTilesPerRow; i++)
+            for (int i = 1; i < numTilesPerRow - 1; i++)
             {
-                for (int j = 0; j < numTilesPerCol; j++)
+                for (int j = 1; j < numTilesPerCol - 1; j++)
                 {
                     for (int k = 0; k < Tile.numInnerTilesInRowAndCol; k++)
                     {
@@ -463,12 +493,13 @@ namespace VacuumSim
             // Pixels to inches conversions
             totalFloorplanArea = (int)(totalFloorplanArea * ((24.0f / tileSideLength) * (24.0f / tileSideLength)));
             totalNonCleanableFloorplanArea = (int)(totalNonCleanableFloorplanArea * ((24.0f / tileSideLength) * (24.0f / tileSideLength)));
-        }      
+        }
 
         /* Returns a 'hashed' number to give an ID a floorplan
            Completely arbitary hashing method but kinda fun.
            Totally open to changing this up later.
         */
+
         public string GetFloorPlanID()
         {
             string uuid = "";           // string to build the ID

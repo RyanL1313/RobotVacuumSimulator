@@ -25,7 +25,8 @@ namespace VacuumSim.Components
         // IDs can be assigned to each algorithm - 0: Random, 1: Spiral, 2: Snaking, 3: Wall Follow.
         // Allows for multiple algorithms to be selected at once. They will be removed from the list once the
         // Vacuum finishes a run. 
-        public List<int> VaccuumAlgorithm { get; set; } 
+        public static List<int> VacuumAlgorithm = new List<int> { 0 };
     }
 
 }
+
