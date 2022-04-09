@@ -123,7 +123,7 @@ namespace VacuumSim
         {
             if ((int)HouseWidthSelector.Value % 2 == 1) // Prevent non-even entries
                 HouseWidthSelector.Value += 1; // Round up
-            
+
             int prevNumTilesPerRow = HouseLayout.numTilesPerRow; // Number of tiles in a row before the width was changed
             HouseLayout.numTilesPerRow = ((int)HouseWidthSelector.Value + 4) / 2; // Get number of tiles per row based on house width chosen by user
             FloorCanvasDesigner.UpdateFloorplanAfterHouseWidthChanged(HouseLayout, prevNumTilesPerRow);
@@ -147,7 +147,6 @@ namespace VacuumSim
             // Update selected obstacle heights if necessary
             RoomHeightSelector.Value = Math.Min(RoomHeightSelector.Value, HouseHeightSelector.Value);
             ChairTableHeightSelector.Value = Math.Min(ChairTableHeightSelector.Value, HouseHeightSelector.Value);
-
 
             FloorCanvas.Invalidate(); // Re-draw canvas to reflect change in house height
         }
@@ -379,6 +378,31 @@ namespace VacuumSim
         private void StartSimulationButton_Click(object sender, EventArgs e)
         {
             SetInitialSimulationValues();
+            DEBUG_SHOW_DIRTINESS_STATS();
+        }
+
+        // TODO delete this func lol
+        private void DEBUG_SHOW_DIRTINESS_STATS()
+        {
+            int numTiles = HouseLayout.numTilesPerCol * HouseLayout.numTilesPerRow;
+            int numSubtiles = 36 * numTiles;
+            double averageDirtiness = 0.0f;
+            for (int i = 0; i < HouseLayout.numTilesPerRow; i++)
+            {
+                for (int j = 0; j < HouseLayout.numTilesPerCol; j++)
+                {
+                    foreach (var subtile in HouseLayout.GetTileFromRowCol(i, j).innerTiles)
+                    {
+                        averageDirtiness += ((double)subtile.dirtiness / (double)numSubtiles);
+                    }
+                }
+            }
+
+            //string DEBUG_msg = HouseLayout.numTilesPerCol + " " + HouseLayout.numTilesPerRow + "\nNumber of tiles: " + numTiles.ToString() + "\nNumber of subtiles: " + numSubtiles.ToString() + "\nAverage dirtiness: " + averageDirtiness.ToString("N1") + "%";
+            //MessageBox.Show(DEBUG_msg);
+
+            MessageBox.Show(HouseLayout.totalFloorplanArea.ToString() + " " + HouseLayout.totalNonCleanableFloorplanArea.ToString());
+            //MessageBox.Show(HouseLayout.GetTileFromRowCol(1, 1).innerTiles[0, 0].obstacle.ToString());
         }
 
         private void StopSimulationButton_Click(object sender, EventArgs e)
@@ -453,7 +477,7 @@ namespace VacuumSim
 
             // Make sure we don't re-draw the canvas if the user is still selecting the same tile while in floorplan drawing mode (efficiency concerns)
             // Also, prevent drawing on the canvas based on various other conditions
-            if (FloorCanvasDesigner.justPlacedDoorway || FloorCanvasDesigner.displayingHeatMap || !FloorCanvasDesigner.eraserModeOn && !FloorCanvasDesigner.currentlyAddingDoorway && !FloorCanvasDesigner.settingVacuumAttributes && 
+            if (FloorCanvasDesigner.justPlacedDoorway || FloorCanvasDesigner.displayingHeatMap || !FloorCanvasDesigner.eraserModeOn && !FloorCanvasDesigner.currentlyAddingDoorway && !FloorCanvasDesigner.settingVacuumAttributes &&
                 selectedTileIndices[0] == FloorCanvasDesigner.currentIndicesOfSelectedTile[0] && selectedTileIndices[1] == FloorCanvasDesigner.currentIndicesOfSelectedTile[1])
                 return;
             else
@@ -572,7 +596,7 @@ namespace VacuumSim
                 }
                 else
                 {
-                    FloorCanvasDesigner.ChangeSuccessTilesToCurrentObstacle(); // Change success tiles in FloorplanHouseDesigner to be the same obstacle type that was just added         
+                    FloorCanvasDesigner.ChangeSuccessTilesToCurrentObstacle(); // Change success tiles in FloorplanHouseDesigner to be the same obstacle type that was just added
                     HouseLayout.DeepCopyFloorplan(FloorCanvasDesigner.FloorplanHouseDesigner); // Copy the designer mode house layout to now be the actual house layout
                 }
             }
@@ -667,7 +691,7 @@ namespace VacuumSim
             LoadDefaultFloorplanButton.Enabled = false;
             LoadSavedFloorplanButton.Enabled = false;
             SaveFloorplanButton.Enabled = false;
-            EraserModeButton.Enabled = false;            
+            EraserModeButton.Enabled = false;
             ChairTableWidthSelector.Enabled = false;
             ChairTableHeightSelector.Enabled = false;
             ObstacleSelector.Enabled = false;
@@ -679,8 +703,8 @@ namespace VacuumSim
             VacDisplay.CenterVacuumDisplay(ActualVacuumData.VacuumCoords, HouseLayout);
             VacDisplay.vacuumHeading = (int)InitialVacuumHeadingSelector.Value;
 
-            HouseLayout.PerformAreaCalculations();
             HouseLayout.SetInnerTileObstacles();
+            HouseLayout.PerformAreaCalculations();
         }
 
         /// <summary>
@@ -734,7 +758,6 @@ namespace VacuumSim
 
         private void Form1_Load(object sender, EventArgs e)
         {
-
         }
     }
 
