@@ -1125,7 +1125,7 @@ namespace VacuumSim
             // 
             // VacDisplayTimer
             // 
-            this.VacDisplayTimer.Interval = 50;
+            this.VacDisplayTimer.Interval = 1;
             this.VacDisplayTimer.Tick += new System.EventHandler(this.VacDisplayTimer_Tick);
             // 
             // Form1

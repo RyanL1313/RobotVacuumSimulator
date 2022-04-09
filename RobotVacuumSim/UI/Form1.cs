@@ -13,7 +13,6 @@ using VacuumSim.UI.FloorplanGraphics;
 using VacuumSim.Components;
 using System.Diagnostics;
 using VacuumSim.UI.Floorplan;
-using System.Threading;
 
 namespace VacuumSim
 {
@@ -669,6 +668,9 @@ namespace VacuumSim
         private void SimTimerTick()
         {
             vc.ExecVPath(VacDisplay, HouseLayout, collisionHandler, floorCleaner, ActualVacuumData);
+
+            if (VacDisplay.batterySecondsRemaining <= 0)
+                SimTimer.Stop();
         }
 
         private void StartSimulationButton_Click(object sender, EventArgs e)
@@ -776,10 +778,8 @@ namespace VacuumSim
         private void ResetValuesAfterSimEnd()
         {
             SimTimer.Stop();
-            FloorCanvasDesigner.displayingHeatMap = true;
             VacDisplayTimer.Enabled = false;
-            HouseLayout.gridLinesOn = true;
-            StartSimulationButton.Enabled = true;
+            FloorCanvasDesigner.displayingHeatMap = true;
             StopSimulationButton.Enabled = false;
             Simulation.simStarted = false;
             Simulation.simTimeElapsed = 0;
@@ -801,6 +801,8 @@ namespace VacuumSim
             FloorCanvasDesigner.displayingHeatMap = false;
             FinishOrEditFloorplanButton.Enabled = true;
             ControlsPane.Panel1.Enabled = true;
+            HouseLayout.gridLinesOn = true;
+            StartSimulationButton.Enabled = true;
             LoadDefaultFloorplanButton.Enabled = true;
             LoadSavedFloorplanButton.Enabled = true;
             SaveFloorplanButton.Enabled = true;
