@@ -650,6 +650,7 @@ namespace VacuumSim
             FloorCanvas.Invalidate();
         }
 
+        // Vacuum display timer tick
         private void VacDisplayTimer_Tick(object sender, EventArgs e)
         {
             FloorCanvasCalculator.CalculateWhiskerCoordinates(VacDisplay);
@@ -665,12 +666,15 @@ namespace VacuumSim
             FloorCanvas.Invalidate();
         }
 
+        // Algorithm timer tick
         private void SimTimerTick()
         {
             vc.ExecVPath(VacDisplay, HouseLayout, collisionHandler, floorCleaner, ActualVacuumData);
 
             if (VacDisplay.batterySecondsRemaining <= 0)
+            {
                 SimTimer.Stop();
+            }
         }
 
         private void StartSimulationButton_Click(object sender, EventArgs e)
@@ -742,6 +746,7 @@ namespace VacuumSim
             LoadSavedFloorplanButton.Enabled = false;
             SaveFloorplanButton.Enabled = false;
             EraserModeButton.Enabled = false;
+            ShowInstructionsButton.Enabled = false;
             ChairTableWidthSelector.Enabled = false;
             ChairTableHeightSelector.Enabled = false;
             ObstacleSelector.Enabled = false;
@@ -789,6 +794,7 @@ namespace VacuumSim
             YesRunAnotherSimulationButton.Visible = true;
             NoRunAnotherSimulationButton.Visible = true;
             RunAnotherSimulationLabel.Visible = true;
+            ShowInstructionsButton.Enabled = true;
 
             FloorCanvas.Invalidate(); // Re-trigger paint event
         }
@@ -815,8 +821,9 @@ namespace VacuumSim
             Simulation.simTimeElapsed = 0;
             FloorCanvasCalculator.movementCount = 0;
             VacDisplay.batterySecondsRemaining = (int)RobotBatteryLifeSelector.Value * 60;
+            BatteryLeftLabel.Text = FloorCanvasCalculator.GetBatteryRemainingText(VacDisplay);
+            SimTimeElapsedLabel.Text = FloorCanvasCalculator.GetTimeElapsedText();
             RunAllAlgorithmsCheckbox.Enabled = true;
-
 
             FloorCanvas.Invalidate(); // Re-trigger paint event
             StartSimulationButton.Enabled = true;
