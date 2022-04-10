@@ -15,7 +15,7 @@ namespace VacuumSim.Components
     {
         private bool spiralFlag = false;
         private int obstacleDistanceCounter = 0;
-        public override void ExecVPath(VacuumDisplay VacDisplay, FloorplanLayout HouseLayout, CollisionHandler collisionHandler, FloorCleaner floorCleaner, Vacuum ActualVacuumData, object sender, EventArgs e)
+        public override void ExecVPath(VacuumDisplay VacDisplay, FloorplanLayout HouseLayout, CollisionHandler collisionHandler, FloorCleaner floorCleaner, Vacuum ActualVacuumData)
         {
             //If the vacuum is not in a spiral, it will just move in a straight line until it is a reasonable distance away from the obstacle it just hit.
             if (spiralFlag == false)
