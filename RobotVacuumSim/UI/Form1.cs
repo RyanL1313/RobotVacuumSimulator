@@ -221,6 +221,7 @@ namespace VacuumSim
         private void InitialVacuumHeadingSelector_ValueChanged(object sender, EventArgs e)
         {
             VacDisplay.vacuumHeading = (int)InitialVacuumHeadingSelector.Value;
+            ActualVacuumData.heading = (int)InitialVacuumHeadingSelector.Value;
 
             FloorCanvas.Invalidate(); // Re-draw canvas to show new whiskers display
         }
