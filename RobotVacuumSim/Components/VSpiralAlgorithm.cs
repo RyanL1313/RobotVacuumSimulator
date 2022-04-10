@@ -14,6 +14,7 @@ namespace VacuumSim.Components
     public class VSpiralAlgorithm : VacuumController
     {
         private bool spiralFlag = false;
+        public static bool tooFarFlag = false;
         private int obstacleDistanceCounter = 0;
         public override void ExecVPath(VacuumDisplay VacDisplay, FloorplanLayout HouseLayout, CollisionHandler collisionHandler, FloorCleaner floorCleaner, Vacuum ActualVacuumData)
         {
@@ -34,7 +35,20 @@ namespace VacuumSim.Components
                 // equations are    x = (a + b * theta) * cos(theta) multiplied by the actual distance traveled per frame
                 //                  y = (a + b * theta) * sin(theta) multiplied by the actual distance traveled per frame
                 // a is the position of the centerpoint of the spiral.
-                // b is how far apart the loops of the spiral are. 
+                // b is how far apart the loops of the spiral are.
+
+                float maxDistance = FloorCanvasCalculator.GetDistanceTraveledPerFrame(VacDisplay.vacuumSpeed);
+
+                float xDistance = FloorCanvasCalculator.GetDistanceTraveledPerFrame(VacDisplay.vacuumSpeed) * (float)((0.01 + 0.0002 * ActualVacuumData.heading) * (Math.Cos(Math.PI * ActualVacuumData.heading / 180)));
+                float yDistance = FloorCanvasCalculator.GetDistanceTraveledPerFrame(VacDisplay.vacuumSpeed) * (float)((0.01 + 0.0002 * ActualVacuumData.heading) * (Math.Sin(Math.PI * ActualVacuumData.heading / 180)));
+
+                // Using Pythagorean Theorem
+                double sumSquaresOfDistances = Math.Pow(xDistance, 2) + Math.Pow(yDistance, 2);
+                double distanceTraveled = Math.Sqrt(sumSquaresOfDistances);
+
+                if (distanceTraveled > maxDistance)
+                    tooFarFlag = true;
+               
                 ActualVacuumData.VacuumCoords[0] += FloorCanvasCalculator.GetDistanceTraveledPerFrame(VacDisplay.vacuumSpeed) * (float)((0.01 + 0.0002 * ActualVacuumData.heading) * (Math.Cos(Math.PI * ActualVacuumData.heading / 180)));
                 ActualVacuumData.VacuumCoords[1] += FloorCanvasCalculator.GetDistanceTraveledPerFrame(VacDisplay.vacuumSpeed) * (float)((0.01 + 0.0002 * ActualVacuumData.heading) * (Math.Sin(Math.PI * ActualVacuumData.heading / 180)));
 

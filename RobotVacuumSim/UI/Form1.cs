@@ -791,6 +791,8 @@ namespace VacuumSim
             RunAnotherSimulationLabel.Visible = true;
             ShowInstructionsButton.Enabled = true;
 
+            MessageBox.Show("" + VSpiralAlgorithm.tooFarFlag);
+
             FloorCanvas.Invalidate(); // Re-trigger paint event
         }
 
