@@ -20,6 +20,7 @@ namespace VacuumSim.Components
         public int VacuumSpeed { get; set; } = 12;       // inches per second. Default is 12 in/s
         public int VacuumBattery { get; set; } = 150;    // minutes, min = 90, max = 200.
         public float[] VacuumCoords = { 200.0f, 30.0f }; // Actual (x, y) coordinates of vacuum
+        public int heading { get; set; } = 0;
 
         // May change this later, but for now I'll denote which algorithms are selected using a list.
         // IDs can be assigned to each algorithm - 0: Random, 1: Spiral, 2: Snaking, 3: Wall Follow.
