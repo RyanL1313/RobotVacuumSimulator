@@ -226,30 +226,25 @@ namespace VacuumSim
             if (HardWoodRadioButton.Checked)
             {
                 VacuumEfficiencySlider.Value = 90;
-                WhiskersEfficiencySlider.Value = 50;
                 ActualVacuumData.VacuumEfficiency = 90.0f / 100.0f;
             }
             else if (LoopPileRadioButton.Checked)
             {
                 VacuumEfficiencySlider.Value = 75;
-                WhiskersEfficiencySlider.Value = 30;
                 ActualVacuumData.VacuumEfficiency = 75.0f / 100.0f;
             }
             else if (CutPileRadioButton.Checked)
             {
                 VacuumEfficiencySlider.Value = 70;
-                WhiskersEfficiencySlider.Value = 20;
                 ActualVacuumData.VacuumEfficiency = 70.0f / 100.0f;
             }
             else if (FriezeCutPileRadioButton.Checked)
             {
                 VacuumEfficiencySlider.Value = 65;
-                WhiskersEfficiencySlider.Value = 10;
                 ActualVacuumData.VacuumEfficiency = 65.0f / 100.0f;
             }
 
             VacuumEfficiencyValueLabel.Text = VacuumEfficiencySlider.Value + "%";
-            WhiskersEfficiencyValueLabel.Text = WhiskersEfficiencySlider.Value + "%";
 
             FloorCanvas.Invalidate();
         }

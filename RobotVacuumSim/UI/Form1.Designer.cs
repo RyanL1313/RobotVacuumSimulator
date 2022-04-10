@@ -754,7 +754,7 @@ namespace VacuumSim
             this.WhiskersEfficiencySlider.Name = "WhiskersEfficiencySlider";
             this.WhiskersEfficiencySlider.Size = new System.Drawing.Size(104, 45);
             this.WhiskersEfficiencySlider.TabIndex = 14;
-            this.WhiskersEfficiencySlider.Value = 50;
+            this.WhiskersEfficiencySlider.Value = 30;
             this.WhiskersEfficiencySlider.Scroll += new System.EventHandler(this.WhiskerEfficiencySlider_Scroll);
             // 
             // VacuumEfficiencySlider
@@ -898,7 +898,7 @@ namespace VacuumSim
             this.WhiskersEfficiencyValueLabel.Name = "WhiskersEfficiencyValueLabel";
             this.WhiskersEfficiencyValueLabel.Size = new System.Drawing.Size(29, 15);
             this.WhiskersEfficiencyValueLabel.TabIndex = 18;
-            this.WhiskersEfficiencyValueLabel.Text = "50%";
+            this.WhiskersEfficiencyValueLabel.Text = "30%";
             // 
             // RunAnotherSimulationLabel
             // 
