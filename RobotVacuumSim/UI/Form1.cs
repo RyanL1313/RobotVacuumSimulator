@@ -441,27 +441,61 @@ namespace VacuumSim
             FloorCanvas.Invalidate();
         }
 
-        // TODO delete this func lol
-        private void DEBUG_SHOW_DIRTINESS_STATS()
+        private double GetFloorplanDirtiness()
         {
-            int numTiles = HouseLayout.numTilesPerCol * HouseLayout.numTilesPerRow;
-            int numSubtiles = 36 * numTiles;
-            double averageDirtiness = 0.0f;
-            for (int i = 0; i < HouseLayout.numTilesPerRow; i++)
+            // -2 to not could the edge tiles
+            int numTiles = (HouseLayout.numTilesPerCol - 2) * (HouseLayout.numTilesPerRow - 2);
+            int numSubtiles = (int)Math.Pow(Tile.numInnerTilesInRowAndCol, 2) * numTiles;
+            double averageDirtiness = 0.0;
+            for (int i = 1; i < HouseLayout.numTilesPerRow - 1; i++)
             {
-                for (int j = 0; j < HouseLayout.numTilesPerCol; j++)
+                for (int j = 1; j < HouseLayout.numTilesPerCol - 1; j++)
                 {
                     foreach (var subtile in HouseLayout.GetTileFromRowCol(i, j).innerTiles)
                     {
+                        if (subtile.dirtiness >= 50)
+                        {
+                            //MessageBox.Show(i.ToString() + " " + j.ToString() + " " + subtile.x.ToString() + " " + subtile.y.ToString());
+                        }
                         averageDirtiness += ((double)subtile.dirtiness / (double)numSubtiles);
                     }
                 }
             }
 
+            // Round to get rid of some of that floating point error, plus we dont need so much precision
+            averageDirtiness = Math.Round(averageDirtiness, 1);
+
+            return averageDirtiness;
+        }
+
+        // TODO delete this func lol
+        private void DEBUG_SHOW_DIRTINESS_STATS()
+        {
+            List<float> dirts = new List<float>();
+            foreach (var subtile in HouseLayout.GetTileFromRowCol(1, 1).innerTiles)
+            {
+                dirts.Add(subtile.dirtiness);
+            }
+
+            int numTiles = (HouseLayout.numTilesPerCol - 2) * (HouseLayout.numTilesPerRow - 2);
+            int numSubtiles = numTiles * 36;
+            string DEBUG_msg = "Total Area: " + HouseLayout.totalFloorplanArea + "\nNon-Cleanable Area: " + HouseLayout.totalNonCleanableFloorplanArea +
+                                "\nAverage Dirtiness: " + GetFloorplanDirtiness() + "\nNumTilesPerCol: " + HouseLayout.numTilesPerCol + "\nNumTilesPerRow: " + HouseLayout.numTilesPerRow +
+                                "\n Number of tiles: " + numTiles + "\nNumSubtiles: " + numSubtiles;
+
+            string dirtsString = "";
+            MessageBox.Show(DEBUG_msg);
+
+            foreach (var x in dirts)
+            {
+                dirtsString += x.ToString() + " : ";
+            }
+            MessageBox.Show(dirtsString);
+
             //string DEBUG_msg = HouseLayout.numTilesPerCol + " " + HouseLayout.numTilesPerRow + "\nNumber of tiles: " + numTiles.ToString() + "\nNumber of subtiles: " + numSubtiles.ToString() + "\nAverage dirtiness: " + averageDirtiness.ToString("N1") + "%";
             //MessageBox.Show(DEBUG_msg);
 
-            MessageBox.Show(HouseLayout.totalFloorplanArea.ToString() + " " + HouseLayout.totalNonCleanableFloorplanArea.ToString());
+            //MessageBox.Show(HouseLayout.totalFloorplanArea.ToString() + " " + HouseLayout.totalNonCleanableFloorplanArea.ToString());
             //MessageBox.Show(HouseLayout.GetTileFromRowCol(1, 1).innerTiles[0, 0].obstacle.ToString());
         }
 
@@ -472,6 +506,7 @@ namespace VacuumSim
             ResetValuesAfterSimEnd();
 
             FloorCanvas.Invalidate();
+            //DEBUG_SHOW_DIRTINESS_STATS();
         }
 
         private void YesRunAnotherSimulationButton_Click(object sender, EventArgs e)
@@ -713,6 +748,7 @@ namespace VacuumSim
                 vc = new VWallFollowAlgorithm();
                 VacAlgorithmTimer.Enabled = true;
             }
+            //DEBUG_SHOW_DIRTINESS_STATS();
         }
 
         /// <summary>
