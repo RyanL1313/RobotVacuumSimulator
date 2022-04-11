@@ -451,12 +451,8 @@ namespace VacuumSim
             {
                 for (int j = 1; j < HouseLayout.numTilesPerCol - 1; j++)
                 {
-                    foreach (var subtile in HouseLayout.GetTileFromRowCol(i, j).innerTiles)
+                    foreach (var subtile in HouseLayout.GetTileFromRowCol(j, i).innerTiles)
                     {
-                        if (subtile.dirtiness >= 50)
-                        {
-                            //MessageBox.Show(i.ToString() + " " + j.ToString() + " " + subtile.x.ToString() + " " + subtile.y.ToString());
-                        }
                         averageDirtiness += ((double)subtile.dirtiness / (double)numSubtiles);
                     }
                 }
@@ -506,7 +502,7 @@ namespace VacuumSim
             ResetValuesAfterSimEnd();
 
             FloorCanvas.Invalidate();
-            //DEBUG_SHOW_DIRTINESS_STATS();
+            // DEBUG_SHOW_DIRTINESS_STATS();
         }
 
         private void YesRunAnotherSimulationButton_Click(object sender, EventArgs e)
@@ -748,7 +744,7 @@ namespace VacuumSim
                 vc = new VWallFollowAlgorithm();
                 VacAlgorithmTimer.Enabled = true;
             }
-            //DEBUG_SHOW_DIRTINESS_STATS();
+            // DEBUG_SHOW_DIRTINESS_STATS();
         }
 
         /// <summary>
