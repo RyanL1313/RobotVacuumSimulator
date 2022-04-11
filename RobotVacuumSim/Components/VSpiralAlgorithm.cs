@@ -70,8 +70,8 @@ namespace VacuumSim.Components
                     ActualVacuumData.heading = VacDisplay.vacuumHeading;
                     spiralFlag = false;
                     tooFarFlag = false;
-                    // reset the counter to allow the vacuum to move away from the obstacle
-                    obstacleDistanceCounter = 0;
+                    // vacuum only needs to travel a short distance away from the end of its spiral.
+                    obstacleDistanceCounter = 15;
                 }
             }
 
@@ -86,8 +86,8 @@ namespace VacuumSim.Components
                 VacDisplay.vacuumHeading = rnd.Next() % 360;
                 ActualVacuumData.heading = VacDisplay.vacuumHeading;
                 spiralFlag = false;
-                // vacuum only needs to travel a short distance away from the end of its spiral.
-                obstacleDistanceCounter = 15;
+                // reset the counter to allow the vacuum to move away from the obstacle
+                obstacleDistanceCounter = 0;
             }
             floorCleaner.CleanInnerTiles(VacDisplay, ActualVacuumData, HouseLayout);
 
