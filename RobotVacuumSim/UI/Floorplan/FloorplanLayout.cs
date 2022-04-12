@@ -35,6 +35,7 @@ namespace VacuumSim
         public const int UL = 3; // Used to access upper left leg of chair/table
         public int totalFloorplanArea = 0; // Total area of the floorplan (including covered-up sub-tiles) in inches
         public int totalNonCleanableFloorplanArea = 0; // Total area of the floorplan that cannot be cleaned in inches
+        public int numCleanableSubtiles = 0; // The number of cleanable subtiles. Used for calculating floorplan dirtiness.
 
         /* Feel free to remove this gigantic comment block later. */
         /* Creates the 2D array of tiles and sets the tiles' default attributes */
@@ -471,6 +472,8 @@ namespace VacuumSim
         /// </summary>
         public void PerformAreaCalculations()
         {
+            // Reset numCleanableSubtiles so that subsequent calls to PerformAreaCalculations doesn't make it higher than it should be.
+            numCleanableSubtiles = 0;
             for (int i = 1; i < numTilesPerRow - 1; i++)
             {
                 for (int j = 1; j < numTilesPerCol - 1; j++)
@@ -485,6 +488,7 @@ namespace VacuumSim
                             totalFloorplanArea += InnerTile.innerTileSideLength * InnerTile.innerTileSideLength;
                             if (theInnerTile.obstacle != ObstacleType.Floor) // Can't clean this
                                 totalNonCleanableFloorplanArea += InnerTile.innerTileSideLength * InnerTile.innerTileSideLength;
+                            else numCleanableSubtiles++;
                         }
                     }
                 }
@@ -493,6 +497,36 @@ namespace VacuumSim
             // Pixels to inches conversions
             totalFloorplanArea = (int)(totalFloorplanArea * ((24.0f / tileSideLength) * (24.0f / tileSideLength)));
             totalNonCleanableFloorplanArea = (int)(totalNonCleanableFloorplanArea * ((24.0f / tileSideLength) * (24.0f / tileSideLength)));
+        }
+
+        /// <summary>
+        /// Gets the floorplan dirtiness as an average of the dirtiness levels of all cleanable inner tiles.
+        /// This method MUST be called AFTER PerformAreaCalculations()
+        /// </summary>
+        /// <returns>A double representing dirtiness 0-100</returns>
+        public double GetFloorplanDirtiness()
+        {
+            int numSubtiles = numCleanableSubtiles;
+            double averageDirtiness = 0.0;
+            for (int i = 1; i < numTilesPerRow - 1; i++)
+            {
+                for (int j = 1; j < numTilesPerCol - 1; j++)
+                {
+                    foreach (var subtile in GetTileFromRowCol(j, i).innerTiles)
+                    {
+                        // Only consider cleanable subtiles
+                        if (subtile.obstacle == ObstacleType.Floor)
+                        {
+                            averageDirtiness += ((double)subtile.dirtiness / (double)numSubtiles);
+                        }
+                    }
+                }
+            }
+
+            // Round to get rid of some of that floating point error, plus we dont need so much precision
+            averageDirtiness = Math.Round(averageDirtiness, 1);
+
+            return averageDirtiness;
         }
 
         /* Returns a 'hashed' number to give an ID a floorplan
