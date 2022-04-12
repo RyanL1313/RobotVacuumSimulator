@@ -670,21 +670,25 @@ namespace VacuumSim
             {
                 vc = new VRandAlgorithm();
                 VacAlgorithmTimer.Enabled = true;
+                Debug.WriteLine("Running "+ vc.getVer());
             }
             else if (Vacuum.VacuumAlgorithm[0] == 1)
             {
                 vc = new VSpiralAlgorithm();
                 VacAlgorithmTimer.Enabled = true;
+                Debug.WriteLine("Running "+ vc.getVer());
             }
             else if (Vacuum.VacuumAlgorithm[0] == 2)
             {
                 vc  = new VSnakeAlgorithm();
                 VacAlgorithmTimer.Enabled = true;
+                Debug.WriteLine("Running "+ vc.getVer());
             }
             else if (Vacuum.VacuumAlgorithm[0] == 3)
             {
                 vc  = new VWallFollowAlgorithm();
                 VacAlgorithmTimer.Enabled = true;
+                Debug.WriteLine("Running "+ vc.getVer());
             }
         }
 
