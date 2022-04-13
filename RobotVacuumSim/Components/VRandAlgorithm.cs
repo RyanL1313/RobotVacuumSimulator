@@ -11,8 +11,14 @@ namespace VacuumSim.Components
     /// <summary>
     /// Subclass of VacuumController. Implements Random Pathing algorithm for the Vacuum.
     /// </summary>
+    
     public class VRandAlgorithm : VacuumController
     {
+        private string RandAlgVer = "Random Algorithm Version 2";  // 2 full revisions of algorithm 
+        public override string getVer()
+        {
+            return RandAlgVer;
+        }
         public override void ExecVPath(VacuumDisplay VacDisplay, FloorplanLayout HouseLayout, CollisionHandler collisionHandler, FloorCleaner floorCleaner, Vacuum ActualVacuumData, object sender, EventArgs e)
         {
             ActualVacuumData.VacuumCoords[0] += FloorCanvasCalculator.GetDistanceTraveledPerFrame(VacDisplay.vacuumSpeed) * (float)Math.Cos((Math.PI * VacDisplay.vacuumHeading) / 180);

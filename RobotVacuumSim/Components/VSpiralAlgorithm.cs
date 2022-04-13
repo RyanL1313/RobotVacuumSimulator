@@ -13,9 +13,14 @@ namespace VacuumSim.Components
     /// </summary>
     public class VSpiralAlgorithm : VacuumController
     {
+        private string SpiralAlgVer = "Spiral Algorithm Version 2.1";  // 2 full revisions of algorithm, one minor fix. 
         private bool spiralFlag = false;
-        public static bool tooFarFlag = false;
+        private static bool tooFarFlag = false;
         private int obstacleDistanceCounter = 0;
+        public override string getVer ()
+        {
+            return SpiralAlgVer;
+        }
         public override void ExecVPath(VacuumDisplay VacDisplay, FloorplanLayout HouseLayout, CollisionHandler collisionHandler, FloorCleaner floorCleaner, Vacuum ActualVacuumData, object sender, EventArgs e)
         {
             //If the vacuum is not in a spiral, it will just move in a straight line until it is a reasonable distance away from the obstacle it just hit.
