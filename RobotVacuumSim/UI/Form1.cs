@@ -13,7 +13,6 @@ using VacuumSim.UI.FloorplanGraphics;
 using VacuumSim.Components;
 using System.Diagnostics;
 using VacuumSim.UI.Floorplan;
-using System.Threading;
 
 namespace VacuumSim
 {
@@ -680,7 +679,7 @@ namespace VacuumSim
 
             VacDisplay.firstAlgVacuumCoords[0] = VacDisplay.vacuumCoords[0];
             VacDisplay.firstAlgVacuumCoords[1] = VacDisplay.vacuumCoords[1];
-            VacDisplay.firstAlgVacuumHeading = VacDisplay.vacuumHeading;  
+            VacDisplay.firstAlgVacuumHeading = VacDisplay.vacuumHeading; 
         }
 
         /// <summary>
