@@ -11,5 +11,6 @@ namespace VacuumSim.Sim
         public static bool simStarted = false; // Is the simulation currently running
         public static int simSpeed = 1; // 1x, 5x, or 50x speed
         public static int simTimeElapsed = 0; // Simulation time elapsed (in seconds)
+        public static bool userManuallyStoppedSimulation = false; // If user pressed "Stop Simulation"
     }
 }

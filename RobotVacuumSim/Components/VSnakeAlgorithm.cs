@@ -22,13 +22,6 @@ namespace VacuumSim.Components
         public override void ExecVPath(VacuumDisplay VacDisplay, FloorplanLayout HouseLayout, CollisionHandler collisionHandler, FloorCleaner floorCleaner, Vacuum ActualVacuumData, object sender, EventArgs e)
         {
             //Debug.WriteLine("running snake algorithm");
-
-            // upon completion
-            if (Vacuum.VacuumAlgorithm.Count != 0)
-                Vacuum.VacuumAlgorithm.RemoveAt(0);
-            if (Vacuum.VacuumAlgorithm.Count == 0)
-                allAlgFinish = true;
-
         }
 
     }
