@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using VacuumSim.UI.Floorplan;
 
 namespace VacuumSim
 {
@@ -21,9 +22,10 @@ namespace VacuumSim
         public int numTilesPerRow { get; set; } = 27; // Default value
         public int numTilesPerCol { get; set; } = 22; // Default value
 
-        public const int tileSideLength = 15; // Pixel length of each side of the tiles
+        public const int tileSideLength = 18; // Pixel length of each side of the tiles
         public Tile[,] floorLayout { get; set; } // 2D array of tiles
         public bool gridLinesOn { get; set; } = true; // Should grid lines currently be displaying?
+        public const bool subGridLinesOn = false; // Should the sub-grid lines currently be showing (just used for testing purposes if so)?
         public int numObstacleGroups = 0; // Amount of obstacle groups currently drawn to the canvas
         public int numRooms = 0; // Number of rooms present in the house
         public const float chairAndTableLegRadius = (2.0f * tileSideLength) / 24.0f; // Chairs/Tables will have a 2 inch radius (4 inch diameter)
@@ -31,6 +33,9 @@ namespace VacuumSim
         public const int LR = 1; // Used to access lower right leg of chair/table
         public const int UR = 2; // Used to access upper right leg of chair/table
         public const int UL = 3; // Used to access upper left leg of chair/table
+        public int totalFloorplanArea = 0; // Total area of the floorplan (including covered-up sub-tiles) in inches
+        public int totalNonCleanableFloorplanArea = 0; // Total area of the floorplan that cannot be cleaned in inches
+        public int numCleanableSubtiles = 0; // The number of cleanable subtiles. Used for calculating floorplan dirtiness.
 
         /* Feel free to remove this gigantic comment block later. */
         /* Creates the 2D array of tiles and sets the tiles' default attributes */
@@ -48,23 +53,35 @@ namespace VacuumSim
 
             // Initialize the grid with blank tiles and the coordinates of those tiles
             for (int i = 0; i < maxTilesPerRow; i++)
+            {
                 for (int j = 0; j < maxTilesPerCol; j++)
-                    floorLayout[i, j] = new Tile(i * tileSideLength, j * tileSideLength, ObstacleType.Floor, 1.0f);
+                {
+                    floorLayout[i, j] = new Tile(i * tileSideLength, j * tileSideLength, ObstacleType.Floor);
+                }
+            }
 
             // Initialize the boundary wall tiles
             for (int i = 0; i < numTilesPerRow; i++)
+            {
                 for (int j = 0; j < numTilesPerCol; j++)
+                {
                     if (i == 0 || j == 0 || i == numTilesPerRow - 1 || j == numTilesPerCol - 1) // Boundary wall tile
+                    {
                         floorLayout[i, j] = new Tile(i * tileSideLength, j * tileSideLength, ObstacleType.Wall);
+                    }
+                }
+            }
         }
 
         /* Returns the Tile object by requested row and column. */
+
         public Tile GetTileFromRowCol(int row, int col)
         {
             return floorLayout[col, row];
         }
 
         /* Returns the Tile object located at the (x, y) coordinates in the FloorCanvas PictureBox */
+
         public Tile GetTileFromCoordinates(int x, int y)
         {
             int xTileIndex = x / tileSideLength;
@@ -93,18 +110,21 @@ namespace VacuumSim
         }
 
         /* Returns the maximum x coordinates. Vacuum should not go past this. */
+
         public int GetMaximumXCoordinates()
         {
             return numTilesPerRow * tileSideLength;
         }
 
         /* Returns the maximum y coordinates. Vacuum should not go past this. */
+
         public int GetMaximumYCoordinates()
         {
             return numTilesPerCol * tileSideLength;
         }
 
         /* Modifies the obstacle located in a certain tile based on the (x, y) coordinates in the FloorCanvas PictureBox */
+
         public void ModifyTileBasedOnCoordinates(int x, int y, ObstacleType ob)
         {
             // Get row, col indices of selected tile based on the coordinates selected by the user
@@ -118,6 +138,7 @@ namespace VacuumSim
         }
 
         /* Modifies the obstacle located in a certain tile based on the chosen indices of floorLayout */
+
         public void ModifyTileBasedOnIndices(int xTileIndex, int yTileIndex, ObstacleType ob)
         {
             if (xTileIndex >= maxTilesPerRow || yTileIndex >= maxTilesPerCol)
@@ -127,6 +148,7 @@ namespace VacuumSim
         }
 
         /* Modifies the obstacle and group ID of a tile based on the chosen indices of floorLayout */
+
         public void ModifyTileBasedOnIndices(int xTileIndex, int yTileIndex, ObstacleType ob, int groupID)
         {
             if (xTileIndex >= maxTilesPerRow || yTileIndex >= maxTilesPerCol)
@@ -152,6 +174,8 @@ namespace VacuumSim
                     numRooms = source.numRooms;
                     numObstacleGroups = source.numObstacleGroups;
                     gridLinesOn = source.gridLinesOn;
+                    totalFloorplanArea = source.totalFloorplanArea;
+                    totalNonCleanableFloorplanArea = source.totalNonCleanableFloorplanArea;
                 }
             }
         }
@@ -244,7 +268,7 @@ namespace VacuumSim
         /// Returns all four pairs of indices of a chair/table's leg locations
         /// </summary>
         /// <param name="chairOrTableTile"> The chair/table tile that was encountered </param>
-        /// <returns></returns>
+        /// <returns> A 4x2 array for the four pairs of indices </returns>
         public int[,] GetChairOrTableLegIndices(Tile chairOrTableTile)
         {
             float[,] coordinates = GetChairOrTableLegCoordinates(chairOrTableTile);
@@ -258,6 +282,251 @@ namespace VacuumSim
             }
 
             return indices;
+        }
+
+        /// <summary>
+        /// Returns an InnerTile based on passed in coordinates of FloorCanvas
+        /// </summary>
+        /// <param name="x"> X Coordinate in FloorCanvas </param>
+        /// <param name="y"> Y coordinate in FloorCanvas </param>
+        /// <returns> The requested InnerTile object </returns>
+        public InnerTile GetInnerTileFromCoordinates(int x, int y)
+        {
+            Tile affectedTile = GetTileFromCoordinates(x, y);
+
+            int innerTileXIndex = (x - affectedTile.x) / InnerTile.innerTileSideLength;
+            int innerTileYIndex = (y - affectedTile.y) / InnerTile.innerTileSideLength;
+
+            return affectedTile.innerTiles[innerTileXIndex, innerTileYIndex];
+        }
+
+        /// <summary>
+        /// Sets the obstacles for all necessary inner tiles to get used in the simulation for cleaning and collision detection
+        /// </summary>
+        public void SetInnerTileObstacles()
+        {
+            for (int i = 0; i < numTilesPerRow; i++)
+            {
+                for (int j = 0; j < numTilesPerCol; j++)
+                {
+                    if (floorLayout[i, j].obstacle == ObstacleType.Wall || floorLayout[i, j].obstacle == ObstacleType.Chest)
+                    {
+                        floorLayout[i, j].SetWallChestInnerTileObstacles(floorLayout[i, j].obstacle);
+                    }
+                    else if (floorLayout[i, j].obstacle == ObstacleType.Chair || floorLayout[i, j].obstacle == ObstacleType.Table)
+                    {
+                        int[,] chairOrTableLegIndices = GetChairOrTableLegIndices(floorLayout[i, j]);
+
+                        if (i != chairOrTableLegIndices[UL, 0] || j != chairOrTableLegIndices[UL, 1]) // Make sure we haven't already encountered this chair/table before
+                            continue; // Move onto the next tile
+
+                        // Set the inner tiles that hold this chair/table's legs to have a Chair/Table obstacle
+                        floorLayout[chairOrTableLegIndices[LL, 0], chairOrTableLegIndices[LL, 1]].SetChairTableInnerTileObstacle(floorLayout[i, j].obstacle, LL);
+                        floorLayout[chairOrTableLegIndices[LR, 0], chairOrTableLegIndices[LR, 1]].SetChairTableInnerTileObstacle(floorLayout[i, j].obstacle, LR);
+                        floorLayout[chairOrTableLegIndices[UR, 0], chairOrTableLegIndices[UR, 1]].SetChairTableInnerTileObstacle(floorLayout[i, j].obstacle, UR);
+                        floorLayout[chairOrTableLegIndices[UL, 0], chairOrTableLegIndices[UL, 1]].SetChairTableInnerTileObstacle(floorLayout[i, j].obstacle, UL);
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Sets every tile's inner tiles to have a Floor obstacle and dirtiness of 100
+        /// Gets called after a simulation finishes
+        /// </summary>
+        public void ResetInnerTiles()
+        {
+            for (int i = 0; i < numTilesPerRow; i++)
+            {
+                for (int j = 0; j < numTilesPerCol; j++)
+                {
+                    floorLayout[i, j].ResetAllInnerTiles();
+                }
+            }
+        }
+
+        /// <summary>
+        /// Gets every inner tile currently being cleaned by the vacuum whiskers
+        /// This depends on the vacuum heading.
+        /// </summary>
+        /// <param name="VacDisplay"> The display of the vacuum in the simulation </param>
+        /// <returns> The list of 6 inner tiles getting cleaned by the vacuum's whiskers </returns>
+        public List<InnerTile> GetInnerTilesBeingCleanedByWhiskers(VacuumDisplay VacDisplay)
+        {
+            InnerTile centerInnerTile = GetInnerTileBeingCleanedByVacuum(VacDisplay);
+            List<InnerTile> retInnerTiles = new List<InnerTile>();
+
+            if (VacDisplay.vacuumHeading >= 0 && VacDisplay.vacuumHeading < 45)
+            {
+                retInnerTiles.Add(GetInnerTileFromCoordinates(centerInnerTile.x - InnerTile.innerTileSideLength, centerInnerTile.y - InnerTile.innerTileSideLength));
+                retInnerTiles.Add(GetInnerTileFromCoordinates(centerInnerTile.x, centerInnerTile.y - InnerTile.innerTileSideLength));
+                retInnerTiles.Add(GetInnerTileFromCoordinates(centerInnerTile.x + InnerTile.innerTileSideLength, centerInnerTile.y - InnerTile.innerTileSideLength));
+                retInnerTiles.Add(GetInnerTileFromCoordinates(centerInnerTile.x - InnerTile.innerTileSideLength, centerInnerTile.y + InnerTile.innerTileSideLength));
+                retInnerTiles.Add(GetInnerTileFromCoordinates(centerInnerTile.x, centerInnerTile.y + InnerTile.innerTileSideLength));
+                retInnerTiles.Add(GetInnerTileFromCoordinates(centerInnerTile.x + InnerTile.innerTileSideLength, centerInnerTile.y + InnerTile.innerTileSideLength));
+            }
+            else if (VacDisplay.vacuumHeading >= 45 && VacDisplay.vacuumHeading < 90)
+            {
+                retInnerTiles.Add(GetInnerTileFromCoordinates(centerInnerTile.x, centerInnerTile.y - InnerTile.innerTileSideLength));
+                retInnerTiles.Add(GetInnerTileFromCoordinates(centerInnerTile.x + InnerTile.innerTileSideLength, centerInnerTile.y - InnerTile.innerTileSideLength));
+                retInnerTiles.Add(GetInnerTileFromCoordinates(centerInnerTile.x + InnerTile.innerTileSideLength, centerInnerTile.y));
+                retInnerTiles.Add(GetInnerTileFromCoordinates(centerInnerTile.x, centerInnerTile.y + InnerTile.innerTileSideLength));
+                retInnerTiles.Add(GetInnerTileFromCoordinates(centerInnerTile.x - InnerTile.innerTileSideLength, centerInnerTile.y + InnerTile.innerTileSideLength));
+                retInnerTiles.Add(GetInnerTileFromCoordinates(centerInnerTile.x - InnerTile.innerTileSideLength, centerInnerTile.y));
+            }
+            else if (VacDisplay.vacuumHeading >= 90 && VacDisplay.vacuumHeading < 135)
+            {
+                retInnerTiles.Add(GetInnerTileFromCoordinates(centerInnerTile.x - InnerTile.innerTileSideLength, centerInnerTile.y - InnerTile.innerTileSideLength));
+                retInnerTiles.Add(GetInnerTileFromCoordinates(centerInnerTile.x - InnerTile.innerTileSideLength, centerInnerTile.y));
+                retInnerTiles.Add(GetInnerTileFromCoordinates(centerInnerTile.x - InnerTile.innerTileSideLength, centerInnerTile.y + InnerTile.innerTileSideLength));
+                retInnerTiles.Add(GetInnerTileFromCoordinates(centerInnerTile.x + InnerTile.innerTileSideLength, centerInnerTile.y - InnerTile.innerTileSideLength));
+                retInnerTiles.Add(GetInnerTileFromCoordinates(centerInnerTile.x + InnerTile.innerTileSideLength, centerInnerTile.y));
+                retInnerTiles.Add(GetInnerTileFromCoordinates(centerInnerTile.x + InnerTile.innerTileSideLength, centerInnerTile.y + InnerTile.innerTileSideLength));
+            }
+            else if (VacDisplay.vacuumHeading >= 135 && VacDisplay.vacuumHeading < 180)
+            {
+                retInnerTiles.Add(GetInnerTileFromCoordinates(centerInnerTile.x - InnerTile.innerTileSideLength, centerInnerTile.y));
+                retInnerTiles.Add(GetInnerTileFromCoordinates(centerInnerTile.x - InnerTile.innerTileSideLength, centerInnerTile.y - InnerTile.innerTileSideLength));
+                retInnerTiles.Add(GetInnerTileFromCoordinates(centerInnerTile.x, centerInnerTile.y - InnerTile.innerTileSideLength));
+                retInnerTiles.Add(GetInnerTileFromCoordinates(centerInnerTile.x, centerInnerTile.y + InnerTile.innerTileSideLength));
+                retInnerTiles.Add(GetInnerTileFromCoordinates(centerInnerTile.x + InnerTile.innerTileSideLength, centerInnerTile.y + InnerTile.innerTileSideLength));
+                retInnerTiles.Add(GetInnerTileFromCoordinates(centerInnerTile.x + InnerTile.innerTileSideLength, centerInnerTile.y));
+            }
+            else if (VacDisplay.vacuumHeading >= 180 && VacDisplay.vacuumHeading < 225)
+            {
+                retInnerTiles.Add(GetInnerTileFromCoordinates(centerInnerTile.x - InnerTile.innerTileSideLength, centerInnerTile.y - InnerTile.innerTileSideLength));
+                retInnerTiles.Add(GetInnerTileFromCoordinates(centerInnerTile.x, centerInnerTile.y - InnerTile.innerTileSideLength));
+                retInnerTiles.Add(GetInnerTileFromCoordinates(centerInnerTile.x + InnerTile.innerTileSideLength, centerInnerTile.y - InnerTile.innerTileSideLength));
+                retInnerTiles.Add(GetInnerTileFromCoordinates(centerInnerTile.x - InnerTile.innerTileSideLength, centerInnerTile.y + InnerTile.innerTileSideLength));
+                retInnerTiles.Add(GetInnerTileFromCoordinates(centerInnerTile.x, centerInnerTile.y + InnerTile.innerTileSideLength));
+                retInnerTiles.Add(GetInnerTileFromCoordinates(centerInnerTile.x + InnerTile.innerTileSideLength, centerInnerTile.y + InnerTile.innerTileSideLength));
+            }
+            else if (VacDisplay.vacuumHeading >= 225 && VacDisplay.vacuumHeading < 270)
+            {
+                retInnerTiles.Add(GetInnerTileFromCoordinates(centerInnerTile.x, centerInnerTile.y - InnerTile.innerTileSideLength));
+                retInnerTiles.Add(GetInnerTileFromCoordinates(centerInnerTile.x + InnerTile.innerTileSideLength, centerInnerTile.y - InnerTile.innerTileSideLength));
+                retInnerTiles.Add(GetInnerTileFromCoordinates(centerInnerTile.x + InnerTile.innerTileSideLength, centerInnerTile.y));
+                retInnerTiles.Add(GetInnerTileFromCoordinates(centerInnerTile.x, centerInnerTile.y + InnerTile.innerTileSideLength));
+                retInnerTiles.Add(GetInnerTileFromCoordinates(centerInnerTile.x - InnerTile.innerTileSideLength, centerInnerTile.y + InnerTile.innerTileSideLength));
+                retInnerTiles.Add(GetInnerTileFromCoordinates(centerInnerTile.x - InnerTile.innerTileSideLength, centerInnerTile.y));
+            }
+            else if (VacDisplay.vacuumHeading >= 270 && VacDisplay.vacuumHeading < 315)
+            {
+                retInnerTiles.Add(GetInnerTileFromCoordinates(centerInnerTile.x - InnerTile.innerTileSideLength, centerInnerTile.y - InnerTile.innerTileSideLength));
+                retInnerTiles.Add(GetInnerTileFromCoordinates(centerInnerTile.x - InnerTile.innerTileSideLength, centerInnerTile.y));
+                retInnerTiles.Add(GetInnerTileFromCoordinates(centerInnerTile.x - InnerTile.innerTileSideLength, centerInnerTile.y + InnerTile.innerTileSideLength));
+                retInnerTiles.Add(GetInnerTileFromCoordinates(centerInnerTile.x + InnerTile.innerTileSideLength, centerInnerTile.y - InnerTile.innerTileSideLength));
+                retInnerTiles.Add(GetInnerTileFromCoordinates(centerInnerTile.x + InnerTile.innerTileSideLength, centerInnerTile.y));
+                retInnerTiles.Add(GetInnerTileFromCoordinates(centerInnerTile.x + InnerTile.innerTileSideLength, centerInnerTile.y + InnerTile.innerTileSideLength));
+            }
+            else if (VacDisplay.vacuumHeading >= 315 && VacDisplay.vacuumHeading < 360)
+            {
+                retInnerTiles.Add(GetInnerTileFromCoordinates(centerInnerTile.x - InnerTile.innerTileSideLength, centerInnerTile.y));
+                retInnerTiles.Add(GetInnerTileFromCoordinates(centerInnerTile.x - InnerTile.innerTileSideLength, centerInnerTile.y - InnerTile.innerTileSideLength));
+                retInnerTiles.Add(GetInnerTileFromCoordinates(centerInnerTile.x, centerInnerTile.y - InnerTile.innerTileSideLength));
+                retInnerTiles.Add(GetInnerTileFromCoordinates(centerInnerTile.x, centerInnerTile.y + InnerTile.innerTileSideLength));
+                retInnerTiles.Add(GetInnerTileFromCoordinates(centerInnerTile.x + InnerTile.innerTileSideLength, centerInnerTile.y + InnerTile.innerTileSideLength));
+                retInnerTiles.Add(GetInnerTileFromCoordinates(centerInnerTile.x + InnerTile.innerTileSideLength, centerInnerTile.y));
+            }
+
+            return retInnerTiles;
+        }
+
+        /// <summary>
+        /// Gets the inner tile currently being cleaned by the vacuum
+        /// </summary>
+        /// <param name="VacDisplay"> The display of the vacuum in the simulation</param>
+        /// <returns> The inner tile currently being cleaned by the vacuum </returns>
+        public InnerTile GetInnerTileBeingCleanedByVacuum(VacuumDisplay VacDisplay)
+        {
+            return GetInnerTileFromCoordinates((int)VacDisplay.vacuumCoords[0], (int)VacDisplay.vacuumCoords[1]);
+        }
+
+        /// <summary>
+        /// Returns every inner tile the vacuum display resides in
+        /// </summary>
+        /// <param name="VacDisplay"> The display of the vacuum </param>
+        /// <param name="HouseLayout"> The floor plan layout </param>
+        /// <returns> The requested list of inner tiles </returns>
+        public List<InnerTile> GetVacuumHitboxInnerTiles(VacuumDisplay VacDisplay, FloorplanLayout HouseLayout)
+        {
+            int vacuumX = (int)VacDisplay.vacuumCoords[0];
+            int vacuumY = (int)VacDisplay.vacuumCoords[1];
+            InnerTile centerInnerTile = HouseLayout.GetInnerTileFromCoordinates(vacuumX, vacuumY);
+            List<InnerTile> retList = new List<InnerTile>();
+
+            for (int x = vacuumX - InnerTile.innerTileSideLength; x <= vacuumX + InnerTile.innerTileSideLength; x += InnerTile.innerTileSideLength)
+            {
+                for (int y = vacuumY - InnerTile.innerTileSideLength; y <= vacuumY + InnerTile.innerTileSideLength; y += InnerTile.innerTileSideLength)
+                {
+                    retList.Add(GetInnerTileFromCoordinates(x, y));
+                }
+            }
+
+            return retList;
+        }
+
+        /// <summary>
+        /// Calculates the total area of the floorplan and the area that cannot be cleaned (**both in inches**)
+        /// Can subtract area that cannot be cleaned from total area to get area that can be cleaned
+        /// </summary>
+        public void PerformAreaCalculations()
+        {
+            // Reset numCleanableSubtiles so that subsequent calls to PerformAreaCalculations doesn't make it higher than it should be.
+            numCleanableSubtiles = 0;
+            for (int i = 1; i < numTilesPerRow - 1; i++)
+            {
+                for (int j = 1; j < numTilesPerCol - 1; j++)
+                {
+                    for (int k = 0; k < Tile.numInnerTilesInRowAndCol; k++)
+                    {
+                        for (int l = 0; l < Tile.numInnerTilesInRowAndCol; l++)
+                        {
+                            Tile theTile = floorLayout[i, j];
+                            InnerTile theInnerTile = GetInnerTileFromCoordinates(theTile.x + k * InnerTile.innerTileSideLength, theTile.y + l * InnerTile.innerTileSideLength);
+
+                            totalFloorplanArea += InnerTile.innerTileSideLength * InnerTile.innerTileSideLength;
+                            if (theInnerTile.obstacle != ObstacleType.Floor) // Can't clean this
+                                totalNonCleanableFloorplanArea += InnerTile.innerTileSideLength * InnerTile.innerTileSideLength;
+                            else numCleanableSubtiles++;
+                        }
+                    }
+                }
+            }
+
+            // Pixels to inches conversions
+            totalFloorplanArea = (int)(totalFloorplanArea * ((24.0f / tileSideLength) * (24.0f / tileSideLength)));
+            totalNonCleanableFloorplanArea = (int)(totalNonCleanableFloorplanArea * ((24.0f / tileSideLength) * (24.0f / tileSideLength)));
+        }
+
+        /// <summary>
+        /// Gets the floorplan dirtiness as an average of the dirtiness levels of all cleanable inner tiles.
+        /// This method MUST be called AFTER PerformAreaCalculations()
+        /// </summary>
+        /// <returns>A double representing dirtiness 0-100</returns>
+        public double GetFloorplanDirtiness()
+        {
+            int numSubtiles = numCleanableSubtiles;
+            double averageDirtiness = 0.0;
+            for (int i = 1; i < numTilesPerRow - 1; i++)
+            {
+                for (int j = 1; j < numTilesPerCol - 1; j++)
+                {
+                    foreach (var subtile in GetTileFromRowCol(j, i).innerTiles)
+                    {
+                        // Only consider cleanable subtiles
+                        if (subtile.obstacle == ObstacleType.Floor)
+                        {
+                            averageDirtiness += ((double)subtile.dirtiness / (double)numSubtiles);
+                        }
+                    }
+                }
+            }
+
+            // Round to get rid of some of that floating point error, plus we dont need so much precision
+            averageDirtiness = Math.Round(averageDirtiness, 1);
+
+            return averageDirtiness;
         }
 
         /* Returns a 'hashed' number to give an ID a floorplan

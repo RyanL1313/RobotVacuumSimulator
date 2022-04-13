@@ -10,8 +10,9 @@ using System.Windows.Forms;
 using System.Reflection;
 using VacuumSim.Sim;
 using VacuumSim.UI.FloorplanGraphics;
-using System.Text.Json;
-using System.IO;
+using VacuumSim.Components;
+using System.Diagnostics;
+using VacuumSim.UI.Floorplan;
 
 namespace VacuumSim
 {
@@ -32,6 +33,10 @@ namespace VacuumSim
         private List<string> SimulationSpeeds = new List<string> { "1x", "5x", "50x" };
         private FloorplanLayout HouseLayout;
         private VacuumDisplay VacDisplay;
+        private VacuumController vc;
+        private Vacuum ActualVacuumData = new Vacuum();
+        private FloorCleaner floorCleaner = new FloorCleaner();
+        private CollisionHandler collisionHandler = new CollisionHandler();
 
         /// <summary>
         /// Initializes the algorithm selector to allow for choosing an algorithm type as specified by the PathAlgorithm enum.
@@ -44,17 +49,24 @@ namespace VacuumSim
             RobotPathAlgorithmSelector.SelectedItem = PathAlgorithm.Random;
         }
 
+        private void RobotPathAlgorithmSelector_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            Vacuum.VacuumAlgorithm.Clear();
+        }
+
         private void InitFloorTileSelector()
         {
             // Set the data source of the dropdown box to be the values of our ObstacleType enum
             //ObstacleSelector.DataSource = Enum.GetValues(typeof(ObstacleType));
             // Set the default value to the ObstacleType.WALL;
             ObstacleSelector.SelectedIndex = 0;
+            Vacuum.VacuumAlgorithm.Clear();
         }
 
         private void InitSimulationSpeedSelector()
         {
             SimulationSpeedSelector.DataSource = SimulationSpeeds;
+            ActualVacuumData.VacuumSpeed = (int)RobotSpeedSelector.Value;
         }
 
         public Form1()
@@ -68,6 +80,7 @@ namespace VacuumSim
             HouseLayout = new FloorplanLayout();
             FloorCanvasDesigner.FloorplanHouseDesigner = new FloorplanLayout();
             VacDisplay = new VacuumDisplay();
+            ActualVacuumData = new Vacuum();
 
             // Enable double buffering for FloorCanvas
             this.DoubleBuffered = true;
@@ -124,8 +137,9 @@ namespace VacuumSim
             HouseLayout.numTilesPerRow = ((int)HouseWidthSelector.Value + 4) / 2; // Get number of tiles per row based on house width chosen by user
             FloorCanvasDesigner.UpdateFloorplanAfterHouseWidthChanged(HouseLayout, prevNumTilesPerRow);
 
-            // Update RoomWidthSelector value if necessary
+            // Update selected obstacle widths if necessary
             RoomWidthSelector.Value = Math.Min(RoomWidthSelector.Value, HouseWidthSelector.Value);
+            ChairTableWidthSelector.Value = Math.Min(ChairTableWidthSelector.Value, HouseWidthSelector.Value);
 
             FloorCanvas.Invalidate(); // Re-draw canvas to reflect change in house width
         }
@@ -139,8 +153,9 @@ namespace VacuumSim
             HouseLayout.numTilesPerCol = ((int)HouseHeightSelector.Value + 4) / 2; // Get number of tiles per column based on house height chosen by user
             FloorCanvasDesigner.UpdateFloorplanAfterHouseHeightChanged(HouseLayout, prevNumTilesPerCol);
 
-            // Update RoomHeightSelector value if necessary
+            // Update selected obstacle heights if necessary
             RoomHeightSelector.Value = Math.Min(RoomHeightSelector.Value, HouseHeightSelector.Value);
+            ChairTableHeightSelector.Value = Math.Min(ChairTableHeightSelector.Value, HouseHeightSelector.Value);
 
             FloorCanvas.Invalidate(); // Re-draw canvas to reflect change in house height
         }
@@ -165,54 +180,107 @@ namespace VacuumSim
         {
             if ((int)ChairTableWidthSelector.Value % 2 == 1) // Prevent non-even entries
                 ChairTableWidthSelector.Value += 1;
+
+            ChairTableWidthSelector.Value = Math.Min(ChairTableWidthSelector.Value, HouseWidthSelector.Value);
         }
 
         private void ChairTableHeightSelector_ValueChanged(object sender, EventArgs e)
         {
             if ((int)ChairTableHeightSelector.Value % 2 == 1) // Prevent non-even entries
                 ChairTableHeightSelector.Value += 1;
+
+            ChairTableHeightSelector.Value = Math.Min(ChairTableHeightSelector.Value, HouseHeightSelector.Value);
         }
 
         private void SimulationSpeedSelector_SelectedIndexChanged(object sender, EventArgs e)
         {
             Simulation.simSpeed = Int32.Parse(SimulationSpeedSelector.SelectedItem.ToString().TrimEnd('x'));
 
-            // Set the vacuum timer to update every 1000 / (simulation speed) / 4 seconds
-            // The reason I divide by 4 is so 4 frames appear each "simulation second"
-            VacuumBodyTimer.Interval = 1000 / Simulation.simSpeed / FloorCanvasCalculator.framesPerSimSecond;
+            // Set the vacuum timer to update every 1000 / (simulation speed) / (frames per simulation second)
+            VacAlgorithmTimer.Interval = 1000 / Simulation.simSpeed / FloorCanvasCalculator.framesPerSimSecond;
         }
 
         private void RobotSpeedSelector_ValueChanged(object sender, EventArgs e)
         {
             VacDisplay.vacuumSpeed = (int)RobotSpeedSelector.Value;
+            ActualVacuumData.VacuumSpeed = (int)RobotSpeedSelector.Value;
         }
 
         private void RobotBatteryLifeSelector_ValueChanged(object sender, EventArgs e)
         {
             BatteryLeftLabel.Text = "" + RobotBatteryLifeSelector.Value + " minutes";
             VacDisplay.batterySecondsRemaining = (int)RobotBatteryLifeSelector.Value * 60;
+            ActualVacuumData.VacuumBattery = (int)RobotBatteryLifeSelector.Value;
         }
 
         private void InitialVacuumHeadingSelector_ValueChanged(object sender, EventArgs e)
         {
             VacDisplay.vacuumHeading = (int)InitialVacuumHeadingSelector.Value;
+            ActualVacuumData.heading = (int)InitialVacuumHeadingSelector.Value;
 
             FloorCanvas.Invalidate(); // Re-draw canvas to show new whiskers display
+        }
+
+        private void FloorTypeControlChanged(object sender, EventArgs e)
+        {
+            // Update the default vacuum efficiency based on the selected floor covering
+            if (HardWoodRadioButton.Checked)
+            {
+                VacuumEfficiencySlider.Value = 90;
+                ActualVacuumData.VacuumEfficiency = 90.0f / 100.0f;
+            }
+            else if (LoopPileRadioButton.Checked)
+            {
+                VacuumEfficiencySlider.Value = 75;
+                ActualVacuumData.VacuumEfficiency = 75.0f / 100.0f;
+            }
+            else if (CutPileRadioButton.Checked)
+            {
+                VacuumEfficiencySlider.Value = 70;
+                ActualVacuumData.VacuumEfficiency = 70.0f / 100.0f;
+            }
+            else if (FriezeCutPileRadioButton.Checked)
+            {
+                VacuumEfficiencySlider.Value = 65;
+                ActualVacuumData.VacuumEfficiency = 65.0f / 100.0f;
+            }
+
+            VacuumEfficiencyValueLabel.Text = VacuumEfficiencySlider.Value + "%";
+
+            FloorCanvas.Invalidate();
         }
 
         private void VacuumEfficiencySlider_Scroll(object sender, EventArgs e)
         {
             VacuumEfficiencyValueLabel.Text = VacuumEfficiencySlider.Value + "%";
+            ActualVacuumData.VacuumEfficiency = VacuumEfficiencySlider.Value / 100.0f;
         }
 
         private void WhiskerEfficiencySlider_Scroll(object sender, EventArgs e)
         {
             WhiskersEfficiencyValueLabel.Text = WhiskersEfficiencySlider.Value + "%";
+            ActualVacuumData.WhiskerEfficiency = WhiskersEfficiencySlider.Value / 100.0f;
         }
 
         private void ShowInstructionsButton_Click(object sender, EventArgs e)
         {
-            MessageBox.Show("To-do.\n\nsomething something vacuum go vroom vroom.");
+            MessageBox.Show("Welcome to the Robot Vacuum Simulator. Below is a short guide on how to use this software:\n\n" +
+                "The first step is to create a floor plan. You can either start from scratch or start from a pre-loaded floor plan.\n" +
+                "There are two types of pre-loaded floor plans. A floor plan that you have created and saved, and a default floor plan\n" +
+                "created by us, the developers. You can then add/remove obstacles onto the floor plan. This can be achieved by selecting\n" +
+                "an obstacle (i.e. room, chair, table, chest) and then clicking-and-dragging the obstacle onto the floor plan. To remove obstacles,\n" +
+                "click on the \"Eraser Mode\" button to turn on eraser mode. Then, you can click on obstacles on the floor plan to remove them.\n" +
+                "Once you are satisfied with your floor plan, press \"Finish Floor Plan\". You can always go back to editing the floor plan by\n" +
+                "pressing \"Edit Floor Plan\". Pressing \"Finish Floor Plan\" will allow you to start setting the vacuum's attributes.\n\n" +
+                "Customize the vacuum's attributes by utilizing the different options in the \"Vacuum Attributes\" section. Place the vacuum\n" +
+                "onto the floor plan by clicking-and-dragging the vacuum onto a valid position. Once the vacuum is placed, you can set the simulation\n" +
+                "speed and start the simulation. Note that if you choose to run all algorithms, four full simulations will run for each algorithm.\n\n" +
+                "Stop the simulation at any time by pressing \"Stop Simulation\". The simulation will automatically stop when the vacuum's battery runs out.\n" +
+                "As the simulation is running, a trail will be shown behind the vacuum showing what areas of the house have been cleaned so far by the vacuum.\n\n" +
+                "Once the simulation has ended, the results will get saved and can be reviewed at any time. Also, after the simulation has ended, a heat map will get displayed\n" +
+                "showing how well each area of the house was cleaned by the vacuum. The more red a spot is, the better the vacuum cleaned it. The more blue\n" +
+                "a spot is, the worse the vacuum cleaned it.\n\n" +
+                "You can then proceed to run another simulation by pressing \"Yes\" when prompted.\n");
         }
 
         private void FinishOrEditFloorplanButton_Click(object sender, EventArgs e)
@@ -234,7 +302,7 @@ namespace VacuumSim
                 ObstaclesGroupBox.Enabled = false;
                 FloorCanvasDesigner.eraserModeOn = false;
                 EraserModeButton.Text = "Eraser Mode: OFF";
-                FinishOrEditFloorplanButton.Text = "Edit Floorplan";
+                FinishOrEditFloorplanButton.Text = "Edit Floor Plan";
                 LoadSaveFloorplanGroupBox.Enabled = false;
 
                 // Vacuum widget attributes
@@ -272,7 +340,7 @@ namespace VacuumSim
                 RoomDimensionsGroupBox.Enabled = ObstacleSelector.SelectedIndex == 0;
                 ChairTableDimensionsGroupBox.Enabled = ObstacleSelector.SelectedIndex == 1 || ObstacleSelector.SelectedIndex == 2;
                 LoadSaveFloorplanGroupBox.Enabled = true;
-                FinishOrEditFloorplanButton.Text = "Finish Floorplan";
+                FinishOrEditFloorplanButton.Text = "Finish Floor Plan";
 
                 // Vacuum widget attributes
                 VacuumAttributesLabel.Enabled = false;
@@ -306,8 +374,25 @@ namespace VacuumSim
 
         private void SaveFloorplanButton_Click(object sender, EventArgs e)
         {
-            // Modify this in the future
-            FloorplanFileWriter.SaveTileGridData("../../../UI/Floorplan/SavedFloorplan.txt", HouseLayout);
+            SaveFileDialog saveFloorplanDialog = new SaveFileDialog();
+            saveFloorplanDialog.Filter = "Text files (*.txt)|*.txt";
+            saveFloorplanDialog.Title = "Save Floorplan";
+            saveFloorplanDialog.ShowDialog();
+
+            string outFilePath;
+
+            if (saveFloorplanDialog.FileName != "")
+            {
+                outFilePath = saveFloorplanDialog.FileName;
+            }
+            else
+            {
+                // If the path fails then tell the user to try again.
+                MessageBox.Show("Invalid file path passed, please try again.");
+                return;
+            }
+
+            FloorplanFileWriter.SaveTileGridData(outFilePath, HouseLayout);
         }
 
         private void LoadDefaultFloorplanButton_Click(object sender, EventArgs e)
@@ -315,34 +400,61 @@ namespace VacuumSim
             HouseWidthSelector.Value = 50; // 25 tiles wide (excluding boundary walls)
             HouseHeightSelector.Value = 40; // 20 tiles high (excluding boundary walls)
 
-            FloorplanFileReader.LoadTileGridData("../../../UI/Floorplan/DefaultFloorplan.txt", HouseLayout);
+            FloorplanFileReader.LoadTileGridData(Properties.Resources.DefaultFloorPlan.Split("\n"), HouseLayout);
 
             FloorCanvas.Invalidate(); // Re-trigger paint event
         }
 
         private void LoadSavedFloorplanButton_Click(object sender, EventArgs e)
         {
-            FloorplanFileReader.LoadTileGridData("../../../UI/Floorplan/SavedFloorplan.txt", HouseLayout);
+            string inFilePath;
+            // This handy bit of code gets the current user's desktop directory.
+            // We use this as the default directory for the load dialog.
+            string usrDesktopPath = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
+
+            OpenFileDialog openFloorplanDialog = new OpenFileDialog();
+            openFloorplanDialog.Title = "Open Floorplan";
+            openFloorplanDialog.Filter = "Text files (*.txt)|*.txt";
+            openFloorplanDialog.InitialDirectory = usrDesktopPath;
+            openFloorplanDialog.RestoreDirectory = true;
+
+            if (openFloorplanDialog.ShowDialog() == DialogResult.OK)
+            {
+                inFilePath = openFloorplanDialog.FileName;
+            }
+            else
+            {
+                // If the user closes the dialog without opening anything, just exit out.
+                return;
+            }
+
+            FloorplanFileReader.LoadTileGridData(inFilePath, HouseLayout);
 
             // Set the house width and height selector values to the size of the newly-loaded floorplan
-            HouseWidthSelector.Value = HouseLayout.numTilesPerRow * 2;
-            HouseHeightSelector.Value = HouseLayout.numTilesPerCol * 2;
+            HouseWidthSelector.Value = HouseLayout.numTilesPerRow * 2 - 4;
+            HouseHeightSelector.Value = HouseLayout.numTilesPerCol * 2 - 4;
 
             FloorCanvas.Invalidate();
         }
 
-        private void StartSimulationButton_Click(object sender, EventArgs e)
-        {
-            SetInitialSimulationValues();
-
-            // Store simulation start time for the simulation report
-            Simulation.simulationStartTime = DateTime.Now.ToString("F");
-        }
-
         private void StopSimulationButton_Click(object sender, EventArgs e)
         {
-            Simulation.lastSimTimeElapsed = Simulation.simTimeElapsed;
-            ResetSimulationValues();
+            // Need to save simulation data right here
+            ResetValuesAfterSimEnd();
+
+            FloorCanvas.Invalidate();
+        }
+
+        private void YesRunAnotherSimulationButton_Click(object sender, EventArgs e)
+        {
+            ResetValuesAfterExitingHeatMap();
+
+            FloorCanvas.Invalidate();
+        }
+
+        private void NoRunAnotherSimulationButton_Click(object sender, EventArgs e)
+        {
+            this.Close(); // User is finished running the program
         }
 
         private void EraserModeButton_Click(object sender, EventArgs e)
@@ -361,11 +473,22 @@ namespace VacuumSim
             var SelectedFloorType = FloorTypeGroupBox.Controls.OfType<RadioButton>()
                            .FirstOrDefault(n => n.Checked).Name;
 
-            FloorCanvasDesigner.SetAntiAliasing(canvasEditor);
-            FloorCanvasDesigner.DisplayFloorCovering(canvasEditor, HouseLayout, SelectedFloorType);
-            FloorCanvasDesigner.PaintChairAndTableBackgrounds(canvasEditor, HouseLayout);
-            FloorCanvasDesigner.DrawVacuum(canvasEditor, VacDisplay);
-            FloorCanvasDesigner.DrawFloorplan(canvasEditor, HouseLayout, VacDisplay);
+            if (FloorCanvasDesigner.displayingHeatMap)
+            {
+                FloorCanvasDesigner.DrawHeatMap(canvasEditor, HouseLayout);
+            }
+            else
+            {
+                FloorCanvasDesigner.SetAntiAliasing(canvasEditor);
+                FloorCanvasDesigner.DisplayFloorCovering(canvasEditor, HouseLayout, SelectedFloorType);
+                FloorCanvasDesigner.PaintChairAndTableBackgrounds(canvasEditor, HouseLayout);
+                FloorCanvasDesigner.DisplayCleanedTiles(canvasEditor, HouseLayout);
+                FloorCanvasDesigner.DrawVacuum(canvasEditor, VacDisplay);
+                // if (Simulation.simStarted) FloorCanvasDesigner.PaintVacuumHitboxInnerTiles(canvasEditor, HouseLayout, VacDisplay);
+                // if (Simulation.simStarted) FloorCanvasDesigner.PaintInnerTilesGettingCleaned(canvasEditor, HouseLayout, VacDisplay); // testing purposes
+                //FloorCanvasDesigner.DrawInnerTileGridLines(canvasEditor, HouseLayout); // testing purposes
+                FloorCanvasDesigner.DrawFloorplan(canvasEditor, HouseLayout, VacDisplay);
+            }
         }
 
         /// <summary>
@@ -385,7 +508,7 @@ namespace VacuumSim
 
             // Make sure we don't re-draw the canvas if the user is still selecting the same tile while in floorplan drawing mode (efficiency concerns)
             // Also, prevent drawing on the canvas based on various other conditions
-            if (FloorCanvasDesigner.justPlacedDoorway || !FloorCanvasDesigner.eraserModeOn && !FloorCanvasDesigner.currentlyAddingDoorway && !FloorCanvasDesigner.settingVacuumAttributes &&
+            if (FloorCanvasDesigner.justPlacedDoorway || FloorCanvasDesigner.displayingHeatMap || !FloorCanvasDesigner.eraserModeOn && !FloorCanvasDesigner.currentlyAddingDoorway && !FloorCanvasDesigner.settingVacuumAttributes &&
                 selectedTileIndices[0] == FloorCanvasDesigner.currentIndicesOfSelectedTile[0] && selectedTileIndices[1] == FloorCanvasDesigner.currentIndicesOfSelectedTile[1])
                 return;
             else
@@ -411,10 +534,12 @@ namespace VacuumSim
                 FloorCanvasDesigner.currentlyPlacingVacuum = true;
 
                 // Set the current vacuum coordinates to the coordinates clicked by the user
-                VacDisplay.vacuumCoords[0] = canvasCoords.X;
-                VacDisplay.vacuumCoords[1] = canvasCoords.Y;
+                ActualVacuumData.VacuumCoords[0] = canvasCoords.X;
+                ActualVacuumData.VacuumCoords[1] = canvasCoords.Y;
 
-                FloorCanvasDesigner.AttemptPlaceVacuum(HouseLayout, VacDisplay);
+                VacDisplay.CenterVacuumDisplay(ActualVacuumData.VacuumCoords, HouseLayout); // Also, center the vacuum display within the correct inner tile
+
+                FloorCanvasDesigner.AttemptPlaceVacuum(HouseLayout, ActualVacuumData);
             }
             else if (FloorCanvasDesigner.currentlyAddingDoorway) // User currently needs to add a doorway to the room they just placed
             {
@@ -510,29 +635,22 @@ namespace VacuumSim
             FloorCanvasDesigner.currentlyPlacingVacuum = false;
             FloorCanvasDesigner.currentlyAddingObstacle = false;
             FloorCanvasDesigner.justPlacedDoorway = false;
+            FloorCanvasDesigner.successAddingObstacle = false;
 
             FloorCanvas.Invalidate();
         }
 
-        private void VacuumBodyTimer_Tick(object sender, EventArgs e)
+        private void VacAlgorithmTimer_Tick(object sender, EventArgs e)
         {
-            // TO-DO: Calculate next (x, y) position of vacuum based on selected algorithm (backend)
+            vc.ExecVPath(VacDisplay, HouseLayout, collisionHandler, floorCleaner, ActualVacuumData, sender, e);
 
-            // Animating the vacuum to go in a circle (change this to move the vacuum however you'd like)
-            VacDisplay.vacuumCoords[0] += FloorCanvasCalculator.GetDistanceTraveledPerFrame(VacDisplay.vacuumSpeed) * (float)Math.Cos((Math.PI * VacDisplay.vacuumHeading) / 180);
-            VacDisplay.vacuumCoords[1] += FloorCanvasCalculator.GetDistanceTraveledPerFrame(VacDisplay.vacuumSpeed) * (float)Math.Sin((Math.PI * VacDisplay.vacuumHeading) / 180);
-
-            VacDisplay.vacuumHeading = (VacDisplay.vacuumHeading + 45) % 360;
-
-            FloorCanvasCalculator.UpdateSimulationData(VacDisplay);
-
+            // Decrement the battery
             BatteryLeftLabel.Text = FloorCanvasCalculator.GetBatteryRemainingText(VacDisplay);
             SimTimeElapsedLabel.Text = FloorCanvasCalculator.GetTimeElapsedText();
 
-            // Reset simulation data if battery just ran out
+            // Save and reset simulation data if battery just ran out
             if (VacDisplay.batterySecondsRemaining <= 0)
-                ResetSimulationValues();
-
+                ResetValuesAfterSimEnd();
             FloorCanvas.Invalidate();
         }
 
@@ -541,6 +659,35 @@ namespace VacuumSim
             FloorCanvasCalculator.CalculateWhiskerCoordinates(VacDisplay);
 
             FloorCanvas.Invalidate(); // Re-trigger paint event
+        }
+
+        private void StartSimulationButton_Click(object sender, EventArgs e)
+        {
+            SetInitialSimulationValues();
+            if (Vacuum.VacuumAlgorithm[0] == 0)
+            {
+                vc = new VRandAlgorithm();
+                VacAlgorithmTimer.Enabled = true;
+                Debug.WriteLine("Running "+ vc.getVer());
+            }
+            else if (Vacuum.VacuumAlgorithm[0] == 1)
+            {
+                vc = new VSpiralAlgorithm();
+                VacAlgorithmTimer.Enabled = true;
+                Debug.WriteLine("Running "+ vc.getVer());
+            }
+            else if (Vacuum.VacuumAlgorithm[0] == 2)
+            {
+                vc = new VSnakeAlgorithm();
+                VacAlgorithmTimer.Enabled = true;
+                Debug.WriteLine("Running "+ vc.getVer());
+            }
+            else if (Vacuum.VacuumAlgorithm[0] == 3)
+            {
+                vc = new VWallFollowAlgorithm();
+                VacAlgorithmTimer.Enabled = true;
+                Debug.WriteLine("Running "+ vc.getVer());
+            }
         }
 
         /// <summary>
@@ -576,7 +723,6 @@ namespace VacuumSim
         /// </summary>
         private void SetInitialSimulationValues()
         {
-            VacuumBodyTimer.Enabled = true;
             VacuumWhiskersTimer.Enabled = true;
             HouseLayout.gridLinesOn = false;
             StartSimulationButton.Enabled = false;
@@ -594,20 +740,58 @@ namespace VacuumSim
             Simulation.simStarted = true;
             Simulation.simTimeElapsed = 0;
             FloorCanvasCalculator.frameCount = 0;
-
             VacDisplay.batterySecondsRemaining = (int)RobotBatteryLifeSelector.Value * 60;
+
+            VacuumController.allAlgFinish = false;
+            if (RunAllAlgorithmsCheckbox.Checked == true)
+            {
+                Vacuum.VacuumAlgorithm.Clear();
+                for (int i = 0; i < 4; i++)
+                    Vacuum.VacuumAlgorithm.Add(i);
+            }
+            else
+            {
+                Vacuum.VacuumAlgorithm.Add(RobotPathAlgorithmSelector.SelectedIndex);
+            }
+            RunAllAlgorithmsCheckbox.Enabled = false;
+            ObstacleSelector.Enabled = false;
+
+            VacDisplay.CenterVacuumDisplay(ActualVacuumData.VacuumCoords, HouseLayout);
+            VacDisplay.vacuumHeading = (int)InitialVacuumHeadingSelector.Value;
+
+            HouseLayout.SetInnerTileObstacles();
+            HouseLayout.PerformAreaCalculations();
         }
 
         /// <summary>
         /// Resetting UI, vacuum, and simulation data after simulation finishes
         /// </summary>
-        private void ResetSimulationValues()
+        private void ResetValuesAfterSimEnd()
         {
-            VacuumBodyTimer.Enabled = false;
+            FloorCanvasDesigner.displayingHeatMap = true;
             VacuumWhiskersTimer.Enabled = false;
+            VacAlgorithmTimer.Enabled = false;
             HouseLayout.gridLinesOn = true;
             StartSimulationButton.Enabled = true;
             StopSimulationButton.Enabled = false;
+            Simulation.simStarted = false;
+            Simulation.simTimeElapsed = 0;
+            FloorCanvasCalculator.frameCount = 0;
+            VacDisplay.batterySecondsRemaining = (int)RobotBatteryLifeSelector.Value * 60;
+            InitialVacuumHeadingSelector.Value = VacDisplay.vacuumHeading;
+            YesRunAnotherSimulationButton.Visible = true;
+            NoRunAnotherSimulationButton.Visible = true;
+            RunAnotherSimulationLabel.Visible = true;
+
+            FloorCanvas.Invalidate(); // Re-trigger paint event
+        }
+
+        /// <summary>
+        /// Resetting values after the user chooses to return to designing a floor plan after seeing the heat map for their previous run
+        /// </summary>
+        private void ResetValuesAfterExitingHeatMap()
+        {
+            FloorCanvasDesigner.displayingHeatMap = false;
             FinishOrEditFloorplanButton.Enabled = true;
             ControlsPane.Panel1.Enabled = true;
             LoadDefaultFloorplanButton.Enabled = true;
@@ -622,17 +806,24 @@ namespace VacuumSim
             Simulation.simTimeElapsed = 0;
             FloorCanvasCalculator.frameCount = 0;
             VacDisplay.batterySecondsRemaining = (int)RobotBatteryLifeSelector.Value * 60;
+            RunAllAlgorithmsCheckbox.Enabled = true;
+
             FloorCanvas.Invalidate(); // Re-trigger paint event
+            StartSimulationButton.Enabled = true;
+            StopSimulationButton.Enabled = false;
+            YesRunAnotherSimulationButton.Visible = false;
+            NoRunAnotherSimulationButton.Visible = false;
+            RunAnotherSimulationLabel.Visible = false;
+
+            HouseLayout.ResetInnerTiles();
+            HouseLayout.totalFloorplanArea = 0;
+            HouseLayout.totalNonCleanableFloorplanArea = 0;
+
+            FloorCanvas.Invalidate();
         }
 
         private void Form1_Load(object sender, EventArgs e)
         {
-        }
-
-        // Just forces a redraw
-        private void FloorTypeControlChanged(object sender, EventArgs e)
-        {
-            FloorCanvas.Invalidate();
         }
 
         private void GenerateReport(object sender, EventArgs e)
