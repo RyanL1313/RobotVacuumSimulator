@@ -834,7 +834,7 @@ namespace VacuumSim
         {
             SimulationReport rep = new SimulationReport
             {
-                SimulationID = HouseLayout.GetFloorPlanID(),
+                FloorplanID = HouseLayout.GetFloorPlanID(),
                 NumberOfRooms = HouseLayout.numRooms,
                 HouseWidthFeet = (int)HouseWidthSelector.Value,
                 HouseHeightFeet = (int)HouseHeightSelector.Value,
@@ -842,7 +842,8 @@ namespace VacuumSim
                            .FirstOrDefault(n => n.Checked).Name.Replace("RadioButton", "", ignoreCase: true, culture: System.Globalization.CultureInfo.InvariantCulture),
                 RobotBatteryLifeMinutes = (int)RobotBatteryLifeSelector.Value,
                 RobotEfficiency = VacuumEfficiencySlider.Value,
-                RobotPathingAlgorithm = RobotPathAlgorithmSelector.Text,
+                //RobotPathingAlgorithm = RobotPathAlgorithmSelector.Text,
+                RobotPathingAlgorithm = vc.getVer(),
                 RobotSpeedInchesPerSecond = (int)RobotSpeedSelector.Value,
                 SimulatedSeconds = Simulation.simTimeElapsed,
                 SimulationStartTime = Simulation.simulationStartTime,
@@ -885,7 +886,7 @@ namespace VacuumSim
     /// </summary>
     public class SimulationReport
     {
-        public string SimulationID;
+        public string FloorplanID;
         public string SimulationStartTime;
         public int SimulatedSeconds;
         public int HouseWidthFeet;
