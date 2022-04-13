@@ -720,24 +720,28 @@ namespace VacuumSim
             {
                 vc = new VRandAlgorithm();
                 VacAlgorithmTimer.Enabled = true;
+                CurrentAlgorithmLabel.Text = "Current Algorithm: Random";
                 Debug.WriteLine("Running " + vc.getVer());
             }
             else if (Vacuum.VacuumAlgorithm[0] == 1)
             {
                 vc = new VSpiralAlgorithm();
                 VacAlgorithmTimer.Enabled = true;
+                CurrentAlgorithmLabel.Text = "Current Algorithm: Spiral";
                 Debug.WriteLine("Running " + vc.getVer());
             }
             else if (Vacuum.VacuumAlgorithm[0] == 2)
             {
                 vc = new VSnakeAlgorithm();
                 VacAlgorithmTimer.Enabled = true;
+                CurrentAlgorithmLabel.Text = "Current Algorithm: Snake";
                 Debug.WriteLine("Running " + vc.getVer());
             }
             else if (Vacuum.VacuumAlgorithm[0] == 3)
             {
                 vc = new VWallFollowAlgorithm();
                 VacAlgorithmTimer.Enabled = true;
+                CurrentAlgorithmLabel.Text = "Current Algorithm: Wall Follow";
                 Debug.WriteLine("Running " + vc.getVer());
             }
 
@@ -852,6 +856,7 @@ namespace VacuumSim
             FloorCanvasCalculator.frameCount = 0;
             VacDisplay.batterySecondsRemaining = (int)RobotBatteryLifeSelector.Value * 60;
             RunAllAlgorithmsCheckbox.Enabled = true;
+            CurrentAlgorithmLabel.Text = "Current Algorithm:";
 
             FloorCanvas.Invalidate(); // Re-trigger paint event
             StartSimulationButton.Enabled = true;
