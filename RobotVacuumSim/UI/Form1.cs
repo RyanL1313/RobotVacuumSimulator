@@ -442,6 +442,7 @@ namespace VacuumSim
         private void StopSimulationButton_Click(object sender, EventArgs e)
         {
             // Need to save simulation data right here
+            GenerateReport();
             ResetValuesAfterSimEnd();
 
             FloorCanvas.Invalidate();
@@ -741,6 +742,7 @@ namespace VacuumSim
             FloorTypeGroupBox.Enabled = false;
             Simulation.simStarted = true;
             Simulation.simTimeElapsed = 0;
+            Simulation.simulationStartTime = DateTime.Now.ToString("G");
             FloorCanvasCalculator.frameCount = 0;
             VacDisplay.batterySecondsRemaining = (int)RobotBatteryLifeSelector.Value * 60;
 
@@ -828,7 +830,7 @@ namespace VacuumSim
         {
         }
 
-        private void GenerateReport(object sender, EventArgs e)
+        private void GenerateReport()
         {
             SimulationReport rep = new SimulationReport
             {
@@ -837,13 +839,14 @@ namespace VacuumSim
                 HouseWidthFeet = (int)HouseWidthSelector.Value,
                 HouseHeightFeet = (int)HouseHeightSelector.Value,
                 HouseFloorType = FloorTypeGroupBox.Controls.OfType<RadioButton>()
-                           .FirstOrDefault(n => n.Checked).Name,
+                           .FirstOrDefault(n => n.Checked).Name.Replace("RadioButton", "", ignoreCase: true, culture: System.Globalization.CultureInfo.InvariantCulture),
                 RobotBatteryLifeMinutes = (int)RobotBatteryLifeSelector.Value,
                 RobotEfficiency = VacuumEfficiencySlider.Value,
                 RobotPathingAlgorithm = RobotPathAlgorithmSelector.Text,
                 RobotSpeedInchesPerSecond = (int)RobotSpeedSelector.Value,
-                SimulatedSeconds = Simulation.lastSimTimeElapsed,
+                SimulatedSeconds = Simulation.simTimeElapsed,
                 SimulationStartTime = Simulation.simulationStartTime,
+                CoveragePercentage = Math.Round(100.0 - HouseLayout.GetFloorplanDirtiness(), 2)
             };
 
             // Save file dialog
@@ -893,6 +896,7 @@ namespace VacuumSim
         public int RobotSpeedInchesPerSecond;
         public float RobotEfficiency;
         public string RobotPathingAlgorithm;
+        public double CoveragePercentage;
         /*
          Simulation ID
         Simulation start time
