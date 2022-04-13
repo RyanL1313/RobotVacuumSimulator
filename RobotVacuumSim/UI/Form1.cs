@@ -13,6 +13,8 @@ using VacuumSim.UI.FloorplanGraphics;
 using VacuumSim.Components;
 using System.Diagnostics;
 using VacuumSim.UI.Floorplan;
+using System.IO;
+using System.Text.Json;
 
 namespace VacuumSim
 {
@@ -668,25 +670,25 @@ namespace VacuumSim
             {
                 vc = new VRandAlgorithm();
                 VacAlgorithmTimer.Enabled = true;
-                Debug.WriteLine("Running "+ vc.getVer());
+                Debug.WriteLine("Running " + vc.getVer());
             }
             else if (Vacuum.VacuumAlgorithm[0] == 1)
             {
                 vc = new VSpiralAlgorithm();
                 VacAlgorithmTimer.Enabled = true;
-                Debug.WriteLine("Running "+ vc.getVer());
+                Debug.WriteLine("Running " + vc.getVer());
             }
             else if (Vacuum.VacuumAlgorithm[0] == 2)
             {
                 vc = new VSnakeAlgorithm();
                 VacAlgorithmTimer.Enabled = true;
-                Debug.WriteLine("Running "+ vc.getVer());
+                Debug.WriteLine("Running " + vc.getVer());
             }
             else if (Vacuum.VacuumAlgorithm[0] == 3)
             {
                 vc = new VWallFollowAlgorithm();
                 VacAlgorithmTimer.Enabled = true;
-                Debug.WriteLine("Running "+ vc.getVer());
+                Debug.WriteLine("Running " + vc.getVer());
             }
         }
 
