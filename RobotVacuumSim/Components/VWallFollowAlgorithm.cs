@@ -14,9 +14,14 @@ namespace VacuumSim.Components
     /// </summary>
     public class VWallFollowAlgorithm : VacuumController
     {
-        public override void ExecVPath(VacuumDisplay VacDisplay, FloorplanLayout HouseLayout, CollisionHandler collisionHandler, FloorCleaner floorCleaner, Vacuum ActualVacuumData)
+        private string WallFollowAlgVer = "Wall Follow Algorithm Version 0";  // Not implemented yet 
+        public override string getVer()
         {
-            Debug.WriteLine("running wall follow algorithm");
+            return WallFollowAlgVer;
+        }
+        public override void ExecVPath(VacuumDisplay VacDisplay, FloorplanLayout HouseLayout, CollisionHandler collisionHandler, FloorCleaner floorCleaner, Vacuum ActualVacuumData, object sender, EventArgs e)
+        {
+            //Debug.WriteLine("running wall follow algorithm");
 
             // upon completion
             if (Vacuum.VacuumAlgorithm.Count != 0)
