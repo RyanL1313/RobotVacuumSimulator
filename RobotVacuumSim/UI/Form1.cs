@@ -684,15 +684,13 @@ namespace VacuumSim
             else
             {
                 Vacuum.VacuumAlgorithm.Add(RobotPathAlgorithmSelector.SelectedIndex);
-                SetInitialSimulationValues();
+            }
 
-                VacDisplay.firstAlgVacuumCoords[0] = VacDisplay.vacuumCoords[0];
-                VacDisplay.firstAlgVacuumCoords[1] = VacDisplay.vacuumCoords[1];
-                VacDisplay.firstAlgVacuumHeading = VacDisplay.vacuumHeading;
+            VacDisplay.firstAlgVacuumCoords[0] = VacDisplay.vacuumCoords[0];
+            VacDisplay.firstAlgVacuumCoords[1] = VacDisplay.vacuumCoords[1];
+            VacDisplay.firstAlgVacuumHeading = VacDisplay.vacuumHeading;
 
-                // Start the simulation timer
-                int interval = 1000 / Simulation.simSpeed / FloorCanvasCalculator.movementsPerSimSecond;
-            SimTimer = new AccurateTimer(this, new Action(SimTimerTick), interval);
+            SetInitialSimulationValues();
         }
 
         /// <summary>
@@ -732,28 +730,24 @@ namespace VacuumSim
             if (Vacuum.VacuumAlgorithm[0] == 0)
             {
                 vc = new VRandAlgorithm();
-                VacAlgorithmTimer.Enabled = true;
                 CurrentAlgorithmLabel.Text = "Current Algorithm: Random";
                 Debug.WriteLine("Running " + vc.getVer());
             }
             else if (Vacuum.VacuumAlgorithm[0] == 1)
             {
                 vc = new VSpiralAlgorithm();
-                VacAlgorithmTimer.Enabled = true;
                 CurrentAlgorithmLabel.Text = "Current Algorithm: Spiral";
                 Debug.WriteLine("Running " + vc.getVer());
             }
             else if (Vacuum.VacuumAlgorithm[0] == 2)
             {
                 vc = new VSnakeAlgorithm();
-                VacAlgorithmTimer.Enabled = true;
                 CurrentAlgorithmLabel.Text = "Current Algorithm: Snake";
                 Debug.WriteLine("Running " + vc.getVer());
             }
             else if (Vacuum.VacuumAlgorithm[0] == 3)
             {
                 vc = new VWallFollowAlgorithm();
-                VacAlgorithmTimer.Enabled = true;
                 CurrentAlgorithmLabel.Text = "Current Algorithm: Wall Follow";
                 Debug.WriteLine("Running " + vc.getVer());
             }
@@ -763,13 +757,16 @@ namespace VacuumSim
             ActualVacuumData.VacuumCoords[1] = VacDisplay.firstAlgVacuumCoords[1];
             VacDisplay.vacuumHeading = VacDisplay.firstAlgVacuumHeading;
 
+            // Start the simulation timer
+            int interval = 1000 / Simulation.simSpeed / FloorCanvasCalculator.movementsPerSimSecond;
+            SimTimer = new AccurateTimer(this, new Action(SimTimerTick), interval);
 
             VacDisplay.CenterVacuumDisplay(ActualVacuumData.VacuumCoords, HouseLayout);
             InitialVacuumHeadingSelector.Value = VacDisplay.vacuumHeading;
 
+            VacDisplayTimer.Enabled = true;
             VacDisplay.vacuumSpeed = (int)RobotSpeedSelector.Value;
             FloorCanvasDesigner.displayingHeatMap = false;
-            VacuumWhiskersTimer.Enabled = true;
             HouseLayout.gridLinesOn = false;
             StartSimulationButton.Enabled = false;
             StopSimulationButton.Enabled = true;
@@ -810,8 +807,6 @@ namespace VacuumSim
             SimTimer.Stop();
             VacDisplayTimer.Enabled = false;
             FloorCanvasDesigner.displayingHeatMap = true;
-            VacuumWhiskersTimer.Enabled = false;
-            VacAlgorithmTimer.Enabled = false;
             StartSimulationButton.Enabled = false;
             StopSimulationButton.Enabled = false;
             ShowInstructionsButton.Enabled = true;

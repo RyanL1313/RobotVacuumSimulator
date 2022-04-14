@@ -19,7 +19,7 @@ namespace VacuumSim.Components
         {
             return SnakeAlgVer;
         }
-        public override void ExecVPath(VacuumDisplay VacDisplay, FloorplanLayout HouseLayout, CollisionHandler collisionHandler, FloorCleaner floorCleaner, Vacuum ActualVacuumData, object sender, EventArgs e)
+        public override void ExecVPath(VacuumDisplay VacDisplay, FloorplanLayout HouseLayout, CollisionHandler collisionHandler, FloorCleaner floorCleaner, Vacuum ActualVacuumData)
         {
             //Debug.WriteLine("running snake algorithm");
         }
