@@ -96,6 +96,7 @@ namespace VacuumSim
             this.StopSimulationButton = new System.Windows.Forms.Button();
             this.ShowInstructionsButton = new System.Windows.Forms.Button();
             this.CenterSplitPane = new System.Windows.Forms.SplitContainer();
+            this.CurrentAlgorithmLabel = new System.Windows.Forms.Label();
             this.SimTimeElapsedLabel = new System.Windows.Forms.Label();
             this.SimTimeElapsedTitleLabel = new System.Windows.Forms.Label();
             this.BatteryLeftLabel = new System.Windows.Forms.Label();
@@ -103,7 +104,6 @@ namespace VacuumSim
             this.FloorCanvas = new System.Windows.Forms.PictureBox();
             this.VacuumWhiskersTimer = new System.Windows.Forms.Timer(this.components);
             this.VacAlgorithmTimer = new System.Windows.Forms.Timer(this.components);
-            this.CurrentAlgorithmLabel = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.LeftPane)).BeginInit();
             this.LeftPane.Panel1.SuspendLayout();
             this.LeftPane.Panel2.SuspendLayout();
@@ -1068,6 +1068,17 @@ namespace VacuumSim
             this.CenterSplitPane.SplitterWidth = 1;
             this.CenterSplitPane.TabIndex = 0;
             // 
+            // CurrentAlgorithmLabel
+            // 
+            this.CurrentAlgorithmLabel.AutoSize = true;
+            this.CurrentAlgorithmLabel.BackColor = System.Drawing.SystemColors.Window;
+            this.CurrentAlgorithmLabel.Font = new System.Drawing.Font("Georgia", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            this.CurrentAlgorithmLabel.Location = new System.Drawing.Point(376, 792);
+            this.CurrentAlgorithmLabel.Name = "CurrentAlgorithmLabel";
+            this.CurrentAlgorithmLabel.Size = new System.Drawing.Size(126, 16);
+            this.CurrentAlgorithmLabel.TabIndex = 18;
+            this.CurrentAlgorithmLabel.Text = "Current Algorithm:";
+            // 
             // SimTimeElapsedLabel
             // 
             this.SimTimeElapsedLabel.AutoSize = true;
@@ -1135,17 +1146,6 @@ namespace VacuumSim
             // 
             this.VacAlgorithmTimer.Interval = 1000;
             this.VacAlgorithmTimer.Tick += new System.EventHandler(this.VacAlgorithmTimer_Tick);
-            // 
-            // CurrentAlgorithmLabel
-            // 
-            this.CurrentAlgorithmLabel.AutoSize = true;
-            this.CurrentAlgorithmLabel.BackColor = System.Drawing.SystemColors.Window;
-            this.CurrentAlgorithmLabel.Font = new System.Drawing.Font("Georgia", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.CurrentAlgorithmLabel.Location = new System.Drawing.Point(326, 792);
-            this.CurrentAlgorithmLabel.Name = "CurrentAlgorithmLabel";
-            this.CurrentAlgorithmLabel.Size = new System.Drawing.Size(126, 16);
-            this.CurrentAlgorithmLabel.TabIndex = 18;
-            this.CurrentAlgorithmLabel.Text = "Current Algorithm:";
             // 
             // Form1
             // 

@@ -745,17 +745,11 @@ namespace VacuumSim
                 Debug.WriteLine("Running " + vc.getVer());
             }
 
-            if (ActualVacuumData.doneWithFirstAlg)
-            {
-                // Reset initial vacuum position and heading values
-                ActualVacuumData.VacuumCoords[0] = VacDisplay.firstAlgVacuumCoords[0];
-                ActualVacuumData.VacuumCoords[1] = VacDisplay.firstAlgVacuumCoords[1];
-                VacDisplay.vacuumHeading = VacDisplay.firstAlgVacuumHeading;
-            }
-            else // First or only algorithm to run
-            {
-                VacDisplay.vacuumHeading = (int)InitialVacuumHeadingSelector.Value;
-            }
+            // Reset initial vacuum position and heading values
+            ActualVacuumData.VacuumCoords[0] = VacDisplay.firstAlgVacuumCoords[0];
+            ActualVacuumData.VacuumCoords[1] = VacDisplay.firstAlgVacuumCoords[1];
+            VacDisplay.vacuumHeading = VacDisplay.firstAlgVacuumHeading;
+
 
             VacDisplay.CenterVacuumDisplay(ActualVacuumData.VacuumCoords, HouseLayout);
             InitialVacuumHeadingSelector.Value = VacDisplay.vacuumHeading;
@@ -814,16 +808,12 @@ namespace VacuumSim
 
             if (!Vacuum.VacuumAlgorithm.Any()) // All algorithms complete, no more simulations to run
             {
-                ActualVacuumData.doneWithFirstAlg = false;
-
                 YesRunAnotherSimulationButton.Visible = true;
                 NoRunAnotherSimulationButton.Visible = true;
                 RunAnotherSimulationLabel.Visible = true;
             }
             else // More algorithms need to run. Move onto the next one
             {
-                ActualVacuumData.doneWithFirstAlg = true;
-
                 // Display heat map for 3 seconds before moving onto the next algorithm
                 FloorCanvas.Invalidate();
                 await Task.Delay(3000);
