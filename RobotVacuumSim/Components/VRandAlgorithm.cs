@@ -36,12 +36,6 @@ namespace VacuumSim.Components
             floorCleaner.CleanInnerTiles(VacDisplay, ActualVacuumData, HouseLayout);
 
             FloorCanvasCalculator.UpdateSimulationData(VacDisplay);
-
-            // upon completion
-            if (Vacuum.VacuumAlgorithm.Count != 0)
-                Vacuum.VacuumAlgorithm.RemoveAt(0);
-            if (Vacuum.VacuumAlgorithm.Count == 0)
-                allAlgFinish = true;
         }
     }
 }
