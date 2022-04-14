@@ -675,11 +675,11 @@ namespace VacuumSim
                 Vacuum.VacuumAlgorithm.Add(RobotPathAlgorithmSelector.SelectedIndex);
             }
 
-            SetInitialSimulationValues();
-
             VacDisplay.firstAlgVacuumCoords[0] = VacDisplay.vacuumCoords[0];
             VacDisplay.firstAlgVacuumCoords[1] = VacDisplay.vacuumCoords[1];
-            VacDisplay.firstAlgVacuumHeading = VacDisplay.vacuumHeading; 
+            VacDisplay.firstAlgVacuumHeading = VacDisplay.vacuumHeading;
+
+            SetInitialSimulationValues();
         }
 
         /// <summary>
