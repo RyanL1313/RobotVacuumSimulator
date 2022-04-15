@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using VacuumSim.UI.Floorplan;
 using VacuumSim.UI.FloorplanGraphics;
 
 
@@ -18,101 +19,63 @@ namespace VacuumSim.Components
         {
             //Debug.WriteLine("running wall follow algorithm");
 
-            //int tileLen = FloorplanLayout.tileSideLength;
-
             var floorPlan = HouseLayout;
-            //var tile = new VacuumSim.Tile();
             var rand = new Random();
-            int adjustmentX = 0;
-            int adjustmentY = 0;
+            
             var collision = collisionHandler;
-            Tile currentTile = null;  
-
-             // floorPlan.GetTileFromRowCol((int)VacDisplay.startTileX, (int)VacDisplay.startTileX);
-            //Tile startTileLocation = floorPlan.GetTileFromCoordinates(floorPlan.GetTileLocationX(startTile), floorPlan.GetTileLocationY(startTile));
-            //tile.obstacle = ObstacleType.Floor;
-            //int laps = 0;
-            //get starting point
-
+            InnerTile leftTile = null;
+            Tile tileActualLocation = null;
             float heading = VacDisplay.vacuumHeading;
-            //while battery > 0
             int battery = VacDisplay.batterySecondsRemaining;
             
 
             if (battery > 0)
             {
-                //  Debug.WriteLine("running");
+               
                 ActualVacuumData.VacuumCoords[0] += FloorCanvasCalculator.GetDistanceTraveledPerFrame(VacDisplay.vacuumSpeed) * (float)Math.Cos((Math.PI * VacDisplay.vacuumHeading) / 180);
                 ActualVacuumData.VacuumCoords[1] += FloorCanvasCalculator.GetDistanceTraveledPerFrame(VacDisplay.vacuumSpeed) * (float)Math.Sin((Math.PI * VacDisplay.vacuumHeading) / 180);
                 
                 VacDisplay.CenterVacuumDisplay(ActualVacuumData.VacuumCoords, floorPlan);
 
+                //Debug.WriteLine(VacDisplay.vacuumHeading);
                 
-
-                //Debug.WriteLine(VacDisplay.loopNum);
+                tileActualLocation = floorPlan.GetTileFromCoordinates((int)ActualVacuumData.VacuumCoords[0], (int)ActualVacuumData.VacuumCoords[1]);
 
                
-
-
-                //currentTile = floorPlan.GetTileFromCoordinates((int)VacDisplay.vacuumCoords[0] + adjustmentX, (int)VacDisplay.vacuumCoords[1] + adjustmentY);
-
-                Tile tileActualLocation = floorPlan.GetTileFromCoordinates((int)ActualVacuumData.VacuumCoords[0], (int)ActualVacuumData.VacuumCoords[1]);
-
-                if (VacDisplay.startTile != null)
+                if (!VacDisplay.firstWallCol)
                 {
-                    //Debug.WriteLine("startTile not null");
-
-                    if (tileActualLocation.TileEquals(VacDisplay.startTile, tileActualLocation))
+                    //need the tile to the left of the vacuum
+                    if (VacDisplay.vacuumHeading < 90.0f) //vaccuum is heading right
                     {
-                       // Debug.WriteLine("startTile hit");
-                        if (VacDisplay.incremented == false)
-                        {
-                            VacDisplay.incremented = true;
-                            VacDisplay.loopNum += 1;
-
-
-                            if (VacDisplay.vacuumHeading < 90.0f)
-                            {
-                                adjustmentX += 6 * (VacDisplay.loopNum - 1); //vacuum is facing east. therefore to lap the room the offset must be moved to the left. logic is the same through the switch statemet for different directions
-                            }
-                            else if (VacDisplay.vacuumHeading < 180.0f)
-                            {
-                                adjustmentY += 6 * (VacDisplay.loopNum - 1);
-                            }
-                            else if (VacDisplay.vacuumHeading < 270.0f)
-                            {
-                                adjustmentX -= 6 * (VacDisplay.loopNum - 1);
-                            }
-                            else
-                            {
-                                adjustmentY -= 6 * (VacDisplay.loopNum - 1);
-                            }
-                            ActualVacuumData.VacuumCoords[0] +=adjustmentX;
-                            ActualVacuumData.VacuumCoords[1] += adjustmentY;
-                            Debug.WriteLine(VacDisplay.loopNum);
-                        }
-
-                        //need to update start tile
-                        //VacDisplay.startTile = floorPlan.GetTileFromCoordinates((int)ActualVacuumData.VacuumCoords[0] + adjustmentX, (int)ActualVacuumData.VacuumCoords[1] + adjustmentY);
-
-                        if (VacDisplay.startTile != tileActualLocation)
-                            VacDisplay.incremented = false;
+                        leftTile = floorPlan.GetInnerTileFromCoordinates((int)ActualVacuumData.VacuumCoords[0], (int)ActualVacuumData.VacuumCoords[1] - InnerTile.innerTileSideLength);
                     }
+                    else if (VacDisplay.vacuumHeading < 180.0f) // vacuum is heading up
+                    {
+                        leftTile = floorPlan.GetInnerTileFromCoordinates((int)ActualVacuumData.VacuumCoords[0] + InnerTile.innerTileSideLength, (int)ActualVacuumData.VacuumCoords[1]);
+                    }
+                    else if (VacDisplay.vacuumHeading < 270.0f) // vacuum is heading left
+                    {
+                        leftTile = floorPlan.GetInnerTileFromCoordinates((int)ActualVacuumData.VacuumCoords[0], (int)ActualVacuumData.VacuumCoords[1] + InnerTile.innerTileSideLength);
+
+                    }
+                    else //vacuum is heading down
+                    {
+                        leftTile = floorPlan.GetInnerTileFromCoordinates((int)ActualVacuumData.VacuumCoords[0] - InnerTile.innerTileSideLength, (int)ActualVacuumData.VacuumCoords[1]);
+
+                    }
+
+                    Debug.WriteLine(leftTile.obstacle);
                 }
+
                 if (collision.VacuumCollidedWithObstacle(VacDisplay, floorPlan))
                 {
                     collision.HandleCollision(VacDisplay, ActualVacuumData, floorPlan);
                     //actually start running the algorithm
                     // save starting tile to use to break from wall later 
                     if (VacDisplay.firstWallCol)
-                    {
-
-                        VacDisplay.startTile = floorPlan.GetTileFromCoordinates((int)ActualVacuumData.VacuumCoords[0], (int)ActualVacuumData.VacuumCoords[1]);
-                       
+                    {                       
                         VacDisplay.firstWallCol = false;
                         Debug.WriteLine("startTile Set");
-                        //Debug.WriteLine((int)ActualVacuumData.VacuumCoords[0]);
-                        //Debug.WriteLine((int)ActualVacuumData.VacuumCoords[1]);
 
                     }
 
@@ -121,8 +84,16 @@ namespace VacuumSim.Components
                     VacDisplay.vacuumHeading = VacDisplay.vacuumHeading % 360;
                 }
 
+                /*else if (!VacDisplay.firstWallCol && leftTile != null && leftTile.obstacle == ObstacleType.Floor )
+                {
+                    VacDisplay.vacuumHeading -= 90;
+                    VacDisplay.vacuumHeading = VacDisplay.vacuumHeading % 360;
+                    if (VacDisplay.vacuumHeading < 0)
+                        VacDisplay.vacuumHeading = 270;
+                    //Debug.WriteLine("leftTile floor");
 
-
+                }
+                */
 
                 //check the current heading to be able to check where to turn
 
@@ -130,9 +101,7 @@ namespace VacuumSim.Components
                 //might not end up working due to float rounding issues
 
             }
-            //check if the start tile or if in line with the start tile
-
-
+            Debug.WriteLine(VacDisplay.vacuumHeading);
 
 
 
