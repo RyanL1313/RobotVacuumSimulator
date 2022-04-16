@@ -898,6 +898,7 @@ namespace VacuumSim
         public float RobotEfficiency;
         public string RobotPathingAlgorithm;
         public double CoveragePercentage;
+        public string FloorplanData;
         /*
          Simulation ID
         Simulation start time
