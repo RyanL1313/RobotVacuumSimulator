@@ -847,7 +847,8 @@ namespace VacuumSim
                 RobotSpeedInchesPerSecond = (int)RobotSpeedSelector.Value,
                 SimulatedSeconds = Simulation.simTimeElapsed,
                 SimulationStartTime = Simulation.simulationStartTime,
-                CoveragePercentage = Math.Round(100.0 - HouseLayout.GetFloorplanDirtiness(), 2)
+                CoveragePercentage = Math.Round(100.0 - HouseLayout.GetFloorplanDirtiness(), 2),
+                FloorplanData = FloorplanFileWriter.TileGridDataAsString(HouseLayout),
             };
 
             // Save file dialog
@@ -898,7 +899,7 @@ namespace VacuumSim
         public float RobotEfficiency;
         public string RobotPathingAlgorithm;
         public double CoveragePercentage;
-        public string FloorplanData;
+        public string[] FloorplanData;
         /*
          Simulation ID
         Simulation start time
