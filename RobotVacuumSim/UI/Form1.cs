@@ -416,7 +416,7 @@ namespace VacuumSim
 
             OpenFileDialog openFloorplanDialog = new OpenFileDialog();
             openFloorplanDialog.Title = "Open Floorplan";
-            openFloorplanDialog.Filter = "Text files (*.txt)|*.txt";
+            openFloorplanDialog.Filter = "Text files (*.txt)|*.txt|Report Files (*.json)|*.json";
             openFloorplanDialog.InitialDirectory = usrDesktopPath;
             openFloorplanDialog.RestoreDirectory = true;
 
@@ -429,8 +429,19 @@ namespace VacuumSim
                 // If the user closes the dialog without opening anything, just exit out.
                 return;
             }
+            // Load floorplan from report file
+            if (inFilePath.Contains(".json"))
+            {
+                string simReport = File.ReadAllText(inFilePath);
+                SimulationReport inreport = JsonSerializer.Deserialize<SimulationReport>(simReport)!;
 
-            FloorplanFileReader.LoadTileGridData(inFilePath, HouseLayout);
+                FloorplanFileReader.LoadTileGridData(inreport.FloorplanData, HouseLayout);
+            }
+            // Load floorplan from saved floorplan
+            else
+            {
+                FloorplanFileReader.LoadTileGridData(inFilePath, HouseLayout);
+            }
 
             // Set the house width and height selector values to the size of the newly-loaded floorplan
             HouseWidthSelector.Value = HouseLayout.numTilesPerRow * 2 - 4;
@@ -887,19 +898,19 @@ namespace VacuumSim
     /// </summary>
     public class SimulationReport
     {
-        public string FloorplanID;
-        public string SimulationStartTime;
-        public int SimulatedSeconds;
-        public int HouseWidthFeet;
-        public int HouseHeightFeet;
-        public string HouseFloorType;
-        public int NumberOfRooms;
-        public int RobotBatteryLifeMinutes;
-        public int RobotSpeedInchesPerSecond;
-        public float RobotEfficiency;
-        public string RobotPathingAlgorithm;
-        public double CoveragePercentage;
-        public string[] FloorplanData;
+        public string FloorplanID { get; set; }
+        public string SimulationStartTime { get; set; }
+        public int SimulatedSeconds { get; set; }
+        public int HouseWidthFeet { get; set; }
+        public int HouseHeightFeet { get; set; }
+        public string HouseFloorType { get; set; }
+        public int NumberOfRooms { get; set; }
+        public int RobotBatteryLifeMinutes { get; set; }
+        public int RobotSpeedInchesPerSecond { get; set; }
+        public float RobotEfficiency { get; set; }
+        public string RobotPathingAlgorithm { get; set; }
+        public double CoveragePercentage { get; set; }
+        public string[] FloorplanData { get; set; }
         /*
          Simulation ID
         Simulation start time
