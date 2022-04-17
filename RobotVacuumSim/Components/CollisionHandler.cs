@@ -38,7 +38,6 @@ namespace VacuumSim.Components
         /// </summary>
         /// <param name="ActualVacuumData"> The vacuum data </param>
         /// <param name="HouseLayout"> The floorplan layout </param>
-        public Tile colided
         public void HandleCollision(VacuumDisplay VacDisplay, Vacuum ActualVacuumData, FloorplanLayout HouseLayout)
         {
             if (VacDisplay.vacuumHeading == 0) // Vacuum moved strictly to the right

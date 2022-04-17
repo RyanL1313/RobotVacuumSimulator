@@ -15,20 +15,15 @@ namespace VacuumSim.Components
     /// </summary>
     public class VWallFollowAlgorithm : VacuumController
     {
+        bool currentlyRoundingACorner = false;
+
         public override void ExecVPath(VacuumDisplay VacDisplay, FloorplanLayout floorPlan, CollisionHandler collisionHandler, FloorCleaner floorCleaner, Vacuum ActualVacuumData, object sender, EventArgs e)
         {
             //Debug.WriteLine("running wall follow algorithm");
-
-            var rand = new Random();
             
             var collision = collisionHandler;
-            InnerTile leftBackTile = null;
-            InnerTile leftFrontTile = null;
-            Tile tileActualLocation = null;
-            float heading = VacDisplay.vacuumHeading;
             int battery = VacDisplay.batterySecondsRemaining;
-            bool backGreater;
-            int[] test = new int[2];
+
             if (battery > 0)
             {
                
@@ -37,71 +32,15 @@ namespace VacuumSim.Components
                 
                 VacDisplay.CenterVacuumDisplay(ActualVacuumData.VacuumCoords, floorPlan);
 
-                //Debug.WriteLine(VacDisplay.vacuumHeading);
-                
-                tileActualLocation = floorPlan.GetTileFromCoordinates((int)ActualVacuumData.VacuumCoords[0], (int)ActualVacuumData.VacuumCoords[1]);
-
-                Tile tile = floorPlan.GetTileFromCoordinates(132, 375);
-
-                test = FloorplanLayout.GetTileIndices(132, 375);
-
-                if (!VacDisplay.firstWallCol)
-                {
-                    //need the tile to the left of the vacuum
-                    if (VacDisplay.vacuumHeading < 90.0f) //vaccuum is heading right
-                    {
-                        leftBackTile = floorPlan.GetInnerTileFromCoordinates((int)VacDisplay.vacuumCoords[0]-5, (int)VacDisplay.vacuumCoords[1] - 5);
-                    }
-                    else if (VacDisplay.vacuumHeading < 180.0f) // vacuum is heading down
-                    {
-                        leftBackTile = floorPlan.GetInnerTileFromCoordinates((int)VacDisplay.vacuumCoords[0] + 5, (int)VacDisplay.vacuumCoords[1]-5);
-                    }
-                    else if (VacDisplay.vacuumHeading < 270.0f) // vacuum is heading left
-                    {
-                        leftBackTile = floorPlan.GetInnerTileFromCoordinates((int)VacDisplay.vacuumCoords[0]+5, (int)VacDisplay.vacuumCoords[1] + 5);
-
-                    }
-                    else //vacuum is heading up
-                    {
-                        leftBackTile = floorPlan.GetInnerTileFromCoordinates((int)VacDisplay.vacuumCoords[0] -5, (int)VacDisplay.vacuumCoords[1]+5);
-
-                    }
-
-                    if (VacDisplay.vacuumHeading < 90.0f) //vaccuum is heading right
-                    {
-                        leftFrontTile = floorPlan.GetInnerTileFromCoordinates((int)VacDisplay.vacuumCoords[0] + 5, (int)VacDisplay.vacuumCoords[1] - 5);
-                    }
-                    else if (VacDisplay.vacuumHeading < 180.0f) // vacuum is heading down
-                    {
-                        leftFrontTile = floorPlan.GetInnerTileFromCoordinates((int)VacDisplay.vacuumCoords[0] + 5, (int)VacDisplay.vacuumCoords[1] + 5);
-                    }
-                    else if (VacDisplay.vacuumHeading < 270.0f) // vacuum is heading left
-                    {
-                        leftFrontTile = floorPlan.GetInnerTileFromCoordinates((int)VacDisplay.vacuumCoords[0] - 5, (int)VacDisplay.vacuumCoords[1] + 5);
-
-                    }
-                    else //vacuum is heading up
-                    {
-                        leftFrontTile = floorPlan.GetInnerTileFromCoordinates((int)VacDisplay.vacuumCoords[0] - 5, (int)VacDisplay.vacuumCoords[1] - 5);
-
-                    }
-
-                    Debug.WriteLine(VacDisplay.vacuumHeading);
-                    
-                }
-
                 if (collision.VacuumCollidedWithObstacle(VacDisplay, floorPlan))
                 {
-                    floorPlan.GetTileFromCoordinates((int)VacDisplay.vacuumCoords[0], (int)VacDisplay.vacuumCoords[1]);
                     collision.HandleCollision(VacDisplay, ActualVacuumData, floorPlan);
-                    
+
                     //actually start running the algorithm
-                    // save starting tile to use to break from wall later 
                     if (VacDisplay.firstWallCol)
-                    {                       
+                    {
                         VacDisplay.firstWallCol = false;
                         Debug.WriteLine("startTile Set");
-
                     }
 
                     //align with wall by turning clockwise
@@ -109,91 +48,89 @@ namespace VacuumSim.Components
                     VacDisplay.vacuumHeading = VacDisplay.vacuumHeading % 360;
                 }
 
-
-                //currently flawed as the left tile isn't reset in time for this to move anywhere
-                else if (!VacDisplay.firstWallCol && ((leftBackTile.obstacle == ObstacleType.Floor && leftFrontTile.obstacle == ObstacleType.Floor) && backGreater))
+                if (!VacDisplay.firstWallCol)
                 {
-
-                    InnerTile swing = swingTile(VacDisplay, floorPlan, leftBackTile);
-                    VacDisplay.vacuumHeading -= 90;
-                    if (VacDisplay.vacuumHeading < 0)
-                        VacDisplay.vacuumHeading = 270;
-                    
+                    //need the tile to the left of the vacuum
                     if (VacDisplay.vacuumHeading < 90.0f) //vaccuum is heading right
                     {
-                        if (leftBackTile.x > swing.x)
-                            backGreater = true;
+                        if (NoVacuuumInnerTilesAreAdjacentToANonFloorInnerTile(VacDisplay, floorPlan)) // Vacuum is now clear to change direction and round the corner
+                        {
+                            if (!currentlyRoundingACorner)
+                            {
+                                VacDisplay.vacuumHeading = 270; // Start going up
+                                currentlyRoundingACorner = true;
+                            }
+                        }
                         else
-                            backGreater = false;
-
+                            currentlyRoundingACorner = false;
                     }
                     else if (VacDisplay.vacuumHeading < 180.0f) // vacuum is heading down
                     {
+                        if (NoVacuuumInnerTilesAreAdjacentToANonFloorInnerTile(VacDisplay, floorPlan)) // Vacuum is now clear to change direction and round the corner
+                        {
+                            if (!currentlyRoundingACorner)
+                            {
+                                VacDisplay.vacuumHeading = 0; // Start going right
+                                currentlyRoundingACorner = true;
+                            }
+                        }
+                        else
+                            currentlyRoundingACorner = false;
                     }
                     else if (VacDisplay.vacuumHeading < 270.0f) // vacuum is heading left
                     {
-
+                        if (NoVacuuumInnerTilesAreAdjacentToANonFloorInnerTile(VacDisplay, floorPlan)) // Vacuum is now clear to change direction and round the corner
+                        {
+                            if (!currentlyRoundingACorner)
+                            {
+                                VacDisplay.vacuumHeading = 90; // Start going down
+                                currentlyRoundingACorner = true;
+                            }
+                        }
+                        else
+                            currentlyRoundingACorner = false;
                     }
                     else //vacuum is heading up
                     {
-
+                        if (NoVacuuumInnerTilesAreAdjacentToANonFloorInnerTile(VacDisplay, floorPlan)) // Vacuum is now clear to change direction and round the corner
+                        {
+                            if (!currentlyRoundingACorner)
+                            {
+                                VacDisplay.vacuumHeading = 180; // Start going left
+                                currentlyRoundingACorner = true;
+                            }
+                        }
+                        else
+                            currentlyRoundingACorner = false;
                     }
-                    
-                    //VacDisplay.vacuumHeading = VacDisplay.vacuumHeading % 360;
-                    
-                    //Debug.WriteLine("leftBackTile floor");
 
+                    Debug.WriteLine(VacDisplay.vacuumHeading);
                 }
-                
 
-                //check the current heading to be able to check where to turn
+                floorCleaner.CleanInnerTiles(VacDisplay, ActualVacuumData, floorPlan);
 
-                
-
-            }
-            //Debug.WriteLine(VacDisplay.vacuumHeading);
-
-
-
-
-
-            //as built right now, other obstacles besides walls can possibly derail the algorithm
-            // FloorCanvasCalculator.UpdateSimulationData(VacDisplay);
-            // upon completion
-            if (Vacuum.VacuumAlgorithm.Count != 0)
-            {
-                Vacuum.VacuumAlgorithm.RemoveAt(0);
-            }
-            if (Vacuum.VacuumAlgorithm.Count == 0)
-            {
-                allAlgFinish = true;
+                FloorCanvasCalculator.UpdateSimulationData(VacDisplay);
             }
         }
 
-
-        public InnerTile swingTile(VacuumDisplay VacDisplay, FloorplanLayout floorPlan, InnerTile leftBackTile)
+        public bool NoVacuuumInnerTilesAreAdjacentToANonFloorInnerTile(VacuumDisplay VacDisplay, FloorplanLayout HouseLayout)
         {
-            if (VacDisplay.vacuumHeading < 90.0f) //vaccuum is heading right
-            {
-                return floorPlan.GetInnerTileFromCoordinates(leftBackTile.x - InnerTile.innerTileSideLength, leftBackTile.y);
+            List<InnerTile> innerHitboxTiles = HouseLayout.GetVacuumHitboxInnerTiles(VacDisplay, HouseLayout);
 
-            }
-            else if (VacDisplay.vacuumHeading < 180.0f) // vacuum is heading down
+            // Iterate through each vacuum inner tile and check if any of them are adjacent to a non-floor tile
+            foreach (InnerTile innerTile in innerHitboxTiles)
             {
-                return floorPlan.GetInnerTileFromCoordinates(leftBackTile.x, leftBackTile.y - InnerTile.innerTileSideLength);
+                InnerTile leftAdjTile = HouseLayout.GetInnerTileFromCoordinates(innerTile.x - InnerTile.innerTileSideLength, innerTile.y);
+                InnerTile rightAdjTile = HouseLayout.GetInnerTileFromCoordinates(innerTile.x + InnerTile.innerTileSideLength, innerTile.y);
+                InnerTile aboveAdjTile = HouseLayout.GetInnerTileFromCoordinates(innerTile.x, innerTile.y - InnerTile.innerTileSideLength);
+                InnerTile belowAdjTile = HouseLayout.GetInnerTileFromCoordinates(innerTile.x, innerTile.y + InnerTile.innerTileSideLength);
 
+                if (leftAdjTile.obstacle != ObstacleType.Floor || rightAdjTile.obstacle != ObstacleType.Floor ||
+                    aboveAdjTile.obstacle != ObstacleType.Floor || belowAdjTile.obstacle != ObstacleType.Floor)
+                    return false;
             }
-            else if (VacDisplay.vacuumHeading < 270.0f) // vacuum is heading left
-            {
-                return floorPlan.GetInnerTileFromCoordinates(leftBackTile.x + InnerTile.innerTileSideLength, leftBackTile.y); 
-            }
-            else //vacuum is heading up
-            {
-                return floorPlan.GetInnerTileFromCoordinates(leftBackTile.x , leftBackTile.y + InnerTile.innerTileSideLength);
-            }
+
+            return true;
         }
     }
-
-
-   
 }
