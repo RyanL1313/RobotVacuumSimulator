@@ -54,7 +54,7 @@ namespace VacuumSim
             Vacuum.VacuumAlgorithm.Clear();
         }
 
-            private void InitFloorTileSelector()
+        private void InitFloorTileSelector()
         {
             // Set the data source of the dropdown box to be the values of our ObstacleType enum
             //ObstacleSelector.DataSource = Enum.GetValues(typeof(ObstacleType));
@@ -216,6 +216,7 @@ namespace VacuumSim
         private void InitialVacuumHeadingSelector_ValueChanged(object sender, EventArgs e)
         {
             VacDisplay.vacuumHeading = (int)InitialVacuumHeadingSelector.Value;
+            ActualVacuumData.heading = (int)InitialVacuumHeadingSelector.Value;
 
             FloorCanvas.Invalidate(); // Re-draw canvas to show new whiskers display
         }
@@ -226,30 +227,25 @@ namespace VacuumSim
             if (HardWoodRadioButton.Checked)
             {
                 VacuumEfficiencySlider.Value = 90;
-                WhiskersEfficiencySlider.Value = 50;
                 ActualVacuumData.VacuumEfficiency = 90.0f / 100.0f;
             }
             else if (LoopPileRadioButton.Checked)
             {
                 VacuumEfficiencySlider.Value = 75;
-                WhiskersEfficiencySlider.Value = 30;
                 ActualVacuumData.VacuumEfficiency = 75.0f / 100.0f;
             }
             else if (CutPileRadioButton.Checked)
             {
                 VacuumEfficiencySlider.Value = 70;
-                WhiskersEfficiencySlider.Value = 20;
                 ActualVacuumData.VacuumEfficiency = 70.0f / 100.0f;
             }
             else if (FriezeCutPileRadioButton.Checked)
             {
                 VacuumEfficiencySlider.Value = 65;
-                WhiskersEfficiencySlider.Value = 10;
                 ActualVacuumData.VacuumEfficiency = 65.0f / 100.0f;
             }
 
             VacuumEfficiencyValueLabel.Text = VacuumEfficiencySlider.Value + "%";
-            WhiskersEfficiencyValueLabel.Text = WhiskersEfficiencySlider.Value + "%";
 
             FloorCanvas.Invalidate();
         }
@@ -269,12 +265,12 @@ namespace VacuumSim
         private void ShowInstructionsButton_Click(object sender, EventArgs e)
         {
             MessageBox.Show("Welcome to the Robot Vacuum Simulator. Below is a short guide on how to use this software:\n\n" +
-                "The first step is to create a floor plan. You can either start from scratch or start from a pre-loaded floor plan.\n" + 
+                "The first step is to create a floor plan. You can either start from scratch or start from a pre-loaded floor plan.\n" +
                 "There are two types of pre-loaded floor plans. A floor plan that you have created and saved, and a default floor plan\n" +
                 "created by us, the developers. You can then add/remove obstacles onto the floor plan. This can be achieved by selecting\n" +
                 "an obstacle (i.e. room, chair, table, chest) and then clicking-and-dragging the obstacle onto the floor plan. To remove obstacles,\n" +
                 "click on the \"Eraser Mode\" button to turn on eraser mode. Then, you can click on obstacles on the floor plan to remove them.\n" +
-                "Once you are satisfied with your floor plan, press \"Finish Floor Plan\". You can always go back to editing the floor plan by\n" + 
+                "Once you are satisfied with your floor plan, press \"Finish Floor Plan\". You can always go back to editing the floor plan by\n" +
                 "pressing \"Edit Floor Plan\". Pressing \"Finish Floor Plan\" will allow you to start setting the vacuum's attributes.\n\n" +
                 "Customize the vacuum's attributes by utilizing the different options in the \"Vacuum Attributes\" section. Place the vacuum\n" +
                 "onto the floor plan by clicking-and-dragging the vacuum onto a valid position. Once the vacuum is placed, you can set the simulation\n" +
@@ -283,7 +279,7 @@ namespace VacuumSim
                 "As the simulation is running, a trail will be shown behind the vacuum showing what areas of the house have been cleaned so far by the vacuum.\n\n" +
                 "Once the simulation has ended, the results will get saved and can be reviewed at any time. Also, after the simulation has ended, a heat map will get displayed\n" +
                 "showing how well each area of the house was cleaned by the vacuum. The more red a spot is, the better the vacuum cleaned it. The more blue\n" +
-                "a spot is, the worse the vacuum cleaned it.\n\n" + 
+                "a spot is, the worse the vacuum cleaned it.\n\n" +
                 "You can then proceed to run another simulation by pressing \"Yes\" when prompted.\n");
         }
 
@@ -444,7 +440,6 @@ namespace VacuumSim
         private void StopSimulationButton_Click(object sender, EventArgs e)
         {
             // Need to save simulation data right here
-
             ResetValuesAfterSimEnd();
 
             FloorCanvas.Invalidate();
@@ -666,30 +661,25 @@ namespace VacuumSim
             FloorCanvas.Invalidate(); // Re-trigger paint event
         }
 
-
         private void StartSimulationButton_Click(object sender, EventArgs e)
         {
+            VacuumController.allAlgFinish = false;
+            if (RunAllAlgorithmsCheckbox.Checked == true)
+            {
+                Vacuum.VacuumAlgorithm.Clear();
+                for (int i = 0; i < 4; i++)
+                    Vacuum.VacuumAlgorithm.Add(i);
+            }
+            else
+            {
+                Vacuum.VacuumAlgorithm.Add(RobotPathAlgorithmSelector.SelectedIndex);
+            }
+
+            VacDisplay.firstAlgVacuumCoords[0] = VacDisplay.vacuumCoords[0];
+            VacDisplay.firstAlgVacuumCoords[1] = VacDisplay.vacuumCoords[1];
+            VacDisplay.firstAlgVacuumHeading = VacDisplay.vacuumHeading;
+
             SetInitialSimulationValues();
-            if (Vacuum.VacuumAlgorithm[0] == 0)
-            {
-                vc = new VRandAlgorithm();
-                VacAlgorithmTimer.Enabled = true;
-            }
-            else if (Vacuum.VacuumAlgorithm[0] == 1)
-            {
-                vc = new VSpiralAlgorithm();
-                VacAlgorithmTimer.Enabled = true;
-            }
-            else if (Vacuum.VacuumAlgorithm[0] == 2)
-            {
-                vc  = new VSnakeAlgorithm();
-                VacAlgorithmTimer.Enabled = true;
-            }
-            else if (Vacuum.VacuumAlgorithm[0] == 3)
-            {
-                vc  = new VWallFollowAlgorithm();
-                VacAlgorithmTimer.Enabled = true;
-            }
         }
 
         /// <summary>
@@ -725,6 +715,47 @@ namespace VacuumSim
         /// </summary>
         private void SetInitialSimulationValues()
         {
+            // Select the current algorithm
+            if (Vacuum.VacuumAlgorithm[0] == 0)
+            {
+                vc = new VRandAlgorithm();
+                VacAlgorithmTimer.Enabled = true;
+                CurrentAlgorithmLabel.Text = "Current Algorithm: Random";
+                Debug.WriteLine("Running " + vc.getVer());
+            }
+            else if (Vacuum.VacuumAlgorithm[0] == 1)
+            {
+                vc = new VSpiralAlgorithm();
+                VacAlgorithmTimer.Enabled = true;
+                CurrentAlgorithmLabel.Text = "Current Algorithm: Spiral";
+                Debug.WriteLine("Running " + vc.getVer());
+            }
+            else if (Vacuum.VacuumAlgorithm[0] == 2)
+            {
+                vc = new VSnakeAlgorithm();
+                VacAlgorithmTimer.Enabled = true;
+                CurrentAlgorithmLabel.Text = "Current Algorithm: Snake";
+                Debug.WriteLine("Running " + vc.getVer());
+            }
+            else if (Vacuum.VacuumAlgorithm[0] == 3)
+            {
+                vc = new VWallFollowAlgorithm();
+                VacAlgorithmTimer.Enabled = true;
+                CurrentAlgorithmLabel.Text = "Current Algorithm: Wall Follow";
+                Debug.WriteLine("Running " + vc.getVer());
+            }
+
+            // Reset initial vacuum position and heading values
+            ActualVacuumData.VacuumCoords[0] = VacDisplay.firstAlgVacuumCoords[0];
+            ActualVacuumData.VacuumCoords[1] = VacDisplay.firstAlgVacuumCoords[1];
+            VacDisplay.vacuumHeading = VacDisplay.firstAlgVacuumHeading;
+
+
+            VacDisplay.CenterVacuumDisplay(ActualVacuumData.VacuumCoords, HouseLayout);
+            InitialVacuumHeadingSelector.Value = VacDisplay.vacuumHeading;
+
+            VacDisplay.vacuumSpeed = (int)RobotSpeedSelector.Value;
+            FloorCanvasDesigner.displayingHeatMap = false;
             VacuumWhiskersTimer.Enabled = true;
             HouseLayout.gridLinesOn = false;
             StartSimulationButton.Enabled = false;
@@ -745,46 +776,51 @@ namespace VacuumSim
             VacDisplay.batterySecondsRemaining = (int)RobotBatteryLifeSelector.Value * 60;
             VacDisplay.firstWallCol = true;
 
-            VacuumController.allAlgFinish = false;
-            if (RunAllAlgorithmsCheckbox.Checked == true)
-            {
-                Vacuum.VacuumAlgorithm.Clear();
-                for (int i = 0; i < 4; i++)
-                    Vacuum.VacuumAlgorithm.Add(i);
-            }
-            else
-            {
-                Vacuum.VacuumAlgorithm.Add(RobotPathAlgorithmSelector.SelectedIndex);
-            }
             RunAllAlgorithmsCheckbox.Enabled = false;
             ObstacleSelector.Enabled = false;
 
-            VacDisplay.CenterVacuumDisplay(ActualVacuumData.VacuumCoords, HouseLayout);
-            VacDisplay.vacuumHeading = (int)InitialVacuumHeadingSelector.Value;
+            // Reset sim data to prep for new simulation
+            HouseLayout.ResetInnerTiles();
+            HouseLayout.totalFloorplanArea = 0;
+            HouseLayout.totalNonCleanableFloorplanArea = 0;
 
-            HouseLayout.PerformAreaCalculations();
+            // Set sim data
             HouseLayout.SetInnerTileObstacles();
+            HouseLayout.PerformAreaCalculations();
         }
 
         /// <summary>
         /// Resetting UI, vacuum, and simulation data after simulation finishes
         /// </summary>
-        private void ResetValuesAfterSimEnd()
+        private async void ResetValuesAfterSimEnd()
         {
             FloorCanvasDesigner.displayingHeatMap = true;
             VacuumWhiskersTimer.Enabled = false;
             VacAlgorithmTimer.Enabled = false;
-            HouseLayout.gridLinesOn = true;
-            StartSimulationButton.Enabled = true;
+            StartSimulationButton.Enabled = false;
             StopSimulationButton.Enabled = false;
             Simulation.simStarted = false;
             Simulation.simTimeElapsed = 0;
             FloorCanvasCalculator.frameCount = 0;
             VacDisplay.batterySecondsRemaining = (int)RobotBatteryLifeSelector.Value * 60;
             InitialVacuumHeadingSelector.Value = VacDisplay.vacuumHeading;
-            YesRunAnotherSimulationButton.Visible = true;
-            NoRunAnotherSimulationButton.Visible = true;
-            RunAnotherSimulationLabel.Visible = true;
+
+            Vacuum.VacuumAlgorithm.RemoveAt(0); // Remove the algorithm that just ran
+
+            if (!Vacuum.VacuumAlgorithm.Any()) // All algorithms complete, no more simulations to run
+            {
+                YesRunAnotherSimulationButton.Visible = true;
+                NoRunAnotherSimulationButton.Visible = true;
+                RunAnotherSimulationLabel.Visible = true;
+            }
+            else // More algorithms need to run. Move onto the next one
+            {
+                // Display heat map for 3 seconds before moving onto the next algorithm
+                FloorCanvas.Invalidate();
+                await Task.Delay(3000);
+
+                SetInitialSimulationValues(); // Start a new simulation with the next algorithm
+            }
 
             FloorCanvas.Invalidate(); // Re-trigger paint event
         }
@@ -797,6 +833,7 @@ namespace VacuumSim
             FloorCanvasDesigner.displayingHeatMap = false;
             FinishOrEditFloorplanButton.Enabled = true;
             ControlsPane.Panel1.Enabled = true;
+            HouseLayout.gridLinesOn = true;
             LoadDefaultFloorplanButton.Enabled = true;
             LoadSavedFloorplanButton.Enabled = true;
             SaveFloorplanButton.Enabled = true;
@@ -810,7 +847,7 @@ namespace VacuumSim
             FloorCanvasCalculator.frameCount = 0;
             VacDisplay.batterySecondsRemaining = (int)RobotBatteryLifeSelector.Value * 60;
             RunAllAlgorithmsCheckbox.Enabled = true;
-
+            CurrentAlgorithmLabel.Text = "Current Algorithm:";
 
             FloorCanvas.Invalidate(); // Re-trigger paint event
             StartSimulationButton.Enabled = true;
@@ -819,6 +856,7 @@ namespace VacuumSim
             NoRunAnotherSimulationButton.Visible = false;
             RunAnotherSimulationLabel.Visible = false;
 
+            // Reset sim data
             HouseLayout.ResetInnerTiles();
             HouseLayout.totalFloorplanArea = 0;
             HouseLayout.totalNonCleanableFloorplanArea = 0;
