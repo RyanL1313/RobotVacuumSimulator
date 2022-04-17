@@ -453,9 +453,7 @@ namespace VacuumSim
         private void StopSimulationButton_Click(object sender, EventArgs e)
         {
             // Need to save simulation data right here
-            SimulationReport rep = GenerateReport();
             ResetValuesAfterSimEnd();
-            SaveReport(rep);
 
             FloorCanvas.Invalidate();
         }
@@ -784,6 +782,9 @@ namespace VacuumSim
         /// </summary>
         private void ResetValuesAfterSimEnd()
         {
+            // Store our sim data before clearing it
+            SimulationReport rep = GenerateReport();
+
             FloorCanvasDesigner.displayingHeatMap = true;
             VacuumWhiskersTimer.Enabled = false;
             VacAlgorithmTimer.Enabled = false;
@@ -800,6 +801,9 @@ namespace VacuumSim
             RunAnotherSimulationLabel.Visible = true;
 
             FloorCanvas.Invalidate(); // Re-trigger paint event
+
+            // Save our sim report
+            SaveReport(rep);
         }
 
         /// <summary>
