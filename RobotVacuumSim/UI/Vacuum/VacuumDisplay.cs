@@ -22,6 +22,13 @@ namespace VacuumSim
         public float[] rightWhiskersEndingCoords { get; set; } = { 0.0f, 0.0f }; // Coordinates of endpoint of right whiskers (1 inch beyond the circle)
         public int vacuumSpeed { get; set; } = 12; // Speed of the vacuum in inches/second
         public int batterySecondsRemaining { get; set; } = 9000; // Battery remaining (seconds). Default is 150 * 60 = 9000
+        public int loopNum { get; set; } = 1;
+
+        public bool incremented { get; set; } = false;
+        public bool firstWallCol { get; set; } = true;
+
+
+        public Tile startTile;
 
         /// <summary>
         /// Updates the vacuum display's coordinates to be centered within the inner tile its centerpoint currently resides in
