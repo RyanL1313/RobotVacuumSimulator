@@ -846,7 +846,6 @@ namespace VacuumSim
             SimulationReport rep = new SimulationReport
             {
                 FloorplanID = HouseLayout.GetFloorPlanID(),
-                NumberOfRooms = HouseLayout.numRooms,
                 HouseWidthFeet = (int)HouseWidthSelector.Value,
                 HouseHeightFeet = (int)HouseHeightSelector.Value,
                 HouseFloorType = FloorTypeGroupBox.Controls.OfType<RadioButton>()
@@ -904,7 +903,6 @@ namespace VacuumSim
         public int HouseWidthFeet { get; set; }
         public int HouseHeightFeet { get; set; }
         public string HouseFloorType { get; set; }
-        public int NumberOfRooms { get; set; }
         public int RobotBatteryLifeMinutes { get; set; }
         public int RobotSpeedInchesPerSecond { get; set; }
         public float RobotEfficiency { get; set; }
