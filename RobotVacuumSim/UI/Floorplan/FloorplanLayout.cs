@@ -89,12 +89,6 @@ namespace VacuumSim
 
             return floorLayout[xTileIndex, yTileIndex];
         }
-        /*public int GetTileRow(Tile tile)
-        {
-           Tile dummy =  GetTileFromCoordinates(tile.x, tile.y);
-            
-
-        }*/
 
             /// <summary>
             /// Returns the indices of a particular tile, given its coordinates on FloorCanvas

@@ -17,7 +17,7 @@ namespace VacuumSim.Components
     {
         bool currentlyRoundingACorner = false;
 
-        private string WallFollowAlgVer = "Wall Follow Algorithm Version 2.2";  // Not implemented yet 
+        private string WallFollowAlgVer = "Wall Follow Algorithm Version 2.2";
         public override string getVer()
         {
             return WallFollowAlgVer;
