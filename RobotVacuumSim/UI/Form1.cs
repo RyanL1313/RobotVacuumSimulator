@@ -849,8 +849,8 @@ namespace VacuumSim
                 FloorplanID = HouseLayout.GetFloorPlanID(),
                 HouseWidthFeet = (int)HouseWidthSelector.Value,
                 HouseHeightFeet = (int)HouseHeightSelector.Value,
-                TotalHouseAreaFeet = (HouseLayout.totalFloorplanArea / 144),
-                TotalCleanableHouseAreaFeet = (HouseLayout.totalFloorplanArea - HouseLayout.totalNonCleanableFloorplanArea) / 144,
+                TotalHouseAreaInFeet = (HouseLayout.totalFloorplanArea / 144),
+                TotalCleanableHouseAreaInFeet = (HouseLayout.totalFloorplanArea - HouseLayout.totalNonCleanableFloorplanArea) / 144,
                 HouseFloorType = FloorTypeGroupBox.Controls.OfType<RadioButton>()
                            .FirstOrDefault(n => n.Checked).Name.Replace("RadioButton", "", ignoreCase: true, culture: System.Globalization.CultureInfo.InvariantCulture),
                 RobotBatteryLifeMinutes = (int)RobotBatteryLifeSelector.Value,
@@ -910,8 +910,8 @@ namespace VacuumSim
         public int SimulatedSeconds { get; set; }
         public int HouseWidthFeet { get; set; }
         public int HouseHeightFeet { get; set; }
-        public int TotalHouseAreaFeet { get; set; }
-        public int TotalCleanableHouseAreaFeet { get; set; }
+        public int TotalHouseAreaInFeet { get; set; }
+        public int TotalCleanableHouseAreaInFeet { get; set; }
         public string HouseFloorType { get; set; }
         public int RobotBatteryLifeMinutes { get; set; }
         public int RobotSpeedInchesPerSecond { get; set; }
