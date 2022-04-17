@@ -453,8 +453,9 @@ namespace VacuumSim
         private void StopSimulationButton_Click(object sender, EventArgs e)
         {
             // Need to save simulation data right here
-            GenerateReport();
+            SimulationReport rep = GenerateReport();
             ResetValuesAfterSimEnd();
+            SaveReport(rep);
 
             FloorCanvas.Invalidate();
         }
@@ -841,7 +842,7 @@ namespace VacuumSim
         {
         }
 
-        private void GenerateReport()
+        private SimulationReport GenerateReport()
         {
             SimulationReport rep = new SimulationReport
             {
@@ -863,6 +864,11 @@ namespace VacuumSim
                 FloorplanData = FloorplanFileWriter.TileGridDataAsString(HouseLayout),
             };
 
+            return rep;
+        }
+
+        private void SaveReport(SimulationReport rep)
+        {
             // Save file dialog
             SaveFileDialog saveFileDialog = new SaveFileDialog();
             saveFileDialog.Filter = "JSON file|*.json";
@@ -904,7 +910,7 @@ namespace VacuumSim
         public int SimulatedSeconds { get; set; }
         public int HouseWidthFeet { get; set; }
         public int HouseHeightFeet { get; set; }
-        public int TotalHouseAreaFeet { get; set }
+        public int TotalHouseAreaFeet { get; set; }
         public int TotalCleanableHouseAreaFeet { get; set; }
         public string HouseFloorType { get; set; }
         public int RobotBatteryLifeMinutes { get; set; }
