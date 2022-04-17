@@ -17,6 +17,13 @@ namespace VacuumSim.Components
     {
         bool currentlyRoundingACorner = false;
 
+        private string WallFollowAlgVer = "Wall Follow Algorithm Version 2.2";  // Not implemented yet 
+        public override string getVer()
+        {
+            return WallFollowAlgVer;
+        }
+
+
         public override void ExecVPath(VacuumDisplay VacDisplay, FloorplanLayout floorPlan, CollisionHandler collisionHandler, FloorCleaner floorCleaner, Vacuum ActualVacuumData, object sender, EventArgs e)
         {
             //Debug.WriteLine("running wall follow algorithm");
