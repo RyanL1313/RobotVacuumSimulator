@@ -13,6 +13,8 @@ namespace VacuumSim
         public const float vacuumDiameter = (12.8f * FloorplanLayout.tileSideLength) / 24.0f; // Vacuum diameter in pixels (should be 9)
         public float[] vacuumCoords = { 200.0f, 30.0f }; // (x, y) coordinates of vacuum that gets displayed
         public int vacuumHeading { get; set; } = 0; // Angle vacuum is traveling at (think of unit circle, so 0 is to the right)
+        public float[] firstAlgVacuumCoords = { 200.0f, 30.0f }; // Location vacuum was placed by the user. Used for when all algorithms run
+        public int firstAlgVacuumHeading = 0; // Saved initial heading of vacuum. Used for when all algorithms run
         public int whiskersHeadingWRTVacuum { get; set; } = 0; // Angle of both whiskers from vacuum heading
         public float[] leftWhiskersStartingCoords { get; set; } = { 0.0f, 0.0f }; // Coordinates of bottom of left whiskers (right along the edge of the circle)
         public float[] leftWhiskersEndingCoords { get; set; } = { 0.0f, 0.0f }; // Coordinates of endpoint of left whiskers (1 inch beyond the circle)
@@ -20,6 +22,13 @@ namespace VacuumSim
         public float[] rightWhiskersEndingCoords { get; set; } = { 0.0f, 0.0f }; // Coordinates of endpoint of right whiskers (1 inch beyond the circle)
         public int vacuumSpeed { get; set; } = 12; // Speed of the vacuum in inches/second
         public int batterySecondsRemaining { get; set; } = 9000; // Battery remaining (seconds). Default is 150 * 60 = 9000
+        public int loopNum { get; set; } = 1;
+
+        public bool incremented { get; set; } = false;
+        public bool firstWallCol { get; set; } = true;
+
+
+        public Tile startTile;
 
         /// <summary>
         /// Updates the vacuum display's coordinates to be centered within the inner tile its centerpoint currently resides in

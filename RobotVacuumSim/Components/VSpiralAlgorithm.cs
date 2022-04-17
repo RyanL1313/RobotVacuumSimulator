@@ -15,7 +15,7 @@ namespace VacuumSim.Components
     {
         private string SpiralAlgVer = "Spiral Algorithm Version 2.1";  // 2 full revisions of algorithm, one minor fix. 
         private bool spiralFlag = false;
-        private static bool tooFarFlag = false;
+        private bool tooFarFlag = false;
         private int obstacleDistanceCounter = 0;
         public override string getVer ()
         {
@@ -97,12 +97,6 @@ namespace VacuumSim.Components
             floorCleaner.CleanInnerTiles(VacDisplay, ActualVacuumData, HouseLayout);
 
             FloorCanvasCalculator.UpdateSimulationData(VacDisplay);
-
-            // upon completion
-            if (Vacuum.VacuumAlgorithm.Count != 0)
-                Vacuum.VacuumAlgorithm.RemoveAt(0);
-            if (Vacuum.VacuumAlgorithm.Count == 0)
-                allAlgFinish = true;
         }
     }
 }

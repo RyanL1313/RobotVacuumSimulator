@@ -95,6 +95,7 @@ namespace VacuumSim
             this.StopSimulationButton = new System.Windows.Forms.Button();
             this.ShowInstructionsButton = new System.Windows.Forms.Button();
             this.CenterSplitPane = new System.Windows.Forms.SplitContainer();
+            this.CurrentAlgorithmLabel = new System.Windows.Forms.Label();
             this.SimTimeElapsedLabel = new System.Windows.Forms.Label();
             this.SimTimeElapsedTitleLabel = new System.Windows.Forms.Label();
             this.BatteryLeftLabel = new System.Windows.Forms.Label();
@@ -1054,6 +1055,7 @@ namespace VacuumSim
             // 
             // CenterSplitPane.Panel2
             // 
+            this.CenterSplitPane.Panel2.Controls.Add(this.CurrentAlgorithmLabel);
             this.CenterSplitPane.Panel2.Controls.Add(this.ShowInstructionsButton);
             this.CenterSplitPane.Panel2.Controls.Add(this.SimTimeElapsedLabel);
             this.CenterSplitPane.Panel2.Controls.Add(this.SimTimeElapsedTitleLabel);
@@ -1064,6 +1066,17 @@ namespace VacuumSim
             this.CenterSplitPane.SplitterDistance = 952;
             this.CenterSplitPane.SplitterWidth = 1;
             this.CenterSplitPane.TabIndex = 0;
+            // 
+            // CurrentAlgorithmLabel
+            // 
+            this.CurrentAlgorithmLabel.AutoSize = true;
+            this.CurrentAlgorithmLabel.BackColor = System.Drawing.SystemColors.Window;
+            this.CurrentAlgorithmLabel.Font = new System.Drawing.Font("Georgia", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            this.CurrentAlgorithmLabel.Location = new System.Drawing.Point(376, 792);
+            this.CurrentAlgorithmLabel.Name = "CurrentAlgorithmLabel";
+            this.CurrentAlgorithmLabel.Size = new System.Drawing.Size(126, 16);
+            this.CurrentAlgorithmLabel.TabIndex = 18;
+            this.CurrentAlgorithmLabel.Text = "Current Algorithm:";
             // 
             // SimTimeElapsedLabel
             // 
@@ -1259,5 +1272,6 @@ namespace VacuumSim
         private System.Windows.Forms.Button YesRunAnotherSimulationButton;
         private System.Windows.Forms.Label RunAnotherSimulationLabel;
         private System.Windows.Forms.Button NoRunAnotherSimulationButton;
+        private System.Windows.Forms.Label CurrentAlgorithmLabel;
     }
 }
