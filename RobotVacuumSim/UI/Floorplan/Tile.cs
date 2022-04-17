@@ -47,6 +47,13 @@ namespace VacuumSim
                 }
             }    
         }
+        public bool TileEquals(Tile tile1, Tile tile2)
+        {
+            if (tile1.x == tile2.x && tile1.y == tile2.y)
+                return true;
+            else
+                return false;
+        }
 
         /// <summary>
         /// Sets every inner tile for this tile to either a Wall or Chest obstacle type.
