@@ -26,7 +26,11 @@ namespace VacuumSim
 
         public bool incremented { get; set; } = false;
         public bool firstWallCol { get; set; } = true;
+        public bool collided { get; set; } = false;
+        public int turnDirection { get; set; } = 90; //used for snake algorithm
 
+
+        public double[] destination { get; set; } = new double[2];
 
         public Tile startTile;
 
