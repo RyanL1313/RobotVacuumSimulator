@@ -29,6 +29,8 @@ namespace VacuumSim
         public bool collided { get; set; } = false;
         public int turnDirection { get; set; } = 90; //used for snake algorithm
 
+        public int hitCounter { get; set; } = 0; //used for snake algorithm
+
 
         public double[] destination { get; set; } = new double[2];
 
