@@ -15,14 +15,12 @@ namespace VacuumSim.UI
 {
     public partial class SimResults : Form
     {
-        private Form1 _parentForm;
         private string _inPath;
         private FloorplanLayout _fplayout;
         private SimulationReport _loadedReport;
 
         public SimResults(string loadedFileName, Form1 ParentForm, ref FloorplanLayout fplayout)
         {
-            _parentForm = ParentForm;
             _inPath = loadedFileName;
             _fplayout = fplayout;
             InitializeComponent();
