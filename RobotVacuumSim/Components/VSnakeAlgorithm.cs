@@ -59,13 +59,15 @@ namespace VacuumSim.Components
             }
             if (VacDisplay.collided)
             {
-                if (VacDisplay.vacuumHeading > 270 || VacDisplay.vacuumHeading < 90)
+                if ((VacDisplay.vacuumHeading > 270 && VacDisplay.vacuumHeading < 360) || (VacDisplay.vacuumHeading >=0 && VacDisplay.vacuumHeading < 90)) // right half
                 {
 
                     if (ActualVacuumData.VacuumCoords[0] > VacDisplay.destination[0])
                     {
                         VacDisplay.vacuumHeading += VacDisplay.turnDirection;
                         VacDisplay.vacuumHeading = VacDisplay.vacuumHeading % 360;
+                        if (VacDisplay.vacuumHeading < 0)
+                            VacDisplay.vacuumHeading = 360 + VacDisplay.vacuumHeading;
 
                         VacDisplay.turnDirection = -VacDisplay.turnDirection;
                         Debug.WriteLine("right quadrent");
@@ -75,12 +77,14 @@ namespace VacuumSim.Components
                     }
 
                 }
-                else if (VacDisplay.vacuumHeading > 90 || VacDisplay.vacuumHeading < 270)
+                else if (VacDisplay.vacuumHeading > 90 && VacDisplay.vacuumHeading < 270) //left half
                 {
                     if (ActualVacuumData.VacuumCoords[0] < VacDisplay.destination[0])
                     {
                         VacDisplay.vacuumHeading += VacDisplay.turnDirection;
                         VacDisplay.vacuumHeading = VacDisplay.vacuumHeading % 360;
+                        if (VacDisplay.vacuumHeading < 0)
+                            VacDisplay.vacuumHeading = 360 + VacDisplay.vacuumHeading;
 
                         VacDisplay.turnDirection = -VacDisplay.turnDirection;
                         Debug.WriteLine("left quadrent");
@@ -91,10 +95,12 @@ namespace VacuumSim.Components
                 }
                 else if (VacDisplay.vacuumHeading == 90)
                 {
-                    if (ActualVacuumData.VacuumCoords[1] < VacDisplay.destination[1])
+                    if (ActualVacuumData.VacuumCoords[1] < VacDisplay.destination[1]) // straight down
                     {
                         VacDisplay.vacuumHeading += VacDisplay.turnDirection;
                         VacDisplay.vacuumHeading = VacDisplay.vacuumHeading % 360;
+                        if (VacDisplay.vacuumHeading < 0)
+                            VacDisplay.vacuumHeading = 360 + VacDisplay.vacuumHeading;
 
                         VacDisplay.turnDirection = -VacDisplay.turnDirection;
                         Debug.WriteLine("bottom quadrent");
@@ -103,13 +109,14 @@ namespace VacuumSim.Components
                         VacDisplay.collided = false;
                     }
                 }
-                else
+                else //straight up
                 {
                     if (ActualVacuumData.VacuumCoords[1] > VacDisplay.destination[1])
                     {
                         VacDisplay.vacuumHeading += VacDisplay.turnDirection;
                         VacDisplay.vacuumHeading = VacDisplay.vacuumHeading % 360;
-
+                        if (VacDisplay.vacuumHeading < 0)
+                            VacDisplay.vacuumHeading = 360 + VacDisplay.vacuumHeading;
                         VacDisplay.turnDirection = -VacDisplay.turnDirection;
 
                         Debug.WriteLine("top quadrent");
