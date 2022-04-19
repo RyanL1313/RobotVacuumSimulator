@@ -789,6 +789,7 @@ namespace VacuumSim
             ObstacleSelector.Enabled = false;
 
             LoadSimulationButton.Enabled = false;
+            LoadSaveSimSettingsGroupBox.Enabled = false;
 
             // Reset sim data to prep for new simulation
             HouseLayout.ResetInnerTiles();
@@ -875,6 +876,7 @@ namespace VacuumSim
             RunAnotherSimulationLabel.Visible = false;
 
             LoadSimulationButton.Enabled = true;
+            LoadSaveSimSettingsGroupBox.Enabled = true;
 
             // Reset sim data
             HouseLayout.ResetInnerTiles();
