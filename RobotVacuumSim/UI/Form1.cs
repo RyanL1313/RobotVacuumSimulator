@@ -986,6 +986,8 @@ namespace VacuumSim
             RobotSpeedSelector.Value = rep.RobotSpeedInchesPerSecond;
             VacuumEfficiencySlider.Value = rep.RobotEfficiency;
             WhiskersEfficiencySlider.Value = rep.RobotWhiskersEfficiency;
+            WhiskersEfficiencyValueLabel.Text = WhiskersEfficiencySlider.Value + "%";
+            VacuumEfficiencyValueLabel.Text = VacuumEfficiencySlider.Value + "%";
 
             // Load pathing alg
             if (rep.RobotPathingAlgorithm.Contains("Snake"))
