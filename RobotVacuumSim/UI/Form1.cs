@@ -788,6 +788,8 @@ namespace VacuumSim
             RunAllAlgorithmsCheckbox.Enabled = false;
             ObstacleSelector.Enabled = false;
 
+            LoadSimulationButton.Enabled = false;
+
             // Reset sim data to prep for new simulation
             HouseLayout.ResetInnerTiles();
             HouseLayout.totalFloorplanArea = 0;
@@ -871,6 +873,8 @@ namespace VacuumSim
             YesRunAnotherSimulationButton.Visible = false;
             NoRunAnotherSimulationButton.Visible = false;
             RunAnotherSimulationLabel.Visible = false;
+
+            LoadSimulationButton.Enabled = true;
 
             // Reset sim data
             HouseLayout.ResetInnerTiles();
