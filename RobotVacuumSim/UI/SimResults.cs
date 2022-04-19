@@ -18,8 +18,8 @@ namespace VacuumSim.UI
     /// </summary>
     public partial class SimResults : Form
     {
-        private Form1 _parentForm;
-        private FloorplanLayout _fplayout;
+        private readonly Form1 _parentForm;
+        private readonly FloorplanLayout _fplayout;
 
         /// <summary>
         /// Initializes and shows a new instance of the <see cref="SimResults"/> class.
@@ -136,11 +136,13 @@ namespace VacuumSim.UI
                 // get the current user's desktop directory.
                 string usrDesktopPath = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
 
-                OpenFileDialog openFloorplanDialog = new OpenFileDialog();
-                openFloorplanDialog.Title = "Open Saved Simulation";
-                openFloorplanDialog.Filter = "Report Files (*.json)|*.json";
-                openFloorplanDialog.InitialDirectory = usrDesktopPath;
-                openFloorplanDialog.RestoreDirectory = true;
+                OpenFileDialog openFloorplanDialog = new OpenFileDialog
+                {
+                    Title = "Open Saved Simulation",
+                    Filter = "Report Files (*.json)|*.json",
+                    InitialDirectory = usrDesktopPath,
+                    RestoreDirectory = true
+                };
 
                 if (openFloorplanDialog.ShowDialog() == DialogResult.OK)
                 {
