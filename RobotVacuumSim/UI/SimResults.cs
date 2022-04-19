@@ -15,8 +15,16 @@ namespace VacuumSim.UI
 {
     public partial class SimResults : Form
     {
-        public SimResults(string loadedFileName)
+        private Form1 _parentForm;
+        private string _inPath;
+        private FloorplanLayout _fplayout;
+        private SimulationReport _loadedReport;
+
+        public SimResults(string loadedFileName, Form1 ParentForm, ref FloorplanLayout fplayout)
         {
+            _parentForm = ParentForm;
+            _inPath = loadedFileName;
+            _fplayout = fplayout;
             InitializeComponent();
             string[] _splitFileName = loadedFileName.Split('\\');
             string fileName = _splitFileName[_splitFileName.Length - 1];
@@ -24,6 +32,7 @@ namespace VacuumSim.UI
 
             string simReport = File.ReadAllText(loadedFileName);
             SimulationReport inreport = JsonSerializer.Deserialize<SimulationReport>(simReport)!;
+            _loadedReport = inreport;
 
             PropertyInfo[] properties = inreport.GetType().GetProperties();
             foreach (PropertyInfo pi in properties)
@@ -33,6 +42,12 @@ namespace VacuumSim.UI
                     SimReportFieldsTable.Rows.Add(pi.Name, pi.GetValue(inreport, null).ToString());
                 }
             }
+        }
+
+        private void LoadFloorplanButton_Click(object sender, EventArgs e)
+        {
+            FloorplanFileReader.LoadTileGridData(_loadedReport.FloorplanData, _fplayout);
+            this.Close();
         }
     }
 }

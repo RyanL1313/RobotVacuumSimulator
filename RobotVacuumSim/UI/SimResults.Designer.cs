@@ -34,7 +34,7 @@ namespace VacuumSim.UI
             this.Value = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.LoadedFileLabel = new System.Windows.Forms.Label();
             this.button1 = new System.Windows.Forms.Button();
-            this.button2 = new System.Windows.Forms.Button();
+            this.LoadFloorplanButton = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.SimReportFieldsTable)).BeginInit();
             this.SuspendLayout();
             // 
@@ -86,21 +86,22 @@ namespace VacuumSim.UI
             this.button1.Text = "Load this floorplan + settings";
             this.button1.UseVisualStyleBackColor = true;
             // 
-            // button2
+            // LoadFloorplanButton
             // 
-            this.button2.Location = new System.Drawing.Point(12, 551);
-            this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(163, 44);
-            this.button2.TabIndex = 3;
-            this.button2.Text = "Load this floorplan";
-            this.button2.UseVisualStyleBackColor = true;
+            this.LoadFloorplanButton.Location = new System.Drawing.Point(12, 551);
+            this.LoadFloorplanButton.Name = "LoadFloorplanButton";
+            this.LoadFloorplanButton.Size = new System.Drawing.Size(163, 44);
+            this.LoadFloorplanButton.TabIndex = 3;
+            this.LoadFloorplanButton.Text = "Load this floorplan";
+            this.LoadFloorplanButton.UseVisualStyleBackColor = true;
+            this.LoadFloorplanButton.Click += new System.EventHandler(this.LoadFloorplanButton_Click);
             // 
             // SimResults
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(520, 607);
-            this.Controls.Add(this.button2);
+            this.Controls.Add(this.LoadFloorplanButton);
             this.Controls.Add(this.button1);
             this.Controls.Add(this.LoadedFileLabel);
             this.Controls.Add(this.SimReportFieldsTable);
@@ -119,6 +120,6 @@ namespace VacuumSim.UI
         private System.Windows.Forms.DataGridViewTextBoxColumn Property;
         private System.Windows.Forms.DataGridViewTextBoxColumn Value;
         private System.Windows.Forms.Button button1;
-        private System.Windows.Forms.Button button2;
+        private System.Windows.Forms.Button LoadFloorplanButton;
     }
 }

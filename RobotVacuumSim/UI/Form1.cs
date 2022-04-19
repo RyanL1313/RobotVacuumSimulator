@@ -951,13 +951,9 @@ namespace VacuumSim
                 return;
             }
 
-            //string simReport = File.ReadAllText(inFilePath);
-            //SimulationReport inreport = JsonSerializer.Deserialize<SimulationReport>(simReport)!;
-
-            //FloorplanFileReader.LoadTileGridData(inreport.FloorplanData, HouseLayout);
-
-            var popUp = new VacuumSim.UI.SimResults(inFilePath);
-            popUp.Show();
+            var popUp = new VacuumSim.UI.SimResults(inFilePath, this, ref HouseLayout);
+            popUp.ShowDialog();
+            FloorCanvas.Invalidate();
         }
     }
 
