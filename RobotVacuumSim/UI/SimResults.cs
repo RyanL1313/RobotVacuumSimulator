@@ -32,7 +32,6 @@ namespace VacuumSim.UI
 
             string simReport = File.ReadAllText(loadedFileName);
             SimulationReport inreport = JsonSerializer.Deserialize<SimulationReport>(simReport)!;
-            _loadedReport = inreport;
 
             PropertyInfo[] properties = inreport.GetType().GetProperties();
             foreach (PropertyInfo pi in properties)
@@ -40,16 +39,35 @@ namespace VacuumSim.UI
                 // Don't show the floorplan data field cause it's huge and not user-facing
                 if (pi.Name != "FloorplanData")
                 {
-                    SimReportFieldsTable.Rows.Add(pi.Name, pi.GetValue(inreport, null).ToString());
+                    MainDataGridView.Rows.Add(pi.Name, pi.GetValue(inreport, null).ToString());
                 }
             }
+
+            MainDataGridView.Rows.Add("Report Path", loadedFileName);
 
             SimulationReportTabs.TabPages[0].Text = fileName;
         }
 
         private void LoadFloorplanButton_Click(object sender, EventArgs e)
         {
-            FloorplanFileReader.LoadTileGridData(_loadedReport.FloorplanData, _fplayout);
+            var activeTabControls = SimulationReportTabs.SelectedTab.Controls;
+            DataGridView activeTabGridView = (DataGridView)activeTabControls[0];
+            string thisReportPath = "";
+            var pathRow = activeTabGridView.Rows[activeTabGridView.Rows.GetLastRow(DataGridViewElementStates.Visible)];
+            if (pathRow.Cells[0].Value.ToString() == "Report Path")
+            {
+                thisReportPath = pathRow.Cells[1].Value.ToString();
+            }
+
+            string simReport = "";
+            if (thisReportPath != "")
+            {
+                simReport = File.ReadAllText(thisReportPath);
+            }
+            else { this.Close(); return; }
+            SimulationReport inreport = JsonSerializer.Deserialize<SimulationReport>(simReport)!;
+
+            FloorplanFileReader.LoadTileGridData(inreport.FloorplanData, _fplayout);
             this.Close();
         }
 
@@ -116,6 +134,8 @@ namespace VacuumSim.UI
                         dgv.Rows.Add(pi.Name, pi.GetValue(inreport, null).ToString());
                     }
                 }
+
+                dgv.Rows.Add("Report Path", inFilePath);
 
                 SimulationReportTabs.TabPages[lastContentTabIdx].Text = fileName;
                 dgv.Parent = SimulationReportTabs.TabPages[lastContentTabIdx];
