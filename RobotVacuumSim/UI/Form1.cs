@@ -1007,6 +1007,9 @@ namespace VacuumSim
 
             HouseHeightSelector.Value = rep.HouseHeightFeet;
             HouseWidthSelector.Value = rep.HouseWidthFeet;
+
+            //HouseWidthSelector.Value = HouseLayout.numTilesPerRow * 2 - 4;
+            //HouseHeightSelector.Value = HouseLayout.numTilesPerCol * 2 - 4;
         }
     }
 
