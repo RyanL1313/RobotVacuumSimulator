@@ -43,6 +43,8 @@ namespace VacuumSim.UI
                     SimReportFieldsTable.Rows.Add(pi.Name, pi.GetValue(inreport, null).ToString());
                 }
             }
+
+            SimulationReportTabs.TabPages[0].Text = fileName;
         }
 
         private void LoadFloorplanButton_Click(object sender, EventArgs e)

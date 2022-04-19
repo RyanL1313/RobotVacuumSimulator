@@ -35,7 +35,11 @@ namespace VacuumSim.UI
             this.LoadedFileLabel = new System.Windows.Forms.Label();
             this.LoadFloorplanAndSettingsButton = new System.Windows.Forms.Button();
             this.LoadFloorplanButton = new System.Windows.Forms.Button();
+            this.SimulationReportTabs = new System.Windows.Forms.TabControl();
+            this.tabPage1 = new System.Windows.Forms.TabPage();
             ((System.ComponentModel.ISupportInitialize)(this.SimReportFieldsTable)).BeginInit();
+            this.SimulationReportTabs.SuspendLayout();
+            this.tabPage1.SuspendLayout();
             this.SuspendLayout();
             // 
             // SimReportFieldsTable
@@ -47,12 +51,13 @@ namespace VacuumSim.UI
             this.SimReportFieldsTable.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.Property,
             this.Value});
-            this.SimReportFieldsTable.Location = new System.Drawing.Point(12, 47);
+            this.SimReportFieldsTable.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.SimReportFieldsTable.Location = new System.Drawing.Point(3, 3);
             this.SimReportFieldsTable.Name = "SimReportFieldsTable";
             this.SimReportFieldsTable.ReadOnly = true;
             this.SimReportFieldsTable.RowHeadersVisible = false;
             this.SimReportFieldsTable.RowTemplate.Height = 25;
-            this.SimReportFieldsTable.Size = new System.Drawing.Size(496, 497);
+            this.SimReportFieldsTable.Size = new System.Drawing.Size(482, 473);
             this.SimReportFieldsTable.TabIndex = 0;
             // 
             // Property
@@ -97,18 +102,43 @@ namespace VacuumSim.UI
             this.LoadFloorplanButton.UseVisualStyleBackColor = true;
             this.LoadFloorplanButton.Click += new System.EventHandler(this.LoadFloorplanButton_Click);
             // 
+            // SimulationReportTabs
+            // 
+            this.SimulationReportTabs.Controls.Add(this.tabPage1);
+            this.SimulationReportTabs.Location = new System.Drawing.Point(12, 37);
+            this.SimulationReportTabs.Name = "SimulationReportTabs";
+            this.SimulationReportTabs.SelectedIndex = 0;
+            this.SimulationReportTabs.Size = new System.Drawing.Size(496, 507);
+            this.SimulationReportTabs.TabIndex = 4;
+            // 
+            // tabPage1
+            // 
+            this.tabPage1.Controls.Add(this.SimReportFieldsTable);
+            this.tabPage1.Location = new System.Drawing.Point(4, 24);
+            this.tabPage1.Name = "tabPage1";
+            this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPage1.Size = new System.Drawing.Size(488, 479);
+            this.tabPage1.TabIndex = 0;
+            this.tabPage1.Text = "tabPage1";
+            this.tabPage1.UseVisualStyleBackColor = true;
+            // 
             // SimResults
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(520, 607);
+            this.Controls.Add(this.SimulationReportTabs);
             this.Controls.Add(this.LoadFloorplanButton);
             this.Controls.Add(this.LoadFloorplanAndSettingsButton);
             this.Controls.Add(this.LoadedFileLabel);
-            this.Controls.Add(this.SimReportFieldsTable);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
+            this.MaximizeBox = false;
             this.Name = "SimResults";
-            this.Text = "SimResults";
+            this.SizeGripStyle = System.Windows.Forms.SizeGripStyle.Hide;
+            this.Text = "Simulation Results";
             ((System.ComponentModel.ISupportInitialize)(this.SimReportFieldsTable)).EndInit();
+            this.SimulationReportTabs.ResumeLayout(false);
+            this.tabPage1.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -122,5 +152,7 @@ namespace VacuumSim.UI
         private System.Windows.Forms.DataGridViewTextBoxColumn Value;
         private System.Windows.Forms.Button LoadFloorplanAndSettingsButton;
         private System.Windows.Forms.Button LoadFloorplanButton;
+        private System.Windows.Forms.TabControl SimulationReportTabs;
+        private System.Windows.Forms.TabPage tabPage1;
     }
 }

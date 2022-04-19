@@ -933,8 +933,7 @@ namespace VacuumSim
         private void LoadSimulationButton_Click(object sender, EventArgs e)
         {
             string inFilePath;
-            // This handy bit of code gets the current user's desktop directory.
-            // We use this as the default directory for the load dialog.
+            // get the current user's desktop directory.
             string usrDesktopPath = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
 
             OpenFileDialog openFloorplanDialog = new OpenFileDialog();
@@ -953,13 +952,14 @@ namespace VacuumSim
                 return;
             }
 
-            var popUp = new VacuumSim.UI.SimResults(inFilePath, this, ref HouseLayout);
+            var popUp = new UI.SimResults(inFilePath, this, ref HouseLayout);
             popUp.ShowDialog();
             FloorCanvas.Invalidate();
         }
 
         public void LoadSimulationSettingsFromReport(SimulationReport rep)
         {
+            // Load some values
             RobotBatteryLifeSelector.Value = rep.RobotBatteryLifeMinutes;
             RobotSpeedSelector.Value = rep.RobotSpeedInchesPerSecond;
             VacuumEfficiencySlider.Value = rep.RobotEfficiency;
