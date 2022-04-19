@@ -84,6 +84,7 @@ namespace VacuumSim.Components
 
                         VacDisplay.turnDirection = -VacDisplay.turnDirection;
                         Debug.WriteLine("left quadrent");
+                        Debug.WriteLine(VacDisplay.vacuumHeading);
                         VacDisplay.collided = false;
 
                     }
@@ -97,6 +98,8 @@ namespace VacuumSim.Components
 
                         VacDisplay.turnDirection = -VacDisplay.turnDirection;
                         Debug.WriteLine("bottom quadrent");
+                        Debug.WriteLine(VacDisplay.vacuumHeading);
+
                         VacDisplay.collided = false;
                     }
                 }
@@ -108,7 +111,10 @@ namespace VacuumSim.Components
                         VacDisplay.vacuumHeading = VacDisplay.vacuumHeading % 360;
 
                         VacDisplay.turnDirection = -VacDisplay.turnDirection;
+
                         Debug.WriteLine("top quadrent");
+                        Debug.WriteLine(VacDisplay.vacuumHeading);
+
                         VacDisplay.collided = false;
                     }
 
