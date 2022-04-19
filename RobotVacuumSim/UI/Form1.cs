@@ -824,20 +824,21 @@ namespace VacuumSim
                 YesRunAnotherSimulationButton.Visible = true;
                 NoRunAnotherSimulationButton.Visible = true;
                 RunAnotherSimulationLabel.Visible = true;
+                // Save our sim report
+                SaveReport(rep);
             }
             else // More algorithms need to run. Move onto the next one
             {
                 // Display heat map for 3 seconds before moving onto the next algorithm
                 FloorCanvas.Invalidate();
+                // Save our sim report
+                SaveReport(rep);
                 await Task.Delay(3000);
 
                 SetInitialSimulationValues(); // Start a new simulation with the next algorithm
             }
 
             FloorCanvas.Invalidate(); // Re-trigger paint event
-
-            // Save our sim report
-            SaveReport(rep);
         }
 
         /// <summary>
