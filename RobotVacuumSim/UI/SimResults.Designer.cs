@@ -32,7 +32,6 @@ namespace VacuumSim.UI
             this.MainDataGridView = new System.Windows.Forms.DataGridView();
             this.Property = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Value = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.LoadedFileLabel = new System.Windows.Forms.Label();
             this.LoadFloorplanAndSettingsButton = new System.Windows.Forms.Button();
             this.LoadFloorplanButton = new System.Windows.Forms.Button();
             this.SimulationReportTabs = new System.Windows.Forms.TabControl();
@@ -58,7 +57,7 @@ namespace VacuumSim.UI
             this.MainDataGridView.ReadOnly = true;
             this.MainDataGridView.RowHeadersVisible = false;
             this.MainDataGridView.RowTemplate.Height = 25;
-            this.MainDataGridView.Size = new System.Drawing.Size(482, 501);
+            this.MainDataGridView.Size = new System.Drawing.Size(482, 498);
             this.MainDataGridView.TabIndex = 0;
             // 
             // Property
@@ -72,16 +71,6 @@ namespace VacuumSim.UI
             this.Value.HeaderText = "Value";
             this.Value.Name = "Value";
             this.Value.ReadOnly = true;
-            // 
-            // LoadedFileLabel
-            // 
-            this.LoadedFileLabel.AutoSize = true;
-            this.LoadedFileLabel.Font = new System.Drawing.Font("Segoe UI", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.LoadedFileLabel.Location = new System.Drawing.Point(12, 9);
-            this.LoadedFileLabel.Name = "LoadedFileLabel";
-            this.LoadedFileLabel.Size = new System.Drawing.Size(78, 25);
-            this.LoadedFileLabel.TabIndex = 1;
-            this.LoadedFileLabel.Text = "Loaded:";
             // 
             // LoadFloorplanAndSettingsButton
             // 
@@ -107,10 +96,10 @@ namespace VacuumSim.UI
             // 
             this.SimulationReportTabs.Controls.Add(this.tabPage1);
             this.SimulationReportTabs.Controls.Add(this.AddTabButton);
-            this.SimulationReportTabs.Location = new System.Drawing.Point(12, 9);
+            this.SimulationReportTabs.Location = new System.Drawing.Point(12, 12);
             this.SimulationReportTabs.Name = "SimulationReportTabs";
             this.SimulationReportTabs.SelectedIndex = 0;
-            this.SimulationReportTabs.Size = new System.Drawing.Size(496, 535);
+            this.SimulationReportTabs.Size = new System.Drawing.Size(496, 532);
             this.SimulationReportTabs.TabIndex = 4;
             this.SimulationReportTabs.MouseClick += new System.Windows.Forms.MouseEventHandler(this.SimulationReportTabs_MouseClick);
             // 
@@ -120,7 +109,7 @@ namespace VacuumSim.UI
             this.tabPage1.Location = new System.Drawing.Point(4, 24);
             this.tabPage1.Name = "tabPage1";
             this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage1.Size = new System.Drawing.Size(488, 507);
+            this.tabPage1.Size = new System.Drawing.Size(488, 504);
             this.tabPage1.TabIndex = 0;
             this.tabPage1.Text = "tabPage1";
             this.tabPage1.UseVisualStyleBackColor = true;
@@ -143,7 +132,6 @@ namespace VacuumSim.UI
             this.Controls.Add(this.SimulationReportTabs);
             this.Controls.Add(this.LoadFloorplanButton);
             this.Controls.Add(this.LoadFloorplanAndSettingsButton);
-            this.Controls.Add(this.LoadedFileLabel);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
             this.MaximizeBox = false;
             this.Name = "SimResults";
@@ -153,14 +141,12 @@ namespace VacuumSim.UI
             this.SimulationReportTabs.ResumeLayout(false);
             this.tabPage1.ResumeLayout(false);
             this.ResumeLayout(false);
-            this.PerformLayout();
 
         }
 
         #endregion
 
         private System.Windows.Forms.DataGridView MainDataGridView;
-        private System.Windows.Forms.Label LoadedFileLabel;
         private System.Windows.Forms.DataGridViewTextBoxColumn Property;
         private System.Windows.Forms.DataGridViewTextBoxColumn Value;
         private System.Windows.Forms.Button LoadFloorplanAndSettingsButton;

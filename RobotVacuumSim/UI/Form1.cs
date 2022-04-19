@@ -884,6 +884,10 @@ namespace VacuumSim
         {
         }
 
+        /// <summary>
+        /// Generates a SimulationReport instance representing the current simulation state.
+        /// </summary>
+        /// <returns>A SimulationReport representing the current simulation state.</returns>
         private SimulationReport GenerateReport()
         {
             SimulationReport rep = new SimulationReport
@@ -910,6 +914,10 @@ namespace VacuumSim
             return rep;
         }
 
+        /// <summary>
+        /// Serializes a SimulationReport instance and saves it as JSON.
+        /// </summary>
+        /// <param name="rep">The SimulationReport instance to save.</param>
         private void SaveReport(SimulationReport rep)
         {
             // Save file dialog
@@ -930,6 +938,10 @@ namespace VacuumSim
             File.WriteAllText(filename, jsonString);
         }
 
+        /// <summary>
+        /// Callback for clicking the Load Simulation button. Promts the user
+        /// for a simulation report file and loads it in a SimResults modal.
+        /// </summary>
         private void LoadSimulationButton_Click(object sender, EventArgs e)
         {
             string inFilePath;
@@ -952,11 +964,17 @@ namespace VacuumSim
                 return;
             }
 
+            // Spawn a SimResults modal with the report the user just selected.
             var popUp = new UI.SimResults(inFilePath, this, ref HouseLayout);
             popUp.ShowDialog();
+            // Redraw after the modal closes.
             FloorCanvas.Invalidate();
         }
 
+        /// <summary>
+        /// Loads the simulation settings from a given SimulationReport instance..
+        /// </summary>
+        /// <param name="rep">The SimulationReport instance to load parameters from.</param>
         public void LoadSimulationSettingsFromReport(SimulationReport rep)
         {
             // Load some values
@@ -1042,18 +1060,5 @@ namespace VacuumSim
         public string RobotPathingAlgorithm { get; set; }
         public double CoveragePercentage { get; set; }
         public string[] FloorplanData { get; set; }
-        /*
-         Simulation ID
-        Simulation start time
-        Amount of simulated time (simulation clock)
-        House size
-        House floor type
-        Number of rooms (pending room implementation)
-        Robot battery life
-        Robot speed
-        Robot efficiency (should determine a way to calculate this)
-        Pathing algorithm used
-        Floorplan file (optional?)
-        */
     }
 }
