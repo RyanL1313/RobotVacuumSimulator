@@ -15,6 +15,7 @@ namespace VacuumSim.UI
 {
     public partial class SimResults : Form
     {
+        private Form1 _parentForm;
         private string _inPath;
         private FloorplanLayout _fplayout;
         private SimulationReport _loadedReport;
@@ -23,6 +24,7 @@ namespace VacuumSim.UI
         {
             _inPath = loadedFileName;
             _fplayout = fplayout;
+            _parentForm = ParentForm;
             InitializeComponent();
             string[] _splitFileName = loadedFileName.Split('\\');
             string fileName = _splitFileName[_splitFileName.Length - 1];
@@ -35,6 +37,7 @@ namespace VacuumSim.UI
             PropertyInfo[] properties = inreport.GetType().GetProperties();
             foreach (PropertyInfo pi in properties)
             {
+                // Don't show the floorplan data field cause it's huge and not user-facing
                 if (pi.Name != "FloorplanData")
                 {
                     SimReportFieldsTable.Rows.Add(pi.Name, pi.GetValue(inreport, null).ToString());
@@ -45,6 +48,13 @@ namespace VacuumSim.UI
         private void LoadFloorplanButton_Click(object sender, EventArgs e)
         {
             FloorplanFileReader.LoadTileGridData(_loadedReport.FloorplanData, _fplayout);
+            this.Close();
+        }
+
+        private void LoadFloorplanAndSettingsButton_Click(object sender, EventArgs e)
+        {
+            FloorplanFileReader.LoadTileGridData(_loadedReport.FloorplanData, _fplayout);
+            _parentForm.LoadSimulationSettingsFromReport(_loadedReport);
             this.Close();
         }
     }

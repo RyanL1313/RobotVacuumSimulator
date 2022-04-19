@@ -896,6 +896,7 @@ namespace VacuumSim
                            .FirstOrDefault(n => n.Checked).Name.Replace("RadioButton", "", ignoreCase: true, culture: System.Globalization.CultureInfo.InvariantCulture),
                 RobotBatteryLifeMinutes = (int)RobotBatteryLifeSelector.Value,
                 RobotEfficiency = VacuumEfficiencySlider.Value,
+                RobotWhiskersEfficiency = WhiskersEfficiencySlider.Value,
                 //RobotPathingAlgorithm = RobotPathAlgorithmSelector.Text,
                 RobotPathingAlgorithm = vc.getVer(),
                 RobotSpeedInchesPerSecond = (int)RobotSpeedSelector.Value,
@@ -955,6 +956,57 @@ namespace VacuumSim
             popUp.ShowDialog();
             FloorCanvas.Invalidate();
         }
+
+        public void LoadSimulationSettingsFromReport(SimulationReport rep)
+        {
+            RobotBatteryLifeSelector.Value = rep.RobotBatteryLifeMinutes;
+            RobotSpeedSelector.Value = rep.RobotSpeedInchesPerSecond;
+            VacuumEfficiencySlider.Value = rep.RobotEfficiency;
+            WhiskersEfficiencySlider.Value = rep.RobotWhiskersEfficiency;
+
+            // Load pathing alg
+            if (rep.RobotPathingAlgorithm.Contains("Snake"))
+            {
+                RobotPathAlgorithmSelector.SelectedItem = PathAlgorithm.Snaking;
+            }
+            else if (rep.RobotPathingAlgorithm.Contains("Random"))
+            {
+                RobotPathAlgorithmSelector.SelectedItem = PathAlgorithm.Random;
+            }
+            else if (rep.RobotPathingAlgorithm.Contains("Spiral"))
+            {
+                RobotPathAlgorithmSelector.SelectedItem = PathAlgorithm.Spiral;
+            }
+            else if (rep.RobotPathingAlgorithm.Contains("Follow"))
+            {
+                RobotPathAlgorithmSelector.SelectedItem = PathAlgorithm.WallFollow;
+            }
+
+            // Load floor covering type
+            switch (rep.HouseFloorType)
+            {
+                case "HardWood":
+                    HardWoodRadioButton.Checked = true;
+                    return;
+
+                case "LoopPile":
+                    LoopPileRadioButton.Checked = true;
+                    return;
+
+                case "CutPile":
+                    CutPileRadioButton.Checked = true;
+                    return;
+
+                case "FriezeCutPile":
+                    FriezeCutPileRadioButton.Checked = true;
+                    return;
+            }
+
+            // Load house dims
+
+            HouseHeightSelector.Value = rep.HouseHeightFeet;
+            HouseWidthSelector.Value = rep.HouseWidthFeet;
+        }
     }
 
     /// <summary>
@@ -984,7 +1036,8 @@ namespace VacuumSim
         public string HouseFloorType { get; set; }
         public int RobotBatteryLifeMinutes { get; set; }
         public int RobotSpeedInchesPerSecond { get; set; }
-        public float RobotEfficiency { get; set; }
+        public int RobotEfficiency { get; set; }
+        public int RobotWhiskersEfficiency { get; set; }
         public string RobotPathingAlgorithm { get; set; }
         public double CoveragePercentage { get; set; }
         public string[] FloorplanData { get; set; }
