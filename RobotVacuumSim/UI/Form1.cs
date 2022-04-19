@@ -489,7 +489,7 @@ namespace VacuumSim
                 FloorCanvasDesigner.PaintChairAndTableBackgrounds(canvasEditor, HouseLayout);
                 FloorCanvasDesigner.DisplayCleanedTiles(canvasEditor, HouseLayout);
                 FloorCanvasDesigner.DrawVacuum(canvasEditor, VacDisplay);
-                // if (Simulation.simStarted) FloorCanvasDesigner.PaintVacuumHitboxInnerTiles(canvasEditor, HouseLayout, VacDisplay);
+                //if (Simulation.simStarted) FloorCanvasDesigner.PaintVacuumHitboxInnerTiles(canvasEditor, HouseLayout, VacDisplay);
                 // if (Simulation.simStarted) FloorCanvasDesigner.PaintInnerTilesGettingCleaned(canvasEditor, HouseLayout, VacDisplay); // testing purposes
                 //FloorCanvasDesigner.DrawInnerTileGridLines(canvasEditor, HouseLayout); // testing purposes
                 FloorCanvasDesigner.DrawFloorplan(canvasEditor, HouseLayout, VacDisplay);
@@ -785,6 +785,7 @@ namespace VacuumSim
             Simulation.simTimeElapsed = 0;
             FloorCanvasCalculator.movementCount = 0;
             VacDisplay.batterySecondsRemaining = (int)RobotBatteryLifeSelector.Value * 60;
+            VacDisplay.firstWallCol = true;
 
             RunAllAlgorithmsCheckbox.Enabled = false;
             ObstacleSelector.Enabled = false;
