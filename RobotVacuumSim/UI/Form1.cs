@@ -988,25 +988,28 @@ namespace VacuumSim
             {
                 case "HardWood":
                     HardWoodRadioButton.Checked = true;
-                    return;
+                    break;
 
                 case "LoopPile":
                     LoopPileRadioButton.Checked = true;
-                    return;
+                    break;
 
                 case "CutPile":
                     CutPileRadioButton.Checked = true;
-                    return;
+                    break;
 
                 case "FriezeCutPile":
                     FriezeCutPileRadioButton.Checked = true;
-                    return;
+                    break;
             }
 
             // Load house dims
 
             HouseHeightSelector.Value = rep.HouseHeightFeet;
             HouseWidthSelector.Value = rep.HouseWidthFeet;
+
+            //HouseWidthSelector.Value = HouseLayout.numTilesPerRow * 2 - 4;
+            //HouseHeightSelector.Value = HouseLayout.numTilesPerCol * 2 - 4;
         }
     }
 
