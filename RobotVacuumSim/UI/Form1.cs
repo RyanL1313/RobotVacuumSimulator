@@ -1,10 +1,7 @@
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Reflection;
@@ -12,7 +9,6 @@ using VacuumSim.Sim;
 using VacuumSim.UI.FloorplanGraphics;
 using VacuumSim.Components;
 using System.Diagnostics;
-using VacuumSim.UI.Floorplan;
 using System.IO;
 using System.Text.Json;
 
@@ -763,7 +759,6 @@ namespace VacuumSim
             ActualVacuumData.VacuumCoords[1] = VacDisplay.firstAlgVacuumCoords[1];
             VacDisplay.vacuumHeading = VacDisplay.firstAlgVacuumHeading;
 
-
             VacDisplay.CenterVacuumDisplay(ActualVacuumData.VacuumCoords, HouseLayout);
             InitialVacuumHeadingSelector.Value = VacDisplay.vacuumHeading;
 
@@ -931,6 +926,38 @@ namespace VacuumSim
             var JSONOpts = new JsonSerializerOptions { IncludeFields = true, WriteIndented = true };
             string jsonString = JsonSerializer.Serialize(rep, JSONOpts);
             File.WriteAllText(filename, jsonString);
+        }
+
+        private void LoadSimulationButton_Click(object sender, EventArgs e)
+        {
+            string inFilePath;
+            // This handy bit of code gets the current user's desktop directory.
+            // We use this as the default directory for the load dialog.
+            string usrDesktopPath = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
+
+            OpenFileDialog openFloorplanDialog = new OpenFileDialog();
+            openFloorplanDialog.Title = "Open Saved Simulation";
+            openFloorplanDialog.Filter = "Report Files (*.json)|*.json";
+            openFloorplanDialog.InitialDirectory = usrDesktopPath;
+            openFloorplanDialog.RestoreDirectory = true;
+
+            if (openFloorplanDialog.ShowDialog() == DialogResult.OK)
+            {
+                inFilePath = openFloorplanDialog.FileName;
+            }
+            else
+            {
+                // If the user closes the dialog without opening anything, just exit out.
+                return;
+            }
+
+            //string simReport = File.ReadAllText(inFilePath);
+            //SimulationReport inreport = JsonSerializer.Deserialize<SimulationReport>(simReport)!;
+
+            //FloorplanFileReader.LoadTileGridData(inreport.FloorplanData, HouseLayout);
+
+            var popUp = new VacuumSim.UI.SimResults(inFilePath);
+            popUp.Show();
         }
     }
 

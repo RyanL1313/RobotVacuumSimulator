@@ -938,7 +938,6 @@ namespace VacuumSim
             // 
             this.LoadSaveSimSettingsGroupBox.Controls.Add(this.LoadSimulationButton);
             this.LoadSaveSimSettingsGroupBox.Controls.Add(this.SaveSimulationButton);
-            this.LoadSaveSimSettingsGroupBox.Enabled = false;
             this.LoadSaveSimSettingsGroupBox.Location = new System.Drawing.Point(3, 219);
             this.LoadSaveSimSettingsGroupBox.Name = "LoadSaveSimSettingsGroupBox";
             this.LoadSaveSimSettingsGroupBox.Size = new System.Drawing.Size(474, 87);
@@ -948,7 +947,6 @@ namespace VacuumSim
             // 
             // LoadSimulationButton
             // 
-            this.LoadSimulationButton.Enabled = false;
             this.LoadSimulationButton.Location = new System.Drawing.Point(7, 32);
             this.LoadSimulationButton.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.LoadSimulationButton.Name = "LoadSimulationButton";
@@ -956,10 +954,10 @@ namespace VacuumSim
             this.LoadSimulationButton.TabIndex = 14;
             this.LoadSimulationButton.Text = "Load Simulation Settings";
             this.LoadSimulationButton.UseVisualStyleBackColor = true;
+            this.LoadSimulationButton.Click += new System.EventHandler(this.LoadSimulationButton_Click);
             // 
             // SaveSimulationButton
             // 
-            this.SaveSimulationButton.Enabled = false;
             this.SaveSimulationButton.Location = new System.Drawing.Point(7, 59);
             this.SaveSimulationButton.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.SaveSimulationButton.Name = "SaveSimulationButton";
