@@ -48,7 +48,7 @@ namespace VacuumSim.UI
             SimulationReportTabs.TabPages[0].Text = fileName;
         }
 
-        private void LoadFloorplanButton_Click(object sender, EventArgs e)
+        private SimulationReport GetSimReportFromActiveTab()
         {
             var activeTabControls = SimulationReportTabs.SelectedTab.Controls;
             DataGridView activeTabGridView = (DataGridView)activeTabControls[0];
@@ -64,17 +64,36 @@ namespace VacuumSim.UI
             {
                 simReport = File.ReadAllText(thisReportPath);
             }
-            else { this.Close(); return; }
+            else { return null; }
             SimulationReport inreport = JsonSerializer.Deserialize<SimulationReport>(simReport)!;
 
+            return inreport;
+        }
+
+        private void LoadFloorplanButton_Click(object sender, EventArgs e)
+        {
+            SimulationReport inreport = GetSimReportFromActiveTab();
+
+            if (inreport == null)
+            {
+                MessageBox.Show("Error loading simulation report.");
+                this.Close();
+            }
             FloorplanFileReader.LoadTileGridData(inreport.FloorplanData, _fplayout);
             this.Close();
         }
 
         private void LoadFloorplanAndSettingsButton_Click(object sender, EventArgs e)
         {
-            FloorplanFileReader.LoadTileGridData(_loadedReport.FloorplanData, _fplayout);
-            _parentForm.LoadSimulationSettingsFromReport(_loadedReport);
+            SimulationReport inreport = GetSimReportFromActiveTab();
+
+            if (inreport == null)
+            {
+                MessageBox.Show("Error loading simulation report.");
+                this.Close();
+            }
+            FloorplanFileReader.LoadTileGridData(inreport.FloorplanData, _fplayout);
+            _parentForm.LoadSimulationSettingsFromReport(inreport);
             this.Close();
         }
 
