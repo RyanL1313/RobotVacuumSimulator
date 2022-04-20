@@ -178,6 +178,7 @@ namespace VacuumSim.UI
                 dgv.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
                 dgv.RowHeadersVisible = false;
                 dgv.Size = new Size(482, 473);
+                dgv.ReadOnly = true;
 
                 // Loop through the properties of the loaded report and add them to the table.
                 PropertyInfo[] properties = inreport.GetType().GetProperties();
