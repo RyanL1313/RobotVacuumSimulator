@@ -812,7 +812,6 @@ namespace VacuumSim
             FloorCanvasDesigner.displayingHeatMap = true;
             StartSimulationButton.Enabled = false;
             StopSimulationButton.Enabled = false;
-            ShowInstructionsButton.Enabled = true;
             Simulation.simStarted = false;
             Simulation.simTimeElapsed = 0;
             FloorCanvasCalculator.movementCount = 0;
