@@ -44,13 +44,26 @@ namespace VacuumSim.Components
             {
                 collision.HandleCollision(VacDisplay, ActualVacuumData, floorPlan);
 
+                //Debug.Write("Vacuum collided at ");
+                //Debug.WriteLine(VacDisplay.vacuumHeading);
+
                 double angle = Math.PI * VacDisplay.vacuumHeading / 180.0;
 
                 test = (ActualVacuumData.VacuumSize/2) * Math.Sin(angle);
 
-                VacDisplay.destination[0] = ActualVacuumData.VacuumCoords[0] + test;
+                if(test<0)
+                    VacDisplay.destination[0] = ActualVacuumData.VacuumCoords[0] + test;
+                else
+                    VacDisplay.destination[0] = ActualVacuumData.VacuumCoords[0] - test;
+
                 VacDisplay.destination[1] = ActualVacuumData.VacuumCoords[1] - Math.Sqrt((ActualVacuumData.VacuumSize / 2) * (ActualVacuumData.VacuumSize / 2) - test * test);
 
+
+                Debug.Write("Target X is ");
+                Debug.WriteLine(VacDisplay.destination[0]);
+
+                Debug.Write("Current X position is ");
+                Debug.WriteLine(ActualVacuumData.VacuumCoords[0]);
 
                 VacDisplay.vacuumHeading += VacDisplay.turnDirection;
                 VacDisplay.vacuumHeading = VacDisplay.vacuumHeading % 360;
@@ -79,16 +92,18 @@ namespace VacuumSim.Components
                 if ((VacDisplay.vacuumHeading > 270 && VacDisplay.vacuumHeading < 360) || (VacDisplay.vacuumHeading >=0 && VacDisplay.vacuumHeading < 90)) // right half
                 {
 
-                    if (ActualVacuumData.VacuumCoords[0] > VacDisplay.destination[0])
+                    if (ActualVacuumData.VacuumCoords[0] < VacDisplay.destination[0])
                     {
+                        Debug.Write("Vacuum entered the right quadrent at ");
+                        Debug.WriteLine(VacDisplay.vacuumHeading);
                         VacDisplay.vacuumHeading += VacDisplay.turnDirection;
                         VacDisplay.vacuumHeading = VacDisplay.vacuumHeading % 360;
                         if (VacDisplay.vacuumHeading < 0)
                             VacDisplay.vacuumHeading = 360 + VacDisplay.vacuumHeading;
 
                         VacDisplay.turnDirection = -VacDisplay.turnDirection;
-                        //Debug.WriteLine("right quadrent");
-                       // Debug.WriteLine(VacDisplay.vacuumHeading);
+                        //Debug.Write("Vacuuum exited right quadrent at");
+                        //Debug.WriteLine(VacDisplay.vacuumHeading);
                         VacDisplay.collided = false;
                         VacDisplay.hitCounter++;
 
@@ -99,14 +114,17 @@ namespace VacuumSim.Components
                 {
                     if (ActualVacuumData.VacuumCoords[0] < VacDisplay.destination[0])
                     {
+                        //Debug.Write("Vacuum entered the left quadrent at ");
+                        //Debug.WriteLine(VacDisplay.vacuumHeading);
                         VacDisplay.vacuumHeading += VacDisplay.turnDirection;
+                        
                         VacDisplay.vacuumHeading = VacDisplay.vacuumHeading % 360;
                         if (VacDisplay.vacuumHeading < 0)
                             VacDisplay.vacuumHeading = 360 + VacDisplay.vacuumHeading;
 
                         VacDisplay.turnDirection = -VacDisplay.turnDirection;
-                        //Debug.WriteLine("left quadrent");
-                        //Debug.WriteLine(VacDisplay.vacuumHeading);
+                        //Debug.Write("Vacuuum exited left quadrent at");
+                       // Debug.WriteLine(VacDisplay.vacuumHeading);
                         VacDisplay.collided = false;
                         VacDisplay.hitCounter++;
 
@@ -122,7 +140,7 @@ namespace VacuumSim.Components
                             VacDisplay.vacuumHeading = 360 + VacDisplay.vacuumHeading;
 
                         VacDisplay.turnDirection = -VacDisplay.turnDirection;
-                        //Debug.WriteLine("bottom quadrent");
+                        Debug.WriteLine("bottom quadrent");
                         //Debug.WriteLine(VacDisplay.vacuumHeading);
 
                         VacDisplay.collided = false;
