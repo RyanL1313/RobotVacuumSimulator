@@ -14,10 +14,10 @@ namespace VacuumSim.Components
     /// </summary>
     public class VSnakeAlgorithm : VacuumController
     {
-
         public override void ExecVPath(VacuumDisplay VacDisplay, FloorplanLayout floorPlan, CollisionHandler collisionHandler, FloorCleaner floorCleaner, Vacuum ActualVacuumData, object sender, EventArgs e)
         {
             //Debug.WriteLine("running snake algorithm");
+
 
 
             var collision = collisionHandler;
@@ -177,7 +177,7 @@ namespace VacuumSim.Components
     
     
     
-        private string SnakeAlgVer = "Snake Algorithm Version 0";  //not implemented yet 
+        private string SnakeAlgVer = "Snake Algorithm Version 1.2"; 
         public override string getVer()
         {
             return SnakeAlgVer;
