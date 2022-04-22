@@ -100,8 +100,7 @@ namespace VacuumSim
             this.BatteryLeftLabel = new System.Windows.Forms.Label();
             this.BatteryLeftTitleLabel = new System.Windows.Forms.Label();
             this.FloorCanvas = new System.Windows.Forms.PictureBox();
-            this.VacuumWhiskersTimer = new System.Windows.Forms.Timer(this.components);
-            this.VacAlgorithmTimer = new System.Windows.Forms.Timer(this.components);
+            this.VacDisplayTimer = new System.Windows.Forms.Timer(this.components);
             ((System.ComponentModel.ISupportInitialize)(this.LeftPane)).BeginInit();
             this.LeftPane.Panel1.SuspendLayout();
             this.LeftPane.Panel2.SuspendLayout();
@@ -1122,15 +1121,10 @@ namespace VacuumSim
             this.FloorCanvas.MouseMove += new System.Windows.Forms.MouseEventHandler(this.FloorCanvas_Click);
             this.FloorCanvas.MouseUp += new System.Windows.Forms.MouseEventHandler(this.FloorCanvas_MouseUp);
             // 
-            // VacuumWhiskersTimer
+            // VacDisplayTimer
             // 
-            this.VacuumWhiskersTimer.Interval = 250;
-            this.VacuumWhiskersTimer.Tick += new System.EventHandler(this.VacuumWhiskersTimer_Tick);
-            // 
-            // VacAlgorithmTimer
-            // 
-            this.VacAlgorithmTimer.Interval = 1000;
-            this.VacAlgorithmTimer.Tick += new System.EventHandler(this.VacAlgorithmTimer_Tick);
+            this.VacDisplayTimer.Interval = 1;
+            this.VacDisplayTimer.Tick += new System.EventHandler(this.VacDisplayTimer_Tick);
             // 
             // Form1
             // 
@@ -1221,7 +1215,6 @@ namespace VacuumSim
         private System.Windows.Forms.Button LoadDefaultFloorplanButton;
         private System.Windows.Forms.PictureBox FloorCanvas;
         private System.Windows.Forms.ComboBox ObstacleSelector;
-        private System.Windows.Forms.Timer VacuumWhiskersTimer;
         private System.Windows.Forms.Label BatteryLeftLabel;
         private System.Windows.Forms.Label BatteryLeftTitleLabel;
         private System.Windows.Forms.Button LoadSavedFloorplanButton;
@@ -1239,7 +1232,7 @@ namespace VacuumSim
         private System.Windows.Forms.NumericUpDown ChairTableHeightSelector;
         private System.Windows.Forms.NumericUpDown ChairTableWidthSelector;
         private System.Windows.Forms.Button EraserModeButton;
-        public System.Windows.Forms.Timer VacAlgorithmTimer;
+        public System.Windows.Forms.Timer VacDisplayTimer;
         private System.Windows.Forms.Label WhiskersEfficiencyTitleLabel;
         private System.Windows.Forms.Label VacuumEfficiencyTitleLabel;
         private System.Windows.Forms.TrackBar WhiskersEfficiencySlider;

@@ -35,6 +35,7 @@ namespace VacuumSim
         private Vacuum ActualVacuumData = new Vacuum();
         private FloorCleaner floorCleaner = new FloorCleaner();
         private CollisionHandler collisionHandler = new CollisionHandler();
+        private AccurateTimer SimTimer;
 
         /// <summary>
         /// Initializes the algorithm selector to allow for choosing an algorithm type as specified by the PathAlgorithm enum.
@@ -194,8 +195,12 @@ namespace VacuumSim
         {
             Simulation.simSpeed = Int32.Parse(SimulationSpeedSelector.SelectedItem.ToString().TrimEnd('x'));
 
-            // Set the vacuum timer to update every 1000 / (simulation speed) / (frames per simulation second)
-            VacAlgorithmTimer.Interval = 1000 / Simulation.simSpeed / FloorCanvasCalculator.framesPerSimSecond;
+            if (Simulation.simStarted) // Process scenario where user changes sim speed during simulation
+            {
+                SimTimer.Stop();
+                int interval = 1000 / Simulation.simSpeed / FloorCanvasCalculator.movementsPerSimSecond;
+                SimTimer = new AccurateTimer(this, new Action(SimTimerTick), interval);
+            }
         }
 
         private void RobotSpeedSelector_ValueChanged(object sender, EventArgs e)
@@ -635,25 +640,31 @@ namespace VacuumSim
             FloorCanvas.Invalidate();
         }
 
-        private void VacAlgorithmTimer_Tick(object sender, EventArgs e)
-        {
-            vc.ExecVPath(VacDisplay, HouseLayout, collisionHandler, floorCleaner, ActualVacuumData, sender, e);
-
-            // Decrement the battery
-            BatteryLeftLabel.Text = FloorCanvasCalculator.GetBatteryRemainingText(VacDisplay);
-            SimTimeElapsedLabel.Text = FloorCanvasCalculator.GetTimeElapsedText();
-
-            // Save and reset simulation data if battery just ran out
-            if (VacDisplay.batterySecondsRemaining <= 0)
-                ResetValuesAfterSimEnd();
-            FloorCanvas.Invalidate();
-        }
-
-        private void VacuumWhiskersTimer_Tick(object sender, EventArgs e)
+        // Vacuum display timer tick
+        private void VacDisplayTimer_Tick(object sender, EventArgs e)
         {
             FloorCanvasCalculator.CalculateWhiskerCoordinates(VacDisplay);
 
-            FloorCanvas.Invalidate(); // Re-trigger paint event
+            // Update the battery left and sim time elapsed labels
+            BatteryLeftLabel.Text = FloorCanvasCalculator.GetBatteryRemainingText(VacDisplay);
+            SimTimeElapsedLabel.Text = FloorCanvasCalculator.GetTimeElapsedText();
+
+            // Save and reset simulation data if battery has run out
+            if (VacDisplay.batterySecondsRemaining <= 0)
+                ResetValuesAfterSimEnd();
+
+            FloorCanvas.Invalidate();
+        }
+
+        // Algorithm timer tick
+        private void SimTimerTick()
+        {
+            vc.ExecVPath(VacDisplay, HouseLayout, collisionHandler, floorCleaner, ActualVacuumData);
+
+            if (VacDisplay.batterySecondsRemaining <= 0)
+            {
+                SimTimer.Stop();
+            }
         }
 
         private void StartSimulationButton_Click(object sender, EventArgs e)
@@ -714,28 +725,24 @@ namespace VacuumSim
             if (Vacuum.VacuumAlgorithm[0] == 0)
             {
                 vc = new VRandAlgorithm();
-                VacAlgorithmTimer.Enabled = true;
                 CurrentAlgorithmLabel.Text = "Current Algorithm: Random";
                 Debug.WriteLine("Running " + vc.getVer());
             }
             else if (Vacuum.VacuumAlgorithm[0] == 1)
             {
                 vc = new VSpiralAlgorithm();
-                VacAlgorithmTimer.Enabled = true;
                 CurrentAlgorithmLabel.Text = "Current Algorithm: Spiral";
                 Debug.WriteLine("Running " + vc.getVer());
             }
             else if (Vacuum.VacuumAlgorithm[0] == 2)
             {
                 vc = new VSnakeAlgorithm();
-                VacAlgorithmTimer.Enabled = true;
                 CurrentAlgorithmLabel.Text = "Current Algorithm: Snake";
                 Debug.WriteLine("Running " + vc.getVer());
             }
             else if (Vacuum.VacuumAlgorithm[0] == 3)
             {
                 vc = new VWallFollowAlgorithm();
-                VacAlgorithmTimer.Enabled = true;
                 CurrentAlgorithmLabel.Text = "Current Algorithm: Wall Follow";
                 Debug.WriteLine("Running " + vc.getVer());
             }
@@ -745,12 +752,16 @@ namespace VacuumSim
             ActualVacuumData.VacuumCoords[1] = VacDisplay.firstAlgVacuumCoords[1];
             VacDisplay.vacuumHeading = VacDisplay.firstAlgVacuumHeading;
 
+            // Start the simulation timer
+            int interval = 1000 / Simulation.simSpeed / FloorCanvasCalculator.movementsPerSimSecond;
+            SimTimer = new AccurateTimer(this, new Action(SimTimerTick), interval);
+
             VacDisplay.CenterVacuumDisplay(ActualVacuumData.VacuumCoords, HouseLayout);
             InitialVacuumHeadingSelector.Value = VacDisplay.vacuumHeading;
 
+            VacDisplayTimer.Enabled = true;
             VacDisplay.vacuumSpeed = (int)RobotSpeedSelector.Value;
             FloorCanvasDesigner.displayingHeatMap = false;
-            VacuumWhiskersTimer.Enabled = true;
             HouseLayout.gridLinesOn = false;
             StartSimulationButton.Enabled = false;
             StopSimulationButton.Enabled = true;
@@ -768,7 +779,7 @@ namespace VacuumSim
             Simulation.simStarted = true;
             Simulation.simTimeElapsed = 0;
             Simulation.simulationStartTime = DateTime.Now.ToString("G");
-            FloorCanvasCalculator.frameCount = 0;
+            FloorCanvasCalculator.movementCount = 0;
             VacDisplay.batterySecondsRemaining = (int)RobotBatteryLifeSelector.Value * 60;
             VacDisplay.firstWallCol = true;
 
@@ -796,15 +807,14 @@ namespace VacuumSim
             // Store our sim data before clearing it
             SimulationReport rep = GenerateReport();
 
+            SimTimer.Stop();
+            VacDisplayTimer.Enabled = false;
             FloorCanvasDesigner.displayingHeatMap = true;
-            VacuumWhiskersTimer.Enabled = false;
-            VacAlgorithmTimer.Enabled = false;
             StartSimulationButton.Enabled = false;
             StopSimulationButton.Enabled = false;
             Simulation.simStarted = false;
             Simulation.simTimeElapsed = 0;
-            FloorCanvasCalculator.frameCount = 0;
-            VacDisplay.batterySecondsRemaining = (int)RobotBatteryLifeSelector.Value * 60;
+            FloorCanvasCalculator.movementCount = 0;
             InitialVacuumHeadingSelector.Value = VacDisplay.vacuumHeading;
 
             Vacuum.VacuumAlgorithm.RemoveAt(0); // Remove the algorithm that just ran
@@ -851,8 +861,10 @@ namespace VacuumSim
             FloorTypeGroupBox.Enabled = true;
             Simulation.simStarted = false;
             Simulation.simTimeElapsed = 0;
-            FloorCanvasCalculator.frameCount = 0;
+            FloorCanvasCalculator.movementCount = 0;
             VacDisplay.batterySecondsRemaining = (int)RobotBatteryLifeSelector.Value * 60;
+            BatteryLeftLabel.Text = FloorCanvasCalculator.GetBatteryRemainingText(VacDisplay);
+            SimTimeElapsedLabel.Text = FloorCanvasCalculator.GetTimeElapsedText();
             RunAllAlgorithmsCheckbox.Enabled = true;
             CurrentAlgorithmLabel.Text = "Current Algorithm:";
 
@@ -876,6 +888,7 @@ namespace VacuumSim
 
         private void Form1_Load(object sender, EventArgs e)
         {
+
         }
 
         /// <summary>
