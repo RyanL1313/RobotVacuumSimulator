@@ -1,10 +1,7 @@
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Reflection;
@@ -12,7 +9,8 @@ using VacuumSim.Sim;
 using VacuumSim.UI.FloorplanGraphics;
 using VacuumSim.Components;
 using System.Diagnostics;
-using VacuumSim.UI.Floorplan;
+using System.IO;
+using System.Text.Json;
 
 namespace VacuumSim
 {
@@ -414,7 +412,7 @@ namespace VacuumSim
 
             OpenFileDialog openFloorplanDialog = new OpenFileDialog();
             openFloorplanDialog.Title = "Open Floorplan";
-            openFloorplanDialog.Filter = "Text files (*.txt)|*.txt";
+            openFloorplanDialog.Filter = "Text files (*.txt)|*.txt|Report Files (*.json)|*.json";
             openFloorplanDialog.InitialDirectory = usrDesktopPath;
             openFloorplanDialog.RestoreDirectory = true;
 
@@ -427,8 +425,19 @@ namespace VacuumSim
                 // If the user closes the dialog without opening anything, just exit out.
                 return;
             }
+            // Load floorplan from report file
+            if (inFilePath.Contains(".json"))
+            {
+                string simReport = File.ReadAllText(inFilePath);
+                SimulationReport inreport = JsonSerializer.Deserialize<SimulationReport>(simReport)!;
 
-            FloorplanFileReader.LoadTileGridData(inFilePath, HouseLayout);
+                FloorplanFileReader.LoadTileGridData(inreport.FloorplanData, HouseLayout);
+            }
+            // Load floorplan from saved floorplan
+            else
+            {
+                FloorplanFileReader.LoadTileGridData(inFilePath, HouseLayout);
+            }
 
             // Set the house width and height selector values to the size of the newly-loaded floorplan
             HouseWidthSelector.Value = HouseLayout.numTilesPerRow * 2 - 4;
@@ -750,7 +759,6 @@ namespace VacuumSim
             ActualVacuumData.VacuumCoords[1] = VacDisplay.firstAlgVacuumCoords[1];
             VacDisplay.vacuumHeading = VacDisplay.firstAlgVacuumHeading;
 
-
             VacDisplay.CenterVacuumDisplay(ActualVacuumData.VacuumCoords, HouseLayout);
             InitialVacuumHeadingSelector.Value = VacDisplay.vacuumHeading;
 
@@ -772,12 +780,16 @@ namespace VacuumSim
             FloorTypeGroupBox.Enabled = false;
             Simulation.simStarted = true;
             Simulation.simTimeElapsed = 0;
+            Simulation.simulationStartTime = DateTime.Now.ToString("G");
             FloorCanvasCalculator.frameCount = 0;
             VacDisplay.batterySecondsRemaining = (int)RobotBatteryLifeSelector.Value * 60;
             VacDisplay.firstWallCol = true;
 
             RunAllAlgorithmsCheckbox.Enabled = false;
             ObstacleSelector.Enabled = false;
+
+            LoadSimulationButton.Enabled = false;
+            LoadSaveSimSettingsGroupBox.Enabled = false;
 
             // Reset sim data to prep for new simulation
             HouseLayout.ResetInnerTiles();
@@ -794,6 +806,9 @@ namespace VacuumSim
         /// </summary>
         private async void ResetValuesAfterSimEnd()
         {
+            // Store our sim data before clearing it
+            SimulationReport rep = GenerateReport();
+
             FloorCanvasDesigner.displayingHeatMap = true;
             VacuumWhiskersTimer.Enabled = false;
             VacAlgorithmTimer.Enabled = false;
@@ -812,11 +827,15 @@ namespace VacuumSim
                 YesRunAnotherSimulationButton.Visible = true;
                 NoRunAnotherSimulationButton.Visible = true;
                 RunAnotherSimulationLabel.Visible = true;
+                // Save our sim report
+                SaveReport(rep);
             }
             else // More algorithms need to run. Move onto the next one
             {
                 // Display heat map for 3 seconds before moving onto the next algorithm
                 FloorCanvas.Invalidate();
+                // Save our sim report
+                SaveReport(rep);
                 await Task.Delay(3000);
 
                 SetInitialSimulationValues(); // Start a new simulation with the next algorithm
@@ -856,6 +875,9 @@ namespace VacuumSim
             NoRunAnotherSimulationButton.Visible = false;
             RunAnotherSimulationLabel.Visible = false;
 
+            LoadSimulationButton.Enabled = true;
+            LoadSaveSimSettingsGroupBox.Enabled = true;
+
             // Reset sim data
             HouseLayout.ResetInnerTiles();
             HouseLayout.totalFloorplanArea = 0;
@@ -866,6 +888,151 @@ namespace VacuumSim
 
         private void Form1_Load(object sender, EventArgs e)
         {
+        }
+
+        /// <summary>
+        /// Generates a SimulationReport instance representing the current simulation state.
+        /// </summary>
+        /// <returns>A SimulationReport representing the current simulation state.</returns>
+        private SimulationReport GenerateReport()
+        {
+            SimulationReport rep = new SimulationReport
+            {
+                FloorplanID = HouseLayout.GetFloorPlanID(),
+                HouseWidthFeet = (int)HouseWidthSelector.Value,
+                HouseHeightFeet = (int)HouseHeightSelector.Value,
+                TotalHouseAreaInFeet = (HouseLayout.totalFloorplanArea / 144),
+                TotalCleanableHouseAreaInFeet = (HouseLayout.totalFloorplanArea - HouseLayout.totalNonCleanableFloorplanArea) / 144,
+                HouseFloorType = FloorTypeGroupBox.Controls.OfType<RadioButton>()
+                           .FirstOrDefault(n => n.Checked).Name.Replace("RadioButton", "", ignoreCase: true, culture: System.Globalization.CultureInfo.InvariantCulture),
+                RobotBatteryLifeMinutes = (int)RobotBatteryLifeSelector.Value,
+                RobotEfficiency = VacuumEfficiencySlider.Value,
+                RobotWhiskersEfficiency = WhiskersEfficiencySlider.Value,
+                //RobotPathingAlgorithm = RobotPathAlgorithmSelector.Text,
+                RobotPathingAlgorithm = vc.getVer(),
+                RobotSpeedInchesPerSecond = (int)RobotSpeedSelector.Value,
+                SimulatedSeconds = Simulation.simTimeElapsed,
+                SimulationStartTime = Simulation.simulationStartTime,
+                CoveragePercentage = Math.Round(100.0 - HouseLayout.GetFloorplanDirtiness(), 2),
+                FloorplanData = FloorplanFileWriter.TileGridDataAsString(HouseLayout),
+            };
+
+            return rep;
+        }
+
+        /// <summary>
+        /// Serializes a SimulationReport instance and saves it as JSON.
+        /// </summary>
+        /// <param name="rep">The SimulationReport instance to save.</param>
+        private void SaveReport(SimulationReport rep)
+        {
+            // Save file dialog
+            SaveFileDialog saveFileDialog = new SaveFileDialog();
+            saveFileDialog.Filter = "JSON file|*.json";
+            saveFileDialog.Title = "Save Simulation Report";
+            saveFileDialog.ShowDialog();
+
+            string filename = "SimulationResults.json";
+
+            if (saveFileDialog.FileName != "")
+            {
+                filename = saveFileDialog.FileName;
+            }
+
+            var JSONOpts = new JsonSerializerOptions { IncludeFields = true, WriteIndented = true };
+            string jsonString = JsonSerializer.Serialize(rep, JSONOpts);
+            File.WriteAllText(filename, jsonString);
+        }
+
+        /// <summary>
+        /// Callback for clicking the Load Simulation button. Promts the user
+        /// for a simulation report file and loads it in a SimResults modal.
+        /// </summary>
+        private void LoadSimulationButton_Click(object sender, EventArgs e)
+        {
+            string inFilePath;
+            // get the current user's desktop directory.
+            string usrDesktopPath = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
+
+            OpenFileDialog openFloorplanDialog = new OpenFileDialog();
+            openFloorplanDialog.Title = "Open Saved Simulation";
+            openFloorplanDialog.Filter = "Report Files (*.json)|*.json";
+            openFloorplanDialog.InitialDirectory = usrDesktopPath;
+            openFloorplanDialog.RestoreDirectory = true;
+
+            if (openFloorplanDialog.ShowDialog() == DialogResult.OK)
+            {
+                inFilePath = openFloorplanDialog.FileName;
+            }
+            else
+            {
+                // If the user closes the dialog without opening anything, just exit out.
+                return;
+            }
+
+            // Spawn a SimResults modal with the report the user just selected.
+            var popUp = new UI.SimResults(inFilePath, this, ref HouseLayout);
+            popUp.ShowDialog();
+            // Redraw after the modal closes.
+            FloorCanvas.Invalidate();
+        }
+
+        /// <summary>
+        /// Loads the simulation settings from a given SimulationReport instance..
+        /// </summary>
+        /// <param name="rep">The SimulationReport instance to load parameters from.</param>
+        public void LoadSimulationSettingsFromReport(SimulationReport rep)
+        {
+            // Load some values
+            RobotBatteryLifeSelector.Value = rep.RobotBatteryLifeMinutes;
+            RobotSpeedSelector.Value = rep.RobotSpeedInchesPerSecond;
+            VacuumEfficiencySlider.Value = rep.RobotEfficiency;
+            WhiskersEfficiencySlider.Value = rep.RobotWhiskersEfficiency;
+            WhiskersEfficiencyValueLabel.Text = WhiskersEfficiencySlider.Value + "%";
+            VacuumEfficiencyValueLabel.Text = VacuumEfficiencySlider.Value + "%";
+
+            // Load pathing alg
+            if (rep.RobotPathingAlgorithm.Contains("Snake"))
+            {
+                RobotPathAlgorithmSelector.SelectedItem = PathAlgorithm.Snaking;
+            }
+            else if (rep.RobotPathingAlgorithm.Contains("Random"))
+            {
+                RobotPathAlgorithmSelector.SelectedItem = PathAlgorithm.Random;
+            }
+            else if (rep.RobotPathingAlgorithm.Contains("Spiral"))
+            {
+                RobotPathAlgorithmSelector.SelectedItem = PathAlgorithm.Spiral;
+            }
+            else if (rep.RobotPathingAlgorithm.Contains("Follow"))
+            {
+                RobotPathAlgorithmSelector.SelectedItem = PathAlgorithm.WallFollow;
+            }
+
+            // Load floor covering type
+            switch (rep.HouseFloorType)
+            {
+                case "HardWood":
+                    HardWoodRadioButton.Checked = true;
+                    break;
+
+                case "LoopPile":
+                    LoopPileRadioButton.Checked = true;
+                    break;
+
+                case "CutPile":
+                    CutPileRadioButton.Checked = true;
+                    break;
+
+                case "FriezeCutPile":
+                    FriezeCutPileRadioButton.Checked = true;
+                    break;
+            }
+
+            // Load house dims
+
+            HouseHeightSelector.Value = rep.HouseHeightFeet;
+            HouseWidthSelector.Value = rep.HouseWidthFeet;
         }
     }
 
@@ -879,5 +1046,27 @@ namespace VacuumSim
             var property = typeof(Control).GetProperty("DoubleBuffered", BindingFlags.Instance | BindingFlags.NonPublic);
             property.SetValue(control, true, null);
         }
+    }
+
+    /// <summary>
+    /// A simulation report to be stored/loaded.
+    /// </summary>
+    public class SimulationReport
+    {
+        public string FloorplanID { get; set; }
+        public string SimulationStartTime { get; set; }
+        public int SimulatedSeconds { get; set; }
+        public int HouseWidthFeet { get; set; }
+        public int HouseHeightFeet { get; set; }
+        public int TotalHouseAreaInFeet { get; set; }
+        public int TotalCleanableHouseAreaInFeet { get; set; }
+        public string HouseFloorType { get; set; }
+        public int RobotBatteryLifeMinutes { get; set; }
+        public int RobotSpeedInchesPerSecond { get; set; }
+        public int RobotEfficiency { get; set; }
+        public int RobotWhiskersEfficiency { get; set; }
+        public string RobotPathingAlgorithm { get; set; }
+        public double CoveragePercentage { get; set; }
+        public string[] FloorplanData { get; set; }
     }
 }

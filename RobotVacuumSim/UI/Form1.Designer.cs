@@ -1,4 +1,3 @@
-
 using VacuumSim.Components;
 
 namespace VacuumSim
@@ -88,7 +87,6 @@ namespace VacuumSim
             this.YesRunAnotherSimulationButton = new System.Windows.Forms.Button();
             this.LoadSaveSimSettingsGroupBox = new System.Windows.Forms.GroupBox();
             this.LoadSimulationButton = new System.Windows.Forms.Button();
-            this.SaveSimulationButton = new System.Windows.Forms.Button();
             this.SimulationControlLabel = new System.Windows.Forms.Label();
             this.SimulationSpeedLabel = new System.Windows.Forms.Label();
             this.StartSimulationButton = new System.Windows.Forms.Button();
@@ -938,36 +936,23 @@ namespace VacuumSim
             // LoadSaveSimSettingsGroupBox
             // 
             this.LoadSaveSimSettingsGroupBox.Controls.Add(this.LoadSimulationButton);
-            this.LoadSaveSimSettingsGroupBox.Controls.Add(this.SaveSimulationButton);
-            this.LoadSaveSimSettingsGroupBox.Enabled = false;
             this.LoadSaveSimSettingsGroupBox.Location = new System.Drawing.Point(3, 219);
             this.LoadSaveSimSettingsGroupBox.Name = "LoadSaveSimSettingsGroupBox";
             this.LoadSaveSimSettingsGroupBox.Size = new System.Drawing.Size(474, 87);
             this.LoadSaveSimSettingsGroupBox.TabIndex = 16;
             this.LoadSaveSimSettingsGroupBox.TabStop = false;
-            this.LoadSaveSimSettingsGroupBox.Text = "Load/Save";
+            this.LoadSaveSimSettingsGroupBox.Text = "Report Files";
             // 
             // LoadSimulationButton
             // 
-            this.LoadSimulationButton.Enabled = false;
             this.LoadSimulationButton.Location = new System.Drawing.Point(7, 32);
             this.LoadSimulationButton.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.LoadSimulationButton.Name = "LoadSimulationButton";
             this.LoadSimulationButton.Size = new System.Drawing.Size(161, 22);
             this.LoadSimulationButton.TabIndex = 14;
-            this.LoadSimulationButton.Text = "Load Simulation Settings";
+            this.LoadSimulationButton.Text = "Load Simulation Report";
             this.LoadSimulationButton.UseVisualStyleBackColor = true;
-            // 
-            // SaveSimulationButton
-            // 
-            this.SaveSimulationButton.Enabled = false;
-            this.SaveSimulationButton.Location = new System.Drawing.Point(7, 59);
-            this.SaveSimulationButton.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
-            this.SaveSimulationButton.Name = "SaveSimulationButton";
-            this.SaveSimulationButton.Size = new System.Drawing.Size(161, 22);
-            this.SaveSimulationButton.TabIndex = 15;
-            this.SaveSimulationButton.Text = "Save Simulation Settings";
-            this.SaveSimulationButton.UseVisualStyleBackColor = true;
+            this.LoadSimulationButton.Click += new System.EventHandler(this.LoadSimulationButton_Click);
             // 
             // SimulationControlLabel
             // 
@@ -1202,6 +1187,7 @@ namespace VacuumSim
         }
 
         #endregion
+
         private System.Windows.Forms.SplitContainer LeftPane;
         private System.Windows.Forms.SplitContainer ControlsPane;
         private System.Windows.Forms.Label SimulationControlLabel;
@@ -1230,7 +1216,6 @@ namespace VacuumSim
         private System.Windows.Forms.Label VacuumAttributesLabel;
         private System.Windows.Forms.SplitContainer CenterSplitPane;
         private System.Windows.Forms.GroupBox LoadSaveFloorplanGroupBox;
-        private System.Windows.Forms.Button SaveSimulationButton;
         private System.Windows.Forms.Button LoadSimulationButton;
         private System.Windows.Forms.Button SaveFloorplanButton;
         private System.Windows.Forms.Button LoadDefaultFloorplanButton;
@@ -1275,4 +1260,3 @@ namespace VacuumSim
         private System.Windows.Forms.Label CurrentAlgorithmLabel;
     }
 }
-
