@@ -567,7 +567,6 @@ namespace VacuumSim
             this.FriezeCutPileRadioButton.Name = "FriezeCutPileRadioButton";
             this.FriezeCutPileRadioButton.Size = new System.Drawing.Size(101, 19);
             this.FriezeCutPileRadioButton.TabIndex = 3;
-            this.FriezeCutPileRadioButton.TabStop = true;
             this.FriezeCutPileRadioButton.Text = "Frieze-Cut Pile";
             this.FriezeCutPileRadioButton.UseVisualStyleBackColor = true;
             this.FriezeCutPileRadioButton.CheckedChanged += new System.EventHandler(this.FloorTypeControlChanged);
@@ -580,7 +579,6 @@ namespace VacuumSim
             this.CutPileRadioButton.Name = "CutPileRadioButton";
             this.CutPileRadioButton.Size = new System.Drawing.Size(66, 19);
             this.CutPileRadioButton.TabIndex = 2;
-            this.CutPileRadioButton.TabStop = true;
             this.CutPileRadioButton.Text = "Cut Pile";
             this.CutPileRadioButton.UseVisualStyleBackColor = true;
             this.CutPileRadioButton.CheckedChanged += new System.EventHandler(this.FloorTypeControlChanged);
@@ -593,7 +591,6 @@ namespace VacuumSim
             this.LoopPileRadioButton.Name = "LoopPileRadioButton";
             this.LoopPileRadioButton.Size = new System.Drawing.Size(74, 19);
             this.LoopPileRadioButton.TabIndex = 1;
-            this.LoopPileRadioButton.TabStop = true;
             this.LoopPileRadioButton.Text = "Loop Pile";
             this.LoopPileRadioButton.UseVisualStyleBackColor = true;
             this.LoopPileRadioButton.CheckedChanged += new System.EventHandler(this.FloorTypeControlChanged);
@@ -601,6 +598,7 @@ namespace VacuumSim
             // HardWoodRadioButton
             // 
             this.HardWoodRadioButton.AutoSize = true;
+            this.HardWoodRadioButton.Checked = true;
             this.HardWoodRadioButton.Location = new System.Drawing.Point(6, 20);
             this.HardWoodRadioButton.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.HardWoodRadioButton.Name = "HardWoodRadioButton";
